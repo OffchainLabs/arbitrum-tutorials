@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.6.11;
 
+import "./Outbox.sol";
 import "./Inbox.sol";
 import "../Greeter.sol";
 
-contract GreeterL2 is Greeter {
+contract GreeterL1 is Greeter {
     address l2Target;
     IInbox inbox;
+
+    event RetryableTicketCreated(uint256 indexed ticketId);
 
     constructor(
         string memory _greeting,
@@ -36,6 +39,17 @@ contract GreeterL2 is Greeter {
             gasPriceBid,
             data
         );
+
+        emit RetryableTicketCreated(ticketID);
         return ticketID;
+    }
+
+    /// @notice only l2Target can update greeting
+    function setGreeting(string memory _greeting) public override {
+        IOutbox outbox = IOutbox(inbox.bridge().activeOutbox());
+        address l2Sender = outbox.l2ToL1Sender();
+        require(l2Sender == l2Target, "Greeting only updateable by L2");
+
+        Greeter.setGreeting(_greeting);
     }
 }
