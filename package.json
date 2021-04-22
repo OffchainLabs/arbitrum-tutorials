@@ -13,10 +13,11 @@
   "workspaces": {
     "packages": [
       "packages/greeter",
-      "packages/exampleA"
+      "packages/example-echo"
     ]
   },
   "scripts": {
-    "compile:greeter": "yarn workspace greeter build"
+    "compile:greeter": "yarn workspace greeter build",
+    "echo": "yarn workspace example-echo echo"
   }
 }
