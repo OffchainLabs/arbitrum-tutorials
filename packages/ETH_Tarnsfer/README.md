@@ -1,11 +1,4 @@
-
-
-<img  align="left" src="https://offchainlabs.com/c79291eee1a8e736eebd9a2c708dbe44.png" width="350" height="100">
-
-
-
 # ETH_Tarnsfer tutorial
-
 
 ETH_Tarnsfer is an example of moving Ether from Ethereum (Layer 1) onto the Arbitrum (Layer 2) chain.
 
@@ -13,7 +6,7 @@ ETH_Tarnsfer is an example of moving Ether from Ethereum (Layer 1) onto the Arbi
 
 Run the following commands in order to install the necessary dependencies and compile your smart contracts.
 
-```bash diff
+```bash
 yarn install
 export INFURA_KEY='InfuraAccessKey'
 export DEVNET_PRIVKEY='0xYourPrivateKey'
@@ -45,4 +38,4 @@ yarn hardhat run scripts/deploy.js
 
 Once the script is successfully executed, you can go to the [Arbitrum block explorer](https://explorer.offchainlabs.com/#/), enter your public key, and see the amount of ETH that has been assigned to your address on the Arbitrum chain!
 
-
+<img align=“center” src="https://offchainlabs.com/c79291eee1a8e736eebd9a2c708dbe44.png" width="350" height="100"> 
