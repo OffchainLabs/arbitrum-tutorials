@@ -6,7 +6,7 @@ import "../Greeter.sol";
 
 contract GreeterL2 is Greeter {
     ArbSys constant arbsys = ArbSys(100);
-    address l1Target;
+    address public l1Target;
 
     event L2ToL1TxCreated(uint256 indexed withdrawalId);
 
@@ -14,6 +14,10 @@ contract GreeterL2 is Greeter {
         string memory _greeting,
         address _l1Target
     ) public Greeter(_greeting) {
+        l1Target = _l1Target;
+    }
+
+    function updateL1Target(address _l1Target) public {
         l1Target = _l1Target;
     }
 

@@ -1,18 +1,23 @@
 {
-  "name": "arbitrum-quickstart",
+  "name": "arbitrum-interop-quickstart",
+  "version": "1.0.0",
+  "description": "The Arbitrum Interoperability Quickstart Monorepo",
+  "author": "Offchain Labs, Inc.",
   "license": "Apache-2.0",
+  "private": "true",
   "engines": {
     "node": ">= 8.0.0 < 13.0.0",
     "npm": "^6.0.0",
     "yarn": "^1.0.0"
   },
-  "scripts": {
-    "build": "hardhat compile"
+  "workspaces": {
+    "packages": [
+      "packages/greeter",
+      "packages/example-echo"
+    ]
   },
-  "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.2",
-    "arb-ts": "0.0.9",
-    "ethers": "^5.1.2",
-    "hardhat": "^2.2.0"
+  "scripts": {
+    "compile:greeter": "yarn workspace greeter build",
+    "echo": "yarn workspace example-echo echo"
   }
 }

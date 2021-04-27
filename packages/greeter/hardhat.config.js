@@ -13,13 +13,15 @@ const accounts = {
  */
 module.exports = {
   solidity: "0.6.11",
-  kovan: {
-    url: "https://kovan.infura.io/v3/" + process.env["INFURA_KEY"],
-    accounts: accounts,
-  },
-  arbkovan4: {
-    gasPrice: 0,
-    url: "https://kovan4.arbitrum.io/rpc",
-    accounts: accounts,
-  },
+  networks: {
+    kovan: {
+      url: "https://kovan.infura.io/v3/" + process.env["INFURA_KEY"],
+      accounts: accounts,
+    },
+    arbkovan4: {
+      gasPrice: 0,
+      url: "https://kovan4.arbitrum.io/rpc",
+      accounts: accounts,
+    },
+  }
 };
