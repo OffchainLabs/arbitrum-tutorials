@@ -1,4 +1,4 @@
-# ETH_Tarnsfer tutorial
+# ETH_Deposit tutorial
 
 ETH_Tarnsfer is an example of moving Ether from Ethereum (Layer 1) onto the Arbitrum (Layer 2) chain.
 
@@ -32,7 +32,7 @@ yarn hardhat run scripts/deploy.js
 
 ####  Payment.sol:
 
-* This contract executes a deposit transaction via `Inbox.depositEth(address destination)` on the Kovan testnet. This transfers funds to the Bridge contract on the L1 and credits the same funds to you inside the Arbitrum chain at the specified address 
+* This contract executes a deposit transaction via `Inbox.depositEth(address destination)` on the Kovan testnet. This transfers funds to the Bridge contract on the L1 and credits the same funds to you inside the Arbitrum chain at the specified address.
 
 ## Curious to see the output on the Arbitrum chain?
 
