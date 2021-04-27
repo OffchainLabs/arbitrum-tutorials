@@ -6,8 +6,8 @@ import "./Inbox.sol";
 import "../Greeter.sol";
 
 contract GreeterL1 is Greeter {
-    address l2Target;
-    IInbox inbox;
+    address public l2Target;
+    IInbox public inbox;
 
     event RetryableTicketCreated(uint256 indexed ticketId);
 
@@ -20,16 +20,20 @@ contract GreeterL1 is Greeter {
         inbox = IInbox(_inbox);
     }
 
+    function updateL2Target(address _l2Target) public {
+        l2Target = _l2Target;
+    }
+
     function setGreetingInL2(
         string memory _greeting,
         uint256 maxSubmissionCost,
         uint256 maxGas,
         uint256 gasPriceBid
-    ) public returns (uint256) {
+    ) public payable returns (uint256) {
         bytes memory data =
             abi.encodeWithSelector(Greeter.setGreeting.selector, _greeting);
         
-        uint256 ticketID = inbox.createRetryableTicket(
+        uint256 ticketID = inbox.createRetryableTicket{value: msg.value}(
             l2Target,
             0,
             maxSubmissionCost,
