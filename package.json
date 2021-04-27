@@ -13,7 +13,8 @@
   "workspaces": {
     "packages": [
       "packages/greeter",
-      "packages/example-echo"
+      "packages/example-echo",
+      "packages/Eth_Transfer"
     ]
   },
   "scripts": {
