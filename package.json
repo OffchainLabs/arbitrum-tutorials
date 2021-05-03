@@ -14,7 +14,8 @@
     "packages": [
       "packages/greeter",
       "packages/eth_deposit",
-      "packages/eth_withdraw"
+      "packages/eth_withdraw",
+      "packages/arb-shared-dependencies"
       
     ]
   },

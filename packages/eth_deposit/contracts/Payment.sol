@@ -1,7 +1,7 @@
 pragma solidity ^0.7.0;
 
 
-import "./Inbox.sol";
+import "arb-shared-dependencies/contracts/Inbox.sol";
 
 contract Payment {
 
