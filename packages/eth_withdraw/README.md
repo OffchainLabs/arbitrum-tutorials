@@ -29,7 +29,7 @@ yarn hardhat run scripts/deploy.js
 
 ####  Withdraw.sol:
 
-* This contract executes a withdraw transaction via `ArbSys(100).withdrawEth(_destAddress)`on the Arbitrum testnet. This burns the Ether balance on the Arbitrum side, and will later make it available on the Ethereum side.transfers 
+* This contract executes a withdraw transaction via `ArbSys(100).withdrawEth(_destAddress)`on the Arbitrum testnet. This burns the Ether balance on the Arbitrum side, and will later make it available on the Ethereum side. 
 
 ## Curious to see the output on the Arbitrum chain?
 
