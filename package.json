@@ -13,12 +13,15 @@
   "workspaces": {
     "packages": [
       "packages/greeter",
-      "packages/example-echo",
-      "packages/Eth_Transfer"
+      "packages/eth_deposit",
+      "packages/eth_withdraw"
+      
     ]
   },
   "scripts": {
     "compile:greeter": "yarn workspace greeter build",
-    "echo": "yarn workspace example-echo echo"
+    "compile:eth_deposit": "yarn workspace eth_deposit build",
+    "compile:eth_withdraw": "yarn workspace eth_withdraw build"
+
   }
 }

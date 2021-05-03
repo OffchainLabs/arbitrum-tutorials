@@ -1,0 +1,1809 @@
+{
+  "id": "0e0335c1c597d10d1954106498cab696",
+  "_format": "hh-sol-build-info-1",
+  "solcVersion": "0.6.11",
+  "solcLongVersion": "0.6.11+commit.5ef660b1",
+  "input": {
+    "language": "Solidity",
+    "sources": {
+      "contracts/Arbsys.sol": {
+        "content": "pragma solidity >=0.4.21 <0.7.0;\n\n/**\n* @title Precompiled contract that exists in every Arbitrum chain at address(100), 0x0000000000000000000000000000000000000064. Exposes a variety of system-level functionality.\n */\ninterface ArbSys {\n    /**\n    * @notice Get internal version number identifying an ArbOS build\n    * @return version number as int\n     */\n    function arbOSVersion() external pure returns (uint);\n\n    /**\n    * @notice Get Arbitrum block number (distinct from L1 block number; Arbitrum genesis block has block number 0)\n    * @return block number as int\n     */ \n    function arbBlockNumber() external view returns (uint);\n\n    /** \n    * @notice Send given amount of Eth to dest from sender.\n    * This is a convenience function, which is equivalent to calling sendTxToL1 with empty calldataForL1.\n    * @param destination recipient address on L1\n    * @return unique identifier for this L2-to-L1 transaction.\n    */\n    function withdrawEth(address destination) external payable returns(uint);\n\n    /** \n    * @notice Send a transaction to L1\n    * @param destination recipient address on L1 \n    * @param calldataForL1 (optional) calldata for L1 contract call\n    * @return a unique identifier for this L2-to-L1 transaction.\n    */\n    function sendTxToL1(address destination, bytes calldata calldataForL1) external payable returns(uint);\n\n\n\n    /** \n    * @notice get the number of transactions issued by the given external account or the account sequence number of the given contract\n    * @param account target account\n    * @return the number of transactions issued by the given external account or the account sequence number of the given contract\n    */\n    function getTransactionCount(address account) external view returns(uint256);\n\n    /**  \n    * @notice get the value of target L2 storage slot \n    * This function is only callable from address 0 to prevent contracts from being able to call it\n    * @param account target account\n    * @param index target index of storage slot \n    * @return stotage value for the given account at the given index\n    */\n    function getStorageAt(address account, uint256 index) external view returns (uint256);\n\n    /**\n    * @notice check if current call is coming from l1\n    * @return true if the caller of this was called directly from L1\n    */\n    function isTopLevelCall() external view returns (bool);\n\n    event EthWithdrawal(address indexed destAddr, uint amount);\n\n    event L2ToL1Transaction(address caller, address indexed destination, uint indexed uniqueId,\n                            uint indexed batchNumber, uint indexInBatch,\n                            uint arbBlockNum, uint ethBlockNum, uint timestamp,\n                            uint callvalue, bytes data);\n}"
+      },
+      "contracts/Withdraw.sol": {
+        "content": "// SPDX-License-Identifier: Apache-2.0\npragma solidity ^0.6.11;\n\n\nimport \"./Arbsys.sol\";\n\ncontract Withdraw {\n\n    ArbSys constant arbsys = ArbSys(100);\n\n    event L2ToL1TxCreated(uint256 indexed withdrawalId);\n\n    function withdrawEth(address _destAddress) public payable\n    {   \n\n        uint256 withdrawalId = arbsys.withdrawEth(_destAddress);\n        emit L2ToL1TxCreated(withdrawalId);\n\n    }\n    \n\n    \n}\n\n"
+      }
+    },
+    "settings": {
+      "optimizer": {
+        "enabled": false,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers"
+          ],
+          "": [
+            "ast"
+          ]
+        }
+      }
+    }
+  },
+  "output": {
+    "contracts": {
+      "contracts/Arbsys.sol": {
+        "ArbSys": {
+          "abi": [
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "destAddr",
+                  "type": "address"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "name": "EthWithdrawal",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": false,
+                  "internalType": "address",
+                  "name": "caller",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "destination",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "uint256",
+                  "name": "uniqueId",
+                  "type": "uint256"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "uint256",
+                  "name": "batchNumber",
+                  "type": "uint256"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "uint256",
+                  "name": "indexInBatch",
+                  "type": "uint256"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "uint256",
+                  "name": "arbBlockNum",
+                  "type": "uint256"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "uint256",
+                  "name": "ethBlockNum",
+                  "type": "uint256"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "uint256",
+                  "name": "timestamp",
+                  "type": "uint256"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "uint256",
+                  "name": "callvalue",
+                  "type": "uint256"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "bytes",
+                  "name": "data",
+                  "type": "bytes"
+                }
+              ],
+              "name": "L2ToL1Transaction",
+              "type": "event"
+            },
+            {
+              "inputs": [],
+              "name": "arbBlockNumber",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "arbOSVersion",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "pure",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "index",
+                  "type": "uint256"
+                }
+              ],
+              "name": "getStorageAt",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                }
+              ],
+              "name": "getTransactionCount",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "isTopLevelCall",
+              "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "destination",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "calldataForL1",
+                  "type": "bytes"
+                }
+              ],
+              "name": "sendTxToL1",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "payable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "destination",
+                  "type": "address"
+                }
+              ],
+              "name": "withdrawEth",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "payable",
+              "type": "function"
+            }
+          ],
+          "evm": {
+            "bytecode": {
+              "linkReferences": {},
+              "object": "",
+              "opcodes": "",
+              "sourceMap": ""
+            },
+            "deployedBytecode": {
+              "immutableReferences": {},
+              "linkReferences": {},
+              "object": "",
+              "opcodes": "",
+              "sourceMap": ""
+            },
+            "methodIdentifiers": {
+              "arbBlockNumber()": "a3b1b31d",
+              "arbOSVersion()": "051038f2",
+              "getStorageAt(address,uint256)": "a169625f",
+              "getTransactionCount(address)": "23ca0cd2",
+              "isTopLevelCall()": "08bd624c",
+              "sendTxToL1(address,bytes)": "928c169a",
+              "withdrawEth(address)": "25e16063"
+            }
+          }
+        }
+      },
+      "contracts/Withdraw.sol": {
+        "Withdraw": {
+          "abi": [
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "uint256",
+                  "name": "withdrawalId",
+                  "type": "uint256"
+                }
+              ],
+              "name": "L2ToL1TxCreated",
+              "type": "event"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "_destAddress",
+                  "type": "address"
+                }
+              ],
+              "name": "withdrawEth",
+              "outputs": [],
+              "stateMutability": "payable",
+              "type": "function"
+            }
+          ],
+          "evm": {
+            "bytecode": {
+              "linkReferences": {},
+              "object": "608060405234801561001057600080fd5b5061018d806100206000396000f3fe60806040526004361061001e5760003560e01c806325e1606314610023575b600080fd5b6100656004803603602081101561003957600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190505050610067565b005b6000606473ffffffffffffffffffffffffffffffffffffffff166325e16063836040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001915050602060405180830381600087803b1580156100e957600080fd5b505af11580156100fd573d6000803e3d6000fd5b505050506040513d602081101561011357600080fd5b81019080805190602001909291905050509050807facd96f3817031b95eab52de9132d4a9dd13dac3d9dfcfe950ca9283c89b851a560405160405180910390a2505056fea264697066735822122054848b9c2247e8ca1165e611fb14af32a909b3e51511cf88b8464c8eb04297ae64736f6c634300060b0033",
+              "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH2 0x10 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH2 0x18D DUP1 PUSH2 0x20 PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN INVALID PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x4 CALLDATASIZE LT PUSH2 0x1E JUMPI PUSH1 0x0 CALLDATALOAD PUSH1 0xE0 SHR DUP1 PUSH4 0x25E16063 EQ PUSH2 0x23 JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST PUSH2 0x65 PUSH1 0x4 DUP1 CALLDATASIZE SUB PUSH1 0x20 DUP2 LT ISZERO PUSH2 0x39 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST DUP2 ADD SWAP1 DUP1 DUP1 CALLDATALOAD PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND SWAP1 PUSH1 0x20 ADD SWAP1 SWAP3 SWAP2 SWAP1 POP POP POP PUSH2 0x67 JUMP JUMPDEST STOP JUMPDEST PUSH1 0x0 PUSH1 0x64 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH4 0x25E16063 DUP4 PUSH1 0x40 MLOAD DUP3 PUSH4 0xFFFFFFFF AND PUSH1 0xE0 SHL DUP2 MSTORE PUSH1 0x4 ADD DUP1 DUP3 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND DUP2 MSTORE PUSH1 0x20 ADD SWAP2 POP POP PUSH1 0x20 PUSH1 0x40 MLOAD DUP1 DUP4 SUB DUP2 PUSH1 0x0 DUP8 DUP1 EXTCODESIZE ISZERO DUP1 ISZERO PUSH2 0xE9 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP GAS CALL ISZERO DUP1 ISZERO PUSH2 0xFD JUMPI RETURNDATASIZE PUSH1 0x0 DUP1 RETURNDATACOPY RETURNDATASIZE PUSH1 0x0 REVERT JUMPDEST POP POP POP POP PUSH1 0x40 MLOAD RETURNDATASIZE PUSH1 0x20 DUP2 LT ISZERO PUSH2 0x113 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST DUP2 ADD SWAP1 DUP1 DUP1 MLOAD SWAP1 PUSH1 0x20 ADD SWAP1 SWAP3 SWAP2 SWAP1 POP POP POP SWAP1 POP DUP1 PUSH32 0xACD96F3817031B95EAB52DE9132D4A9DD13DAC3D9DFCFE950CA9283C89B851A5 PUSH1 0x40 MLOAD PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 LOG2 POP POP JUMP INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 SLOAD DUP5 DUP12 SWAP13 0x22 SELFBALANCE 0xE8 0xCA GT PUSH6 0xE611FB14AF32 0xA9 MULMOD 0xB3 0xE5 ISZERO GT 0xCF DUP9 0xB8 CHAINID 0x4C DUP15 0xB0 TIMESTAMP SWAP8 0xAE PUSH5 0x736F6C6343 STOP MOD SIGNEXTEND STOP CALLER ",
+              "sourceMap": "90:322:1:-:0;;;;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+              "immutableReferences": {},
+              "linkReferences": {},
+              "object": "60806040526004361061001e5760003560e01c806325e1606314610023575b600080fd5b6100656004803603602081101561003957600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190505050610067565b005b6000606473ffffffffffffffffffffffffffffffffffffffff166325e16063836040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001915050602060405180830381600087803b1580156100e957600080fd5b505af11580156100fd573d6000803e3d6000fd5b505050506040513d602081101561011357600080fd5b81019080805190602001909291905050509050807facd96f3817031b95eab52de9132d4a9dd13dac3d9dfcfe950ca9283c89b851a560405160405180910390a2505056fea264697066735822122054848b9c2247e8ca1165e611fb14af32a909b3e51511cf88b8464c8eb04297ae64736f6c634300060b0033",
+              "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x4 CALLDATASIZE LT PUSH2 0x1E JUMPI PUSH1 0x0 CALLDATALOAD PUSH1 0xE0 SHR DUP1 PUSH4 0x25E16063 EQ PUSH2 0x23 JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST PUSH2 0x65 PUSH1 0x4 DUP1 CALLDATASIZE SUB PUSH1 0x20 DUP2 LT ISZERO PUSH2 0x39 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST DUP2 ADD SWAP1 DUP1 DUP1 CALLDATALOAD PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND SWAP1 PUSH1 0x20 ADD SWAP1 SWAP3 SWAP2 SWAP1 POP POP POP PUSH2 0x67 JUMP JUMPDEST STOP JUMPDEST PUSH1 0x0 PUSH1 0x64 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH4 0x25E16063 DUP4 PUSH1 0x40 MLOAD DUP3 PUSH4 0xFFFFFFFF AND PUSH1 0xE0 SHL DUP2 MSTORE PUSH1 0x4 ADD DUP1 DUP3 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND DUP2 MSTORE PUSH1 0x20 ADD SWAP2 POP POP PUSH1 0x20 PUSH1 0x40 MLOAD DUP1 DUP4 SUB DUP2 PUSH1 0x0 DUP8 DUP1 EXTCODESIZE ISZERO DUP1 ISZERO PUSH2 0xE9 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP GAS CALL ISZERO DUP1 ISZERO PUSH2 0xFD JUMPI RETURNDATASIZE PUSH1 0x0 DUP1 RETURNDATACOPY RETURNDATASIZE PUSH1 0x0 REVERT JUMPDEST POP POP POP POP PUSH1 0x40 MLOAD RETURNDATASIZE PUSH1 0x20 DUP2 LT ISZERO PUSH2 0x113 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST DUP2 ADD SWAP1 DUP1 DUP1 MLOAD SWAP1 PUSH1 0x20 ADD SWAP1 SWAP3 SWAP2 SWAP1 POP POP POP SWAP1 POP DUP1 PUSH32 0xACD96F3817031B95EAB52DE9132D4A9DD13DAC3D9DFCFE950CA9283C89B851A5 PUSH1 0x40 MLOAD PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 LOG2 POP POP JUMP INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 SLOAD DUP5 DUP12 SWAP13 0x22 SELFBALANCE 0xE8 0xCA GT PUSH6 0xE611FB14AF32 0xA9 MULMOD 0xB3 0xE5 ISZERO GT 0xCF DUP9 0xB8 CHAINID 0x4C DUP15 0xB0 TIMESTAMP SWAP8 0xAE PUSH5 0x736F6C6343 STOP MOD SIGNEXTEND STOP CALLER ",
+              "sourceMap": "90:322:1:-:0;;;;;;;;;;;;;;;;;;;;;216:183;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;292:20;147:3;315:18;;;334:12;315:32;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;292:55;;378:12;362:29;;;;;;;;;;216:183;;:::o"
+            },
+            "methodIdentifiers": {
+              "withdrawEth(address)": "25e16063"
+            }
+          }
+        }
+      }
+    },
+    "errors": [
+      {
+        "component": "general",
+        "errorCode": "1878",
+        "formattedMessage": "contracts/Arbsys.sol: Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing \"SPDX-License-Identifier: <SPDX-License>\" to each source file. Use \"SPDX-License-Identifier: UNLICENSED\" for non-open-source code. Please see https://spdx.org for more information.\n",
+        "message": "SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing \"SPDX-License-Identifier: <SPDX-License>\" to each source file. Use \"SPDX-License-Identifier: UNLICENSED\" for non-open-source code. Please see https://spdx.org for more information.",
+        "severity": "warning",
+        "sourceLocation": {
+          "end": -1,
+          "file": "contracts/Arbsys.sol",
+          "start": -1
+        },
+        "type": "Warning"
+      }
+    ],
+    "sources": {
+      "contracts/Arbsys.sol": {
+        "ast": {
+          "absolutePath": "contracts/Arbsys.sol",
+          "exportedSymbols": {
+            "ArbSys": [
+              85
+            ]
+          },
+          "id": 86,
+          "license": null,
+          "nodeType": "SourceUnit",
+          "nodes": [
+            {
+              "id": 1,
+              "literals": [
+                "solidity",
+                ">=",
+                "0.4",
+                ".21",
+                "<",
+                "0.7",
+                ".0"
+              ],
+              "nodeType": "PragmaDirective",
+              "src": "0:32:0"
+            },
+            {
+              "abstract": false,
+              "baseContracts": [],
+              "contractDependencies": [],
+              "contractKind": "interface",
+              "documentation": {
+                "id": 2,
+                "nodeType": "StructuredDocumentation",
+                "src": "34:183:0",
+                "text": " @title Precompiled contract that exists in every Arbitrum chain at address(100), 0x0000000000000000000000000000000000000064. Exposes a variety of system-level functionality."
+              },
+              "fullyImplemented": false,
+              "id": 85,
+              "linearizedBaseContracts": [
+                85
+              ],
+              "name": "ArbSys",
+              "nodeType": "ContractDefinition",
+              "nodes": [
+                {
+                  "body": null,
+                  "documentation": {
+                    "id": 3,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "241:116:0",
+                    "text": " @notice Get internal version number identifying an ArbOS build\n @return version number as int"
+                  },
+                  "functionSelector": "051038f2",
+                  "id": 8,
+                  "implemented": false,
+                  "kind": "function",
+                  "modifiers": [],
+                  "name": "arbOSVersion",
+                  "nodeType": "FunctionDefinition",
+                  "overrides": null,
+                  "parameters": {
+                    "id": 4,
+                    "nodeType": "ParameterList",
+                    "parameters": [],
+                    "src": "383:2:0"
+                  },
+                  "returnParameters": {
+                    "id": 7,
+                    "nodeType": "ParameterList",
+                    "parameters": [
+                      {
+                        "constant": false,
+                        "id": 6,
+                        "mutability": "mutable",
+                        "name": "",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 8,
+                        "src": "409:4:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "typeName": {
+                          "id": 5,
+                          "name": "uint",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "409:4:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      }
+                    ],
+                    "src": "408:6:0"
+                  },
+                  "scope": 85,
+                  "src": "362:53:0",
+                  "stateMutability": "pure",
+                  "virtual": false,
+                  "visibility": "external"
+                },
+                {
+                  "body": null,
+                  "documentation": {
+                    "id": 9,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "421:160:0",
+                    "text": " @notice Get Arbitrum block number (distinct from L1 block number; Arbitrum genesis block has block number 0)\n @return block number as int"
+                  },
+                  "functionSelector": "a3b1b31d",
+                  "id": 14,
+                  "implemented": false,
+                  "kind": "function",
+                  "modifiers": [],
+                  "name": "arbBlockNumber",
+                  "nodeType": "FunctionDefinition",
+                  "overrides": null,
+                  "parameters": {
+                    "id": 10,
+                    "nodeType": "ParameterList",
+                    "parameters": [],
+                    "src": "610:2:0"
+                  },
+                  "returnParameters": {
+                    "id": 13,
+                    "nodeType": "ParameterList",
+                    "parameters": [
+                      {
+                        "constant": false,
+                        "id": 12,
+                        "mutability": "mutable",
+                        "name": "",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 14,
+                        "src": "636:4:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "typeName": {
+                          "id": 11,
+                          "name": "uint",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "636:4:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      }
+                    ],
+                    "src": "635:6:0"
+                  },
+                  "scope": 85,
+                  "src": "587:55:0",
+                  "stateMutability": "view",
+                  "virtual": false,
+                  "visibility": "external"
+                },
+                {
+                  "body": null,
+                  "documentation": {
+                    "id": 15,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "648:289:0",
+                    "text": " @notice Send given amount of Eth to dest from sender.\n This is a convenience function, which is equivalent to calling sendTxToL1 with empty calldataForL1.\n @param destination recipient address on L1\n @return unique identifier for this L2-to-L1 transaction."
+                  },
+                  "functionSelector": "25e16063",
+                  "id": 22,
+                  "implemented": false,
+                  "kind": "function",
+                  "modifiers": [],
+                  "name": "withdrawEth",
+                  "nodeType": "FunctionDefinition",
+                  "overrides": null,
+                  "parameters": {
+                    "id": 18,
+                    "nodeType": "ParameterList",
+                    "parameters": [
+                      {
+                        "constant": false,
+                        "id": 17,
+                        "mutability": "mutable",
+                        "name": "destination",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 22,
+                        "src": "963:19:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "typeName": {
+                          "id": 16,
+                          "name": "address",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "963:7:0",
+                          "stateMutability": "nonpayable",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      }
+                    ],
+                    "src": "962:21:0"
+                  },
+                  "returnParameters": {
+                    "id": 21,
+                    "nodeType": "ParameterList",
+                    "parameters": [
+                      {
+                        "constant": false,
+                        "id": 20,
+                        "mutability": "mutable",
+                        "name": "",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 22,
+                        "src": "1009:4:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "typeName": {
+                          "id": 19,
+                          "name": "uint",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "1009:4:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      }
+                    ],
+                    "src": "1008:6:0"
+                  },
+                  "scope": 85,
+                  "src": "942:73:0",
+                  "stateMutability": "payable",
+                  "virtual": false,
+                  "visibility": "external"
+                },
+                {
+                  "body": null,
+                  "documentation": {
+                    "id": 23,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "1021:233:0",
+                    "text": " @notice Send a transaction to L1\n @param destination recipient address on L1 \n @param calldataForL1 (optional) calldata for L1 contract call\n @return a unique identifier for this L2-to-L1 transaction."
+                  },
+                  "functionSelector": "928c169a",
+                  "id": 32,
+                  "implemented": false,
+                  "kind": "function",
+                  "modifiers": [],
+                  "name": "sendTxToL1",
+                  "nodeType": "FunctionDefinition",
+                  "overrides": null,
+                  "parameters": {
+                    "id": 28,
+                    "nodeType": "ParameterList",
+                    "parameters": [
+                      {
+                        "constant": false,
+                        "id": 25,
+                        "mutability": "mutable",
+                        "name": "destination",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 32,
+                        "src": "1279:19:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "typeName": {
+                          "id": 24,
+                          "name": "address",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "1279:7:0",
+                          "stateMutability": "nonpayable",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      },
+                      {
+                        "constant": false,
+                        "id": 27,
+                        "mutability": "mutable",
+                        "name": "calldataForL1",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 32,
+                        "src": "1300:28:0",
+                        "stateVariable": false,
+                        "storageLocation": "calldata",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes_calldata_ptr",
+                          "typeString": "bytes"
+                        },
+                        "typeName": {
+                          "id": 26,
+                          "name": "bytes",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "1300:5:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_bytes_storage_ptr",
+                            "typeString": "bytes"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      }
+                    ],
+                    "src": "1278:51:0"
+                  },
+                  "returnParameters": {
+                    "id": 31,
+                    "nodeType": "ParameterList",
+                    "parameters": [
+                      {
+                        "constant": false,
+                        "id": 30,
+                        "mutability": "mutable",
+                        "name": "",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 32,
+                        "src": "1355:4:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "typeName": {
+                          "id": 29,
+                          "name": "uint",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "1355:4:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      }
+                    ],
+                    "src": "1354:6:0"
+                  },
+                  "scope": 85,
+                  "src": "1259:102:0",
+                  "stateMutability": "payable",
+                  "virtual": false,
+                  "visibility": "external"
+                },
+                {
+                  "body": null,
+                  "documentation": {
+                    "id": 33,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "1369:313:0",
+                    "text": " @notice get the number of transactions issued by the given external account or the account sequence number of the given contract\n @param account target account\n @return the number of transactions issued by the given external account or the account sequence number of the given contract"
+                  },
+                  "functionSelector": "23ca0cd2",
+                  "id": 40,
+                  "implemented": false,
+                  "kind": "function",
+                  "modifiers": [],
+                  "name": "getTransactionCount",
+                  "nodeType": "FunctionDefinition",
+                  "overrides": null,
+                  "parameters": {
+                    "id": 36,
+                    "nodeType": "ParameterList",
+                    "parameters": [
+                      {
+                        "constant": false,
+                        "id": 35,
+                        "mutability": "mutable",
+                        "name": "account",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 40,
+                        "src": "1716:15:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "typeName": {
+                          "id": 34,
+                          "name": "address",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "1716:7:0",
+                          "stateMutability": "nonpayable",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      }
+                    ],
+                    "src": "1715:17:0"
+                  },
+                  "returnParameters": {
+                    "id": 39,
+                    "nodeType": "ParameterList",
+                    "parameters": [
+                      {
+                        "constant": false,
+                        "id": 38,
+                        "mutability": "mutable",
+                        "name": "",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 40,
+                        "src": "1755:7:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "typeName": {
+                          "id": 37,
+                          "name": "uint256",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "1755:7:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      }
+                    ],
+                    "src": "1754:9:0"
+                  },
+                  "scope": 85,
+                  "src": "1687:77:0",
+                  "stateMutability": "view",
+                  "virtual": false,
+                  "visibility": "external"
+                },
+                {
+                  "body": null,
+                  "documentation": {
+                    "id": 41,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "1770:321:0",
+                    "text": " @notice get the value of target L2 storage slot \n This function is only callable from address 0 to prevent contracts from being able to call it\n @param account target account\n @param index target index of storage slot \n @return stotage value for the given account at the given index"
+                  },
+                  "functionSelector": "a169625f",
+                  "id": 50,
+                  "implemented": false,
+                  "kind": "function",
+                  "modifiers": [],
+                  "name": "getStorageAt",
+                  "nodeType": "FunctionDefinition",
+                  "overrides": null,
+                  "parameters": {
+                    "id": 46,
+                    "nodeType": "ParameterList",
+                    "parameters": [
+                      {
+                        "constant": false,
+                        "id": 43,
+                        "mutability": "mutable",
+                        "name": "account",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 50,
+                        "src": "2118:15:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "typeName": {
+                          "id": 42,
+                          "name": "address",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "2118:7:0",
+                          "stateMutability": "nonpayable",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      },
+                      {
+                        "constant": false,
+                        "id": 45,
+                        "mutability": "mutable",
+                        "name": "index",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 50,
+                        "src": "2135:13:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "typeName": {
+                          "id": 44,
+                          "name": "uint256",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "2135:7:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      }
+                    ],
+                    "src": "2117:32:0"
+                  },
+                  "returnParameters": {
+                    "id": 49,
+                    "nodeType": "ParameterList",
+                    "parameters": [
+                      {
+                        "constant": false,
+                        "id": 48,
+                        "mutability": "mutable",
+                        "name": "",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 50,
+                        "src": "2173:7:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "typeName": {
+                          "id": 47,
+                          "name": "uint256",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "2173:7:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      }
+                    ],
+                    "src": "2172:9:0"
+                  },
+                  "scope": 85,
+                  "src": "2096:86:0",
+                  "stateMutability": "view",
+                  "virtual": false,
+                  "visibility": "external"
+                },
+                {
+                  "body": null,
+                  "documentation": {
+                    "id": 51,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "2188:133:0",
+                    "text": " @notice check if current call is coming from l1\n @return true if the caller of this was called directly from L1"
+                  },
+                  "functionSelector": "08bd624c",
+                  "id": 56,
+                  "implemented": false,
+                  "kind": "function",
+                  "modifiers": [],
+                  "name": "isTopLevelCall",
+                  "nodeType": "FunctionDefinition",
+                  "overrides": null,
+                  "parameters": {
+                    "id": 52,
+                    "nodeType": "ParameterList",
+                    "parameters": [],
+                    "src": "2349:2:0"
+                  },
+                  "returnParameters": {
+                    "id": 55,
+                    "nodeType": "ParameterList",
+                    "parameters": [
+                      {
+                        "constant": false,
+                        "id": 54,
+                        "mutability": "mutable",
+                        "name": "",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 56,
+                        "src": "2375:4:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        },
+                        "typeName": {
+                          "id": 53,
+                          "name": "bool",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "2375:4:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_bool",
+                            "typeString": "bool"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      }
+                    ],
+                    "src": "2374:6:0"
+                  },
+                  "scope": 85,
+                  "src": "2326:55:0",
+                  "stateMutability": "view",
+                  "virtual": false,
+                  "visibility": "external"
+                },
+                {
+                  "anonymous": false,
+                  "documentation": null,
+                  "id": 62,
+                  "name": "EthWithdrawal",
+                  "nodeType": "EventDefinition",
+                  "parameters": {
+                    "id": 61,
+                    "nodeType": "ParameterList",
+                    "parameters": [
+                      {
+                        "constant": false,
+                        "id": 58,
+                        "indexed": true,
+                        "mutability": "mutable",
+                        "name": "destAddr",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 62,
+                        "src": "2407:24:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "typeName": {
+                          "id": 57,
+                          "name": "address",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "2407:7:0",
+                          "stateMutability": "nonpayable",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      },
+                      {
+                        "constant": false,
+                        "id": 60,
+                        "indexed": false,
+                        "mutability": "mutable",
+                        "name": "amount",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 62,
+                        "src": "2433:11:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "typeName": {
+                          "id": 59,
+                          "name": "uint",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "2433:4:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      }
+                    ],
+                    "src": "2406:39:0"
+                  },
+                  "src": "2387:59:0"
+                },
+                {
+                  "anonymous": false,
+                  "documentation": null,
+                  "id": 84,
+                  "name": "L2ToL1Transaction",
+                  "nodeType": "EventDefinition",
+                  "parameters": {
+                    "id": 83,
+                    "nodeType": "ParameterList",
+                    "parameters": [
+                      {
+                        "constant": false,
+                        "id": 64,
+                        "indexed": false,
+                        "mutability": "mutable",
+                        "name": "caller",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 84,
+                        "src": "2476:14:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "typeName": {
+                          "id": 63,
+                          "name": "address",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "2476:7:0",
+                          "stateMutability": "nonpayable",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      },
+                      {
+                        "constant": false,
+                        "id": 66,
+                        "indexed": true,
+                        "mutability": "mutable",
+                        "name": "destination",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 84,
+                        "src": "2492:27:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "typeName": {
+                          "id": 65,
+                          "name": "address",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "2492:7:0",
+                          "stateMutability": "nonpayable",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      },
+                      {
+                        "constant": false,
+                        "id": 68,
+                        "indexed": true,
+                        "mutability": "mutable",
+                        "name": "uniqueId",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 84,
+                        "src": "2521:21:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "typeName": {
+                          "id": 67,
+                          "name": "uint",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "2521:4:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      },
+                      {
+                        "constant": false,
+                        "id": 70,
+                        "indexed": true,
+                        "mutability": "mutable",
+                        "name": "batchNumber",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 84,
+                        "src": "2572:24:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "typeName": {
+                          "id": 69,
+                          "name": "uint",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "2572:4:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      },
+                      {
+                        "constant": false,
+                        "id": 72,
+                        "indexed": false,
+                        "mutability": "mutable",
+                        "name": "indexInBatch",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 84,
+                        "src": "2598:17:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "typeName": {
+                          "id": 71,
+                          "name": "uint",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "2598:4:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      },
+                      {
+                        "constant": false,
+                        "id": 74,
+                        "indexed": false,
+                        "mutability": "mutable",
+                        "name": "arbBlockNum",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 84,
+                        "src": "2645:16:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "typeName": {
+                          "id": 73,
+                          "name": "uint",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "2645:4:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      },
+                      {
+                        "constant": false,
+                        "id": 76,
+                        "indexed": false,
+                        "mutability": "mutable",
+                        "name": "ethBlockNum",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 84,
+                        "src": "2663:16:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "typeName": {
+                          "id": 75,
+                          "name": "uint",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "2663:4:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      },
+                      {
+                        "constant": false,
+                        "id": 78,
+                        "indexed": false,
+                        "mutability": "mutable",
+                        "name": "timestamp",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 84,
+                        "src": "2681:14:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "typeName": {
+                          "id": 77,
+                          "name": "uint",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "2681:4:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      },
+                      {
+                        "constant": false,
+                        "id": 80,
+                        "indexed": false,
+                        "mutability": "mutable",
+                        "name": "callvalue",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 84,
+                        "src": "2725:14:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "typeName": {
+                          "id": 79,
+                          "name": "uint",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "2725:4:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      },
+                      {
+                        "constant": false,
+                        "id": 82,
+                        "indexed": false,
+                        "mutability": "mutable",
+                        "name": "data",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 84,
+                        "src": "2741:10:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes"
+                        },
+                        "typeName": {
+                          "id": 81,
+                          "name": "bytes",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "2741:5:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_bytes_storage_ptr",
+                            "typeString": "bytes"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      }
+                    ],
+                    "src": "2475:277:0"
+                  },
+                  "src": "2452:301:0"
+                }
+              ],
+              "scope": 86,
+              "src": "218:2537:0"
+            }
+          ],
+          "src": "0:2755:0"
+        },
+        "id": 0
+      },
+      "contracts/Withdraw.sol": {
+        "ast": {
+          "absolutePath": "contracts/Withdraw.sol",
+          "exportedSymbols": {
+            "Withdraw": [
+              115
+            ]
+          },
+          "id": 116,
+          "license": "Apache-2.0",
+          "nodeType": "SourceUnit",
+          "nodes": [
+            {
+              "id": 87,
+              "literals": [
+                "solidity",
+                "^",
+                "0.6",
+                ".11"
+              ],
+              "nodeType": "PragmaDirective",
+              "src": "39:24:1"
+            },
+            {
+              "absolutePath": "contracts/Arbsys.sol",
+              "file": "./Arbsys.sol",
+              "id": 88,
+              "nodeType": "ImportDirective",
+              "scope": 116,
+              "sourceUnit": 86,
+              "src": "66:22:1",
+              "symbolAliases": [],
+              "unitAlias": ""
+            },
+            {
+              "abstract": false,
+              "baseContracts": [],
+              "contractDependencies": [],
+              "contractKind": "contract",
+              "documentation": null,
+              "fullyImplemented": true,
+              "id": 115,
+              "linearizedBaseContracts": [
+                115
+              ],
+              "name": "Withdraw",
+              "nodeType": "ContractDefinition",
+              "nodes": [
+                {
+                  "constant": true,
+                  "id": 93,
+                  "mutability": "constant",
+                  "name": "arbsys",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 115,
+                  "src": "115:36:1",
+                  "stateVariable": true,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_ArbSys_$85",
+                    "typeString": "contract ArbSys"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 89,
+                    "name": "ArbSys",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 85,
+                    "src": "115:6:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_ArbSys_$85",
+                      "typeString": "contract ArbSys"
+                    }
+                  },
+                  "value": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "hexValue": "313030",
+                        "id": 91,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "number",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "147:3:1",
+                        "subdenomination": null,
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_rational_100_by_1",
+                          "typeString": "int_const 100"
+                        },
+                        "value": "100"
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_rational_100_by_1",
+                          "typeString": "int_const 100"
+                        }
+                      ],
+                      "id": 90,
+                      "name": "ArbSys",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 85,
+                      "src": "140:6:1",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_type$_t_contract$_ArbSys_$85_$",
+                        "typeString": "type(contract ArbSys)"
+                      }
+                    },
+                    "id": 92,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "typeConversion",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "140:11:1",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_ArbSys_$85",
+                      "typeString": "contract ArbSys"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "anonymous": false,
+                  "documentation": null,
+                  "id": 97,
+                  "name": "L2ToL1TxCreated",
+                  "nodeType": "EventDefinition",
+                  "parameters": {
+                    "id": 96,
+                    "nodeType": "ParameterList",
+                    "parameters": [
+                      {
+                        "constant": false,
+                        "id": 95,
+                        "indexed": true,
+                        "mutability": "mutable",
+                        "name": "withdrawalId",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 97,
+                        "src": "180:28:1",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "typeName": {
+                          "id": 94,
+                          "name": "uint256",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "180:7:1",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      }
+                    ],
+                    "src": "179:30:1"
+                  },
+                  "src": "158:52:1"
+                },
+                {
+                  "body": {
+                    "id": 113,
+                    "nodeType": "Block",
+                    "src": "278:121:1",
+                    "statements": [
+                      {
+                        "assignments": [
+                          103
+                        ],
+                        "declarations": [
+                          {
+                            "constant": false,
+                            "id": 103,
+                            "mutability": "mutable",
+                            "name": "withdrawalId",
+                            "nodeType": "VariableDeclaration",
+                            "overrides": null,
+                            "scope": 113,
+                            "src": "292:20:1",
+                            "stateVariable": false,
+                            "storageLocation": "default",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            },
+                            "typeName": {
+                              "id": 102,
+                              "name": "uint256",
+                              "nodeType": "ElementaryTypeName",
+                              "src": "292:7:1",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            },
+                            "value": null,
+                            "visibility": "internal"
+                          }
+                        ],
+                        "id": 108,
+                        "initialValue": {
+                          "argumentTypes": null,
+                          "arguments": [
+                            {
+                              "argumentTypes": null,
+                              "id": 106,
+                              "name": "_destAddress",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 99,
+                              "src": "334:12:1",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                              }
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                              }
+                            ],
+                            "expression": {
+                              "argumentTypes": null,
+                              "id": 104,
+                              "name": "arbsys",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 93,
+                              "src": "315:6:1",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_ArbSys_$85",
+                                "typeString": "contract ArbSys"
+                              }
+                            },
+                            "id": 105,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "withdrawEth",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 22,
+                            "src": "315:18:1",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_external_payable$_t_address_$returns$_t_uint256_$",
+                              "typeString": "function (address) payable external returns (uint256)"
+                            }
+                          },
+                          "id": 107,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "315:32:1",
+                          "tryCall": false,
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "nodeType": "VariableDeclarationStatement",
+                        "src": "292:55:1"
+                      },
+                      {
+                        "eventCall": {
+                          "argumentTypes": null,
+                          "arguments": [
+                            {
+                              "argumentTypes": null,
+                              "id": 110,
+                              "name": "withdrawalId",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 103,
+                              "src": "378:12:1",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            ],
+                            "id": 109,
+                            "name": "L2ToL1TxCreated",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 97,
+                            "src": "362:15:1",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_event_nonpayable$_t_uint256_$returns$__$",
+                              "typeString": "function (uint256)"
+                            }
+                          },
+                          "id": 111,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "362:29:1",
+                          "tryCall": false,
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_tuple$__$",
+                            "typeString": "tuple()"
+                          }
+                        },
+                        "id": 112,
+                        "nodeType": "EmitStatement",
+                        "src": "357:34:1"
+                      }
+                    ]
+                  },
+                  "documentation": null,
+                  "functionSelector": "25e16063",
+                  "id": 114,
+                  "implemented": true,
+                  "kind": "function",
+                  "modifiers": [],
+                  "name": "withdrawEth",
+                  "nodeType": "FunctionDefinition",
+                  "overrides": null,
+                  "parameters": {
+                    "id": 100,
+                    "nodeType": "ParameterList",
+                    "parameters": [
+                      {
+                        "constant": false,
+                        "id": 99,
+                        "mutability": "mutable",
+                        "name": "_destAddress",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": null,
+                        "scope": 114,
+                        "src": "237:20:1",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "typeName": {
+                          "id": 98,
+                          "name": "address",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "237:7:1",
+                          "stateMutability": "nonpayable",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                      }
+                    ],
+                    "src": "236:22:1"
+                  },
+                  "returnParameters": {
+                    "id": 101,
+                    "nodeType": "ParameterList",
+                    "parameters": [],
+                    "src": "278:0:1"
+                  },
+                  "scope": 115,
+                  "src": "216:183:1",
+                  "stateMutability": "payable",
+                  "virtual": false,
+                  "visibility": "public"
+                }
+              ],
+              "scope": 116,
+              "src": "90:322:1"
+            }
+          ],
+          "src": "39:375:1"
+        },
+        "id": 1
+      }
+    }
+  }
+}

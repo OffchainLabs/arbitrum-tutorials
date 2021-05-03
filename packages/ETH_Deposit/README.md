@@ -1,13 +1,12 @@
-# ETH_Deposit tutorial
+# eth_deposit Tutorial
 
-ETH_Tarnsfer is an example of moving Ether from Ethereum (Layer 1) onto the Arbitrum (Layer 2) chain.
+eth_deposit is an example of moving Ether from Ethereum (Layer 1) onto the Arbitrum (Layer 2) chain.
 
 ## Installation
 
 Run the following commands in order to install the necessary dependencies and compile your smart contracts.
 
 ```bash
-yarn install
 export INFURA_KEY='InfuraAccessKey'
 export DEVNET_PRIVKEY='0xYourPrivateKey'
 ```

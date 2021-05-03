@@ -1,6 +1,12 @@
+
+
 const hre = require("hardhat");
 const ethers = require("ethers");
+const { Bridge } = require("arb-ts");
 const inboxAddr = "0xD71d47AD1b63981E9dB8e4A78C0b30170da8a601";
+
+
+
 
 const main = async () => {
     const accounts = await hre.ethers.getSigners();
@@ -12,27 +18,24 @@ const main = async () => {
     if(!walletPrivateKey) throw new Error("No DEVNET_PRIVKEY set.")
 
 
-    const l1Provider = new ethers.providers.JsonRpcProvider(`https://kovan.infura.io/v3/${infuraKey}`)
     const l2Provider = new ethers.providers.JsonRpcProvider(`https://kovan4.arbitrum.io/rpc`)
     const signer = new ethers.Wallet(walletPrivateKey)
 
-    const l1Signer = signer.connect(l1Provider);
+    const l2Signer = signer.connect(l2Provider)
 
-
-    const L1Payment = await (await hre.ethers.getContractFactory('Payment')).connect(l1Signer)
+    const L2Witdraw = await (await hre.ethers.getContractFactory('Withdraw')).connect(l2Signer)
     
-    console.log("Deploying L1")
+    console.log("Deploying L2")
     
-    const l1Payment = await L1Payment.deploy(inboxAddr)
-    await l1Payment.deployed()
-    console.log(`deployed to ${l1Payment.address}`)
+    const l2Withdraw = await L2Witdraw.deploy()
+    await l2Withdraw.deployed()
+    console.log(`deployed to ${l2Withdraw.address}`)
+
 
     
-
-
-    await l1Payment.depositEther(signer.address, {value: 10000000});
-    console.log("ETH has been assigned to", signer.address)
-
+    await l2Withdraw.withdrawEth(signer.address,  {value: 10000000 })
+    
+    console.log("ETH has been withdrwan and sent to", signer.address)
 
 }
 

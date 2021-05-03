@@ -5,7 +5,7 @@ import "./Inbox.sol";
 
 contract Payment {
 
-     IInbox public inbox;
+    IInbox public inbox;
     constructor( address _inbox) public  {
       
         inbox = IInbox(_inbox);

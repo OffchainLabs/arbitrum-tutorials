@@ -1,5 +1,5 @@
 {
-  "name": "eth_deposit",
+  "name": "eth_withdraw",
   "license": "Apache-2.0",
   "version": "1.0.0",
   "scripts": {
@@ -15,7 +15,3 @@
     "dotenv": "^8.2.0"
   }
 }
-
-
-
-
