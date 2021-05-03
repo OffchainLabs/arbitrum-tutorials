@@ -1,6 +1,8 @@
+.DS_Store
 node_modules/
 packages/.DS_Store
-packages/eth_withdraw/.DS_Store
-packages/arb-shared-dependencies/.DS_Store
-packages/*/artifacts
-packages/*/cache
+packages/*/.DS_Store
+packages/*/artifacts/
+packages/*/cache/
+packages/*/build/
+packages/*/node_modules/
