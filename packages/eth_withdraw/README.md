@@ -2,25 +2,26 @@
 
 eth_withdraw is an example of moving Ether from Arbitrum (Layer 2) onto the Ethereum (Layer 1) chain.
 
-## Installation
+## Running locally
 
-Run the following commands in order to install the necessary dependencies and compile your smart contracts.
+eth_withdraw is configurable.  You can configure it with the following environment variables:
 
-```bash
-export INFURA_KEY='InfuraAccessKey'
-export DEVNET_PRIVKEY='0xYourPrivateKey'
-```
-
-
-*Note that the **InfuraAccessKey** can be found in the setting of your project on [Infura](https://infura.io) and it is called PROJECT ID in their terms.*
-
-## Usage
+1. In the application folder, copy the ```.env-sample``` file and create a file called ```.env```.
 
 ```bash
-yarn hardhat run scripts/deploy.js
+cp .env.example .env
 ```
 
+2. Open the .env file and add the variables.
 
+
+3. Run the following command in order to compile and execute the smart contracts.
+
+
+```bash
+yarn hardhat run scripts/exec.js
+
+```
 ## How It Works?
 
 #### Arbsys.sol:
@@ -33,6 +34,8 @@ yarn hardhat run scripts/deploy.js
 
 ## Curious to see the output on the Arbitrum chain?
 
-Once the script is successfully executed, you can go to the [Arbitrum block explorer](https://explorer.offchainlabs.com/#/), enter your public key, and see the amount of ETH that has been depsoyyed to your address on the Kovan testnet!
+Once the script is successfully executed, you can go to the [Arbitrum block explorer](https://explorer.arbitrum.io), enter your public key, and see the amount of ETH that has been withdrawn to your address on the Kovan testnet!
 
-<img align=“center” src="https://offchainlabs.com/c79291eee1a8e736eebd9a2c708dbe44.png" width="350" height="100"> 
+<p align="center">
+  <img width="350" height="100" src= "https://offchainlabs.com/c79291eee1a8e736eebd9a2c708dbe44.png" />
+</p>

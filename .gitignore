@@ -6,3 +6,4 @@ packages/*/artifacts/
 packages/*/cache/
 packages/*/build/
 packages/*/node_modules/
+packages/*/.env

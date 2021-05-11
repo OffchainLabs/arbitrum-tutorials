@@ -2,22 +2,24 @@
 
 eth_deposit is an example of moving Ether from Ethereum (Layer 1) onto the Arbitrum (Layer 2) chain.
 
-## Installation
+## Running locally
 
-Run the following commands in order to install the necessary dependencies and compile your smart contracts.
+eth_deposit is configurable.  You can configure it with the following environment variables:
+
+1. In the application folder, copy the ```.env-sample``` file and create a file called ```.env```.
 
 ```bash
-export INFURA_KEY='InfuraAccessKey'
-export DEVNET_PRIVKEY='0xYourPrivateKey'
+cp .env.example .env
 ```
 
+2. Open the .env file and add the variables.
 
-*Note that the **InfuraAccessKey** can be found in the setting of your project on [Infura](https://infura.io) and it is called PROJECT ID in their terms.*
 
-## Usage
+3. Run the following command in order to compile and execute the smart contracts.
+
 
 ```bash
-yarn hardhat run scripts/deploy.js
+yarn hardhat run scripts/exec.js
 ```
 
 
@@ -35,6 +37,6 @@ yarn hardhat run scripts/deploy.js
 
 ## Curious to see the output on the Arbitrum chain?
 
-Once the script is successfully executed, you can go to the [Arbitrum block explorer](https://explorer.offchainlabs.com/#/), enter your public key, and see the amount of ETH that has been assigned to your address on the Arbitrum chain!
+Once the script is successfully executed, you can go to the [Arbitrum block explorer](https://explorer.arbitrum.io), enter your public key, and see the amount of ETH that has been assigned to your address on the Arbitrum chain!
 
 <img align=“center” src="https://offchainlabs.com/c79291eee1a8e736eebd9a2c708dbe44.png" width="350" height="100"> 

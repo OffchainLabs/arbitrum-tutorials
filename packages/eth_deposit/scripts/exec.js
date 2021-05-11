@@ -1,8 +1,10 @@
 const hre = require("hardhat");
 const ethers = require("ethers");
 const inboxAddr = "0xD71d47AD1b63981E9dB8e4A78C0b30170da8a601";
+require('dotenv').config();
 
 const main = async () => {
+   
     const accounts = await hre.ethers.getSigners();
 
     const infuraKey = process.env.INFURA_KEY
@@ -12,8 +14,8 @@ const main = async () => {
     if(!walletPrivateKey) throw new Error("No DEVNET_PRIVKEY set.")
 
 
-    const l1Provider = new ethers.providers.JsonRpcProvider(`https://kovan.infura.io/v3/${infuraKey}`)
-    const l2Provider = new ethers.providers.JsonRpcProvider(`https://kovan4.arbitrum.io/rpc`)
+    const l1Provider = new ethers.providers.JsonRpcProvider(process.env.KOVANHOST)
+    const l2Provider = new ethers.providers.JsonRpcProvider(process.env.RPCHOST)
     const signer = new ethers.Wallet(walletPrivateKey)
 
     const l1Signer = signer.connect(l1Provider);
