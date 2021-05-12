@@ -1,6 +1,6 @@
 const hre = require("hardhat");
 const ethers = require("ethers");
-const inboxAddr = "0xD71d47AD1b63981E9dB8e4A78C0b30170da8a601";
+
 require('dotenv').config();
 
 const main = async () => {
@@ -14,8 +14,8 @@ const main = async () => {
     if(!walletPrivateKey) throw new Error("No DEVNET_PRIVKEY set.")
 
 
-    const l1Provider = new ethers.providers.JsonRpcProvider(process.env.KOVANHOST)
-    const l2Provider = new ethers.providers.JsonRpcProvider(process.env.RPCHOST)
+    const l1Provider = new ethers.providers.JsonRpcProvider(process.env.L1RPC)
+    const l2Provider = new ethers.providers.JsonRpcProvider(process.env.L2RPC)
     const signer = new ethers.Wallet(walletPrivateKey)
 
     const l1Signer = signer.connect(l1Provider);
@@ -25,7 +25,7 @@ const main = async () => {
     
     console.log("Deploying L1")
     
-    const l1Payment = await L1Payment.deploy(inboxAddr)
+    const l1Payment = await L1Payment.deploy(process.env.INBOX_ADDR)
     await l1Payment.deployed()
     console.log(`deployed to ${l1Payment.address}`)
 

@@ -3,7 +3,6 @@
 const hre = require("hardhat");
 const ethers = require("ethers");
 const { Bridge } = require("arb-ts");
-const inboxAddr = "0xD71d47AD1b63981E9dB8e4A78C0b30170da8a601";
 require('dotenv').config();
 
 
@@ -18,7 +17,7 @@ const main = async () => {
     if(!walletPrivateKey) throw new Error("No DEVNET_PRIVKEY set.")
 
 
-    const l2Provider = new ethers.providers.JsonRpcProvider(process.env.RPCHOST)
+    const l2Provider = new ethers.providers.JsonRpcProvider(process.env.L2RPC)
     const signer = new ethers.Wallet(walletPrivateKey)
 
     const l2Signer = signer.connect(l2Provider)

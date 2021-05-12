@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 const ethers = require("ethers");
 const { Bridge } = require("arb-ts");
-const inboxAddr = "0xD71d47AD1b63981E9dB8e4A78C0b30170da8a601";
+
 
 const main = async () => {
     const accounts = await hre.ethers.getSigners();
@@ -13,8 +13,8 @@ const main = async () => {
     if(!walletPrivateKey) throw new Error("No DEVNET_PRIVKEY set.")
 
 
-    const l1Provider = new ethers.providers.JsonRpcProvider(`https://kovan.infura.io/v3/${infuraKey}`)
-    const l2Provider = new ethers.providers.JsonRpcProvider(`https://kovan4.arbitrum.io/rpc`)
+    const l1Provider = new ethers.providers.JsonRpcProvider(process.env.L1RPC)
+    const l2Provider = new ethers.providers.JsonRpcProvider(process.env.L2RPC)
     const signer = new ethers.Wallet(walletPrivateKey)
 
     const l1Signer = signer.connect(l1Provider);
@@ -34,7 +34,7 @@ const main = async () => {
     const l1Greeter = await L1Greeter.deploy(
       "Hello world in L1",
       "0x0000000000000000000000000000000000000000", // temp l2 addr
-      inboxAddr
+      process.env.INBOX_ADDR
     )
     await l1Greeter.deployed()
     console.log(`deployed to ${l1Greeter.address}`)
