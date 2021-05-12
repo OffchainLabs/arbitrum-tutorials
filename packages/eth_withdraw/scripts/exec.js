@@ -22,19 +22,26 @@ const main = async () => {
 
     const l2Signer = signer.connect(l2Provider)
 
-    const L2Witdraw = await (await hre.ethers.getContractFactory('Withdraw')).connect(l2Signer)
+    const L2Withdraw = await (await hre.ethers.getContractFactory('Withdraw')).connect(l2Signer)
     
     console.log("Deploying L2")
     
-    const l2Withdraw = await L2Witdraw.deploy()
+    const l2Withdraw = await L2Withdraw.deploy()
     await l2Withdraw.deployed()
     console.log(`deployed to ${l2Withdraw.address}`)
 
+    //As explained in the README, there are two options to withdraw ETH:
 
-    
+    //Option 1:
+    await l2Withdraw.sendTxToL1(signer.address,  {value: 10000000 })
+    console.log("ETH has been withdrawn and sent to", signer.address)
+    //Option 2:
     await l2Withdraw.withdrawEth(signer.address,  {value: 10000000 })
+    console.log("ETH has been withdrawn and sent to", signer.address)
     
-    console.log("ETH has been withdrwan and sent to", signer.address)
+    
+
+
 
 }
 

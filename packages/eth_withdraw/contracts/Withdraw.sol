@@ -8,19 +8,22 @@ contract Withdraw {
 
     event L2ToL1TxCreated(uint256 indexed withdrawalId);
 
-    function withdrawEth(address _destAddress) public payable
+    
+    function sendTxToL1(address _destAddress) public payable returns(uint)
+    {
+        uint withdrawalId = arbsys.sendTxToL1(_destAddress);
+        emit L2ToL1TxCreated(withdrawalId);
+        return withdrawalId;
+    }
+    function withdrawEth(address _destAddress) public payable returns(uint)
     {   
 
-        uint256 withdrawalId = arbsys.withdrawEth(_destAddress);
+        uint withdrawalId = arbsys.withdrawEth(_destAddress);
         emit L2ToL1TxCreated(withdrawalId);
-
+        return withdrawalId;
     }
     
-    function sendTxToL1(address _destAddress, bytes calldata calldataForL1) public payable
-    {
-        uint256 withdrawalId = arbsys.sendTxToL1(_destAddress);
-        emit L2ToL1TxCreated(withdrawalId);
-    }
+    
     
 }
 

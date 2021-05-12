@@ -10,13 +10,11 @@ contract Payment {
       
         inbox = IInbox(_inbox);
     }
-    mapping(address => uint256) public EtherBalance;
+   
     
     function depositEther(address _destAddress) public payable
     {   
-
         inbox.depositEth{value: msg.value}(_destAddress);
-        EtherBalance[_destAddress] += msg.value;
 
     }
 
