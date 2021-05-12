@@ -3,6 +3,7 @@
 eth_withdraw is an example of moving Ether from Arbitrum (Layer 2) onto the Ethereum (Layer 1) chain.
 
 ## Running locally
+---
 
 eth_withdraw is configurable.  You can configure it with the following environment variables:
 
@@ -22,13 +23,14 @@ cp .env-sample .env
 yarn hardhat run scripts/exec.js
 
 ```
-## How It Works?
+## How it works?
+---
 
-eth_withdraw works with two contracts: 
+Two contracts are used in the `eth_withdraw` example: 
 
 ####  **1. Arbsys.sol:** 
 
-* Arbsys is a Pre-compiled contract that exists in every Arbitrum chain at address(100), 0x0000000000000000000000000000000000000064 and exposes a variety of system-level functionality.
+* Arbsys is a pre-compiled contract that exists in every Arbitrum chain at address(100), 0x0000000000000000000000000000000000000064 and exposes a variety of system-level functionality.
 
 ####  **2. Withdraw.sol:** 
 
@@ -40,6 +42,7 @@ eth_withdraw works with two contracts:
 
 
 ## Curious to see the output on the Arbitrum chain?
+---
 
 Once the script is successfully executed, you can go to the [Arbitrum block explorer](https://explorer.arbitrum.io), enter your address, and see the amount of ETH that has been withdrawn to your address on Layer 1!
 

@@ -7,3 +7,4 @@ packages/*/cache/
 packages/*/build/
 packages/*/node_modules/
 packages/*/.env
+packages/token_deposit/
