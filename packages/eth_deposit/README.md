@@ -2,6 +2,7 @@
 
 
 eth_deposit is an example of moving Ether from Ethereum (Layer 1) onto the Arbitrum (Layer 2) chain.
+##### Note that, <span style="text-decoration:underline">instead of going through a contract</span>, you can also transfer Ether into the Arbitrum chain simply by sending a `depositEth` transaction to the GlobalInbox deployed on the Layer 1.
 
 ## Running locally
 ---
@@ -37,8 +38,14 @@ Two contracts are used in the `eth_deposit` example:
 ####  **2. Payment.sol:** 
 
 * This contract executes a deposit transaction via `Inbox.depositEth(address destination)` on Layer 1. This transfers funds to the Bridge contract on the L1 and credits the same funds inside the Arbitrum chain at the specified address.
+---
 
-    **DISCLAIMER:** you can only call the `Inbox.depositEth(address destination)` function from your account on Layer 1 instead of going through a contract.
+
+
+
+
+
+
 
 ## Curious to see the output on the Arbitrum chain?
 ---
