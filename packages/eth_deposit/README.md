@@ -38,12 +38,6 @@ Two contracts are used in the `eth_deposit` example:
 ####  **2. Payment.sol:** 
 
 * This contract executes a deposit transaction via `Inbox.depositEth(address destination)` on Layer 1. This transfers funds to the Bridge contract on the L1 and credits the same funds inside the Arbitrum chain at the specified address.
----
-
-
-
-
-
 
 
 
