@@ -28,8 +28,8 @@ const main = async () => {
 
 
     const bridge = new Bridge(
-        '0x1d750369c91b129524B68f308512b0FE2C903d71',
-        '0x2EEBB8EE9c377caBC476654ca4aba016ECA1B9fc',
+        process.env.L1EthErc20BridgeAddress,
+        process.env.L2ArbTokenBridgeAddress,
         preFundedWallet,
         l2Wallet
     )

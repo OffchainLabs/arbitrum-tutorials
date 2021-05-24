@@ -2,7 +2,29 @@
 
 
 eth_deposit is an example of moving Ether from Ethereum (Layer 1) onto the Arbitrum (Layer 2) chain.
-##### Note that, <span style="text-decoration:underline">instead of going through a contract</span>, you can also transfer Ether into the Arbitrum chain simply by sending a `depositEth` transaction to the GlobalInbox deployed on the Layer 1.
+
+
+## How it works?
+---
+
+Depositting ETH into the Arbitrum chain can be done in 3 different ways. Here, we explain the mechanics of each option:
+
+---
+
+####  **1. Through an L1 DApp:** 
+You can transefr ETH to L2 through a DApp that executes a deposit transaction via `Inbox.depositEth(address destination)` on Layer 1. This transfers funds to the Bridge contract on the L1 and credits the same funds inside the Arbitrum chain at the specified address. See the `exec_throughDApp.js` for sample usage.
+
+---
+####  **2. Through Arbitrum / Ethereum Bridge:** 
+Here, users do not have to depoly any L1 DApp that enables them to deposit ETH into the L2. Instead, they can do so using the Bridge that we provide. Accessing bridging methods can be done via our `arb-ts` library. See the `exec_throughBridge.js` for sample usage.
+
+---
+
+####  **2. Through the Inbox Contract :** 
+`Inbox.sol` is the Arbitrum inbox contract that resides on Layer 1 and allows users and contracts to transfer ETH between Ethereum and Arbitrum chain. Users can transfer Ether into the Arbitrum chain by sending a `depositEth` transaction to the this contract that is deployed on the Layer 1. See the `exec_throughInbox.js` for sample usage.
+
+---
+
 
 ## Running locally
 ---
@@ -18,31 +40,18 @@ cp .env-sample .env
 2. Open the .env file and add the variables.
 
 
-3. Run the following command in order to compile and execute the smart contracts.
+3. Run one of the following commands (depending on which of the 3 methods you want to use to transfer ETH to the L2) in order to compile and execute the smart contracts.
 
 
 ```bash
-yarn hardhat run scripts/exec.js
+1- yarn hardhat run scripts/exec_throughDApp.js
+2- yarn hardhat run scripts/exec_throughBridge.js
+3- yarn hardhat run scripts/exec_throughInbox.js
 ```
 
 
-## How it works?
----
-Two contracts are used in the `eth_deposit` example: 
-
-####  **1. Inbox.sol:** 
-
-* This contract is the Arbitrum inbox contract that resides on Layer 1 and allows people and contracts to transfer Ether between Ethereum and Arbitrum chain.
-
-
-####  **2. Payment.sol:** 
-
-* This contract executes a deposit transaction via `Inbox.depositEth(address destination)` on Layer 1. This transfers funds to the Bridge contract on the L1 and credits the same funds inside the Arbitrum chain at the specified address.
-
-
-
 ## Curious to see the output on the Arbitrum chain?
----
+
 
 Once the script is successfully executed, you can go to the [Arbitrum block explorer](https://explorer.arbitrum.io), enter your address, and see the amount of ETH that has been assigned to your address on the Arbitrum chain!
 
