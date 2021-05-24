@@ -3,7 +3,7 @@ pragma solidity ^0.7.0;
 
 import "arb-shared-dependencies/contracts/Inbox.sol";
 
-contract Payment {
+contract Deposit {
 
     IInbox public inbox;
     constructor( address _inbox) public  {
