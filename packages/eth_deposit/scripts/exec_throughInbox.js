@@ -30,7 +30,7 @@ const main = async () => {
     
     const ethToL2DepositAmount = parseEther('0.0001')
 
-    //Transfer ETH to L2 directly through the Inbo contract instantiation:
+    //Transfer ETH to L2 directly through the Inbox contract instantiation:
     const inbox = Inbox__factory.connect(process.env.INBOX_ADDR, l1Signer)
     const tx = await inbox.depositEth(signer.address, {value: ethToL2DepositAmount})
     const rec = await tx.wait()

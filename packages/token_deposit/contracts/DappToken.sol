@@ -7,7 +7,7 @@ contract DappToken{
   string public symbol = "DAPP";            //Toekn symbol
   string public standard = "Dapp Token v1.0";
   uint256 public totalSupply;
-  uint8 public decimals = 18;
+  uint8 public decimals = 2;
   
   
   mapping(address => uint256) public balanceOf;    //stores the balance of addresses. Every time a token is baught/sold/transferred, this mapping is responsible for knowing who has each token

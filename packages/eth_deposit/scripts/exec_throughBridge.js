@@ -1,5 +1,5 @@
-const {ethers, utils, providers, Wallet} = require("ethers");
-const { Bridge, Inbox__factory } = require("arb-ts") 
+const {utils, providers, Wallet} = require("ethers");
+const { Bridge} = require("arb-ts") 
 const { expect } = require("chai");
 const { parseEther } = utils
 

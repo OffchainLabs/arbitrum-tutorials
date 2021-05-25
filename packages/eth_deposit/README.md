@@ -20,8 +20,8 @@ Here, users do not have to depoly any L1 DApp that enables them to deposit ETH i
 
 ---
 
-####  **2. Through the Inbox Contract :** 
-`Inbox.sol` is the Arbitrum inbox contract that resides on Layer 1 and allows users and contracts to transfer ETH between Ethereum and Arbitrum chain. Users can transfer Ether into the Arbitrum chain by sending a `depositEth` transaction to the this contract that is deployed on the Layer 1. See the `exec_throughInbox.js` for sample usage.
+####  **3. Directly Through the Inbox Contract :** 
+`Inbox.sol` is the Arbitrum inbox contract that resides on Layer 1 and allows users and contracts to transfer ETH between Ethereum and Arbitrum chain. Users can transfer Ether into the Arbitrum chain by sending a `depositEth` transaction directly to the this contract that is deployed on the Layer 1. See the `exec_throughInbox.js` for sample usage.
 
 ---
 

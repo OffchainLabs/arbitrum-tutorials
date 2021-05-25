@@ -1,12 +1,14 @@
-const {utils, providers, Wallet} = require("ethers");
-const { ethers } = require("hardhat");
+const { utils, providers, Wallet} = require("ethers");
 const { expect } = require("chai");
+const { Bridge} = require("arb-ts") 
 const { parseEther } = utils
 
 require('dotenv').config();
 
+
 const main = async () => {
-   
+
+    const wait = (ms = 0) => { return new Promise(res => setTimeout(res, ms || 1000))}
 
     const infuraKey = process.env.INFURA_KEY
     if(!infuraKey) throw new Error("No INFURA_KEY set.")
@@ -21,23 +23,30 @@ const main = async () => {
     const preFundedWallet = new Wallet(walletPrivateKey, l1Provider)
     const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
     const L2initialbalance = await l2Wallet.getBalance()
-    
-    const ethToL2DepositAmount = parseEther('0.0001')
-    const L1Deposit = await (await ethers.getContractFactory('Deposit')).connect(preFundedWallet)
-    
-    console.log("Deploying Deposit contract to L1")
-    
-    const l1Deposit = await L1Deposit.deploy(process.env.INBOX_ADDR)
-    await l1Deposit.deployed()
-    console.log(`Deposit contract is deployed to ${l1Deposit.address}`)
 
+
+    const bridge = new Bridge(
+        process.env.L1EthErc20BridgeAddress,
+        process.env.L2ArbTokenBridgeAddress,
+        preFundedWallet,
+        l2Wallet
+    )
+
+    const ethFromL2WithdrawAmount = parseEther('0.00001')
     
-    const tx = await l1Deposit.depositEther(preFundedWallet.address, {value: ethToL2DepositAmount});
+    
+    const tx = await bridge.withdrawETH(ethFromL2WithdrawAmount)
     const rec = await tx.wait()
     expect(rec.status).to.equal(1)
-    
-    const L2EthBalance = await l2Provider.getBalance(l2Wallet.address)
-    expect(L2initialbalance.add(ethToL2DepositAmount).eq(L2EthBalance))
+    const withdrawEventData = (await bridge.getWithdrawalsInL2Transaction(rec))[0]
+    expect(withdrawEventData).to.exist
+
+    //Check to see if the balance is deducted after withdraw ETH
+    wait()
+    const L2EthBalance = await bridge.getAndUpdateL2EthBalance()
+    expect(L2EthBalance.lt(L2initialbalance)).to.be.true
+
+
 
 
 }
@@ -47,4 +56,4 @@ main()
   .catch(error => {
     console.error(error);
     process.exit(1);
-  }); 
+  });
