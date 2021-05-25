@@ -55,4 +55,6 @@ cp .env-sample .env
 
 Once the script is successfully executed, you can go to the [Arbitrum block explorer](https://explorer.arbitrum.io), enter your address, and see the amount of ETH that has been assigned to your address on the Arbitrum chain!
 
-<img align=“center” src="https://offchainlabs.com/c79291eee1a8e736eebd9a2c708dbe44.png" width="350" height="100"> 
+<p align="center">
+  <img width="350" height="100" src= "https://offchainlabs.com/c79291eee1a8e736eebd9a2c708dbe44.png" />
+</p>
