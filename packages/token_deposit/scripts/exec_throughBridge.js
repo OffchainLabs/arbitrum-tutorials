@@ -81,7 +81,6 @@ const main = async () => {
         BigNumber.from(0),
         undefined,
         { gasLimit: 210000, gasPrice: l1gasPrice }
-    
     )
 
     const depositRec = await depositTx.wait()
@@ -94,11 +93,10 @@ const main = async () => {
     const finalBridgeTokenBalance = await l1DappToken.balanceOf(bridge.ethERC20Bridge.address)
     expect(initialBridgeTokenBalance.add(tokenDepositAmount).eq(finalBridgeTokenBalance))
 
-    
-    const tokenDepositData =  DepositTokenEventResult(await (bridge.getDepositTokenEventData(depositRec)[0]))
+    const tokenDepositData = (await bridge.getDepositTokenEventData(depositRec))[0] 
     const seqNum = tokenDepositData.seqNum
     const l2RetryableHash = await bridge.calculateL2RetryableTransactionHash(seqNum)
-    const retryableReceipt = await l2Provider.waitForTransaction(l2RetryableHash)
+    const retryableReceipt = await l2Provider.waitForTransaction(l2RetryableHash) //TOOK a DAY!
     expect(retryableReceipt.status).to.equal(1)
 
 

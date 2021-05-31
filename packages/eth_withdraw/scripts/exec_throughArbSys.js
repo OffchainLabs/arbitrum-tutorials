@@ -1,5 +1,4 @@
 const {utils, providers, Wallet} = require("ethers");
-const { ethers } = require("hardhat");
 const { expect } = require("chai");
 const { ArbSys__factory } = require("arb-ts");
 const { parseEther } = utils
