@@ -14,7 +14,8 @@ contract Deposit {
     
     function depositEther(uint256 _maxSubmissionCost) public payable
     {   
-        inbox.depositEth{value: msg.value}(_maxSubmissionCost);
+        uint256 amount = msg.value; 
+        inbox.depositEth{value: amount}(_maxSubmissionCost) ;
 
     }
 

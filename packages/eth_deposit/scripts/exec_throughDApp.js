@@ -1,6 +1,8 @@
 const {utils, providers, Wallet} = require("ethers");
 const { ethers } = require("hardhat");
+const { Bridge} = require ("arb-ts") 
 const { expect } = require("chai");
+
 const { parseEther } = utils
 
 
@@ -27,6 +29,7 @@ const main = async () => {
     const l2Wallet = new Wallet(walletPrivateKey, l2Provider)    
     const initialWalletEth2Balance = await l2Provider.getBalance(l2Wallet.address)
     const ethToL2DepositAmount = parseEther('0.0001')
+    bridge = await Bridge.init(preFundedWallet, l2Wallet)
 
 
 
@@ -39,41 +42,57 @@ const main = async () => {
     
 
 
-
-
-
-
-    //eth.sendTransaction({from:eth.accounts[0], to:'0x[ADDRESS_HERE]', value: web3.toWei(5, "ether"), gas:100000});
-
-    const depositTx = await l1Deposit.depositEther(0, {value: ethToL2DepositAmount});
+    const depositTx = await l1Deposit.depositEther(1000000000, {value: ethToL2DepositAmount});
     const rec = await depositTx.wait()
     console.warn(
         'deposit L1 receipt',
         rec.transactionHash
     )
-    expect(rec.status).to.equal(1)
+
+    // const seqNumArr = await bridge.getInboxSeqNumFromContractTransaction(rec)
+    // if (seqNumArr === undefined) {
+    //   throw new Error('no seq num')
+    // }
+    // expect(seqNumArr.length).to.exist
+    
+
+    // const seqNum = seqNumArr[0]
+    // const l2TxHash = await bridge.calculateL2TransactionHash(seqNum)
+    // console.log('l2TxHash: ' + l2TxHash)
+
+    // console.log('waiting for l2 transaction:')
+    // const l2TxnRec = await l2Provider.waitForTransaction(
+    //   l2TxHash,
+    //   undefined,
+    //   1000 * 60 * 12
+    // )
+    // console.log('l2 transaction found!')
+    // expect(l2TxnRec.status).to.equal(1)
+
+    
+        
     
 
 
 
-    let testWalletL2EthBalance;
-    //L2 address has expected balance after deposit eth
-    for (let i = 0; i < 60; i++) {
-        console.log('balance check attempt ' + (i + 1))
-        await wait(5000)
-        testWalletL2EthBalance = await l2Provider.getAndUpdateL2EthBalance()
-        if (!initialWalletEth2Balance.eq(testWalletL2EthBalance)) {
-            console.log(
-              `balance updated! ${initialWalletEth2Balance.toString()} ${testWalletL2EthBalance.toString()}`
-            )
-            break
-          }
-        }
+    // let testWalletL2EthBalance;
+    // //L2 address has expected balance after deposit eth
+    // for (let i = 0; i < 60; i++) {
+    //     console.log('balance check attempt ' + (i + 1))
+    //     await wait(5000)
+    //     testWalletL2EthBalance = await l2Provider.getAndUpdateL2EthBalance()
+    //     if (!initialWalletEth2Balance.eq(testWalletL2EthBalance)) {
+    //         console.log(
+    //           `balance updated! ${initialWalletEth2Balance.toString()} ${testWalletL2EthBalance.toString()}`
+    //         )
+    //         break
+    //       }
+    //     }
     
-    expect(testWalletL2EthBalance.gte(initialWalletEth2Balance)).to.be.true
+    // expect(testWalletL2EthBalance.gte(initialWalletEth2Balance)).to.be.true
 
-    updatedWalletEth2Balance = await l2Provider.getBalance(l2Wallet.address)
-    expect(initialWalletEth2Balance.add(ethToL2DepositAmount).eq(updatedWalletEth2Balance))
+    // updatedWalletEth2Balance = await l2Provider.getBalance(l2Wallet.address)
+    // expect(initialWalletEth2Balance.add(ethToL2DepositAmount).eq(updatedWalletEth2Balance))
 
 
 }

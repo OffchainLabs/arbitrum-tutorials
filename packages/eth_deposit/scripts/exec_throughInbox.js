@@ -39,7 +39,6 @@ const main = async () => {
     const tx = await inbox.depositEth(10000000000000, {value: ethToL2DepositAmount})
     const rec = await tx.wait()
 
-    //expect(rec.status).to.equal(1)
 
 
     const seqNumArr = await bridge.getInboxSeqNumFromContractTransaction(rec)
