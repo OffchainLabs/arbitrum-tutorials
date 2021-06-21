@@ -12,9 +12,9 @@ contract Deposit {
     }
    
     
-    function depositEther(address _destAddress) public payable
+    function depositEther(uint256 _maxSubmissionCost) public payable
     {   
-        inbox.depositEth{value: msg.value}(_destAddress);
+        inbox.depositEth{value: msg.value}(_maxSubmissionCost);
 
     }
 

@@ -3,10 +3,15 @@ const { ethers } = require("hardhat");
 const { expect } = require("chai");
 const { parseEther } = utils
 
+
 require('dotenv').config();
 
 const main = async () => {
    
+
+    const wait = (ms = 0) => {
+        return new Promise(res => setTimeout(res, ms || 0))
+    }
 
     const infuraKey = process.env.INFURA_KEY
     if(!infuraKey) throw new Error("No INFURA_KEY set.")
@@ -19,25 +24,56 @@ const main = async () => {
 
     
     const preFundedWallet = new Wallet(walletPrivateKey, l1Provider)
-    const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
-    const l2InitialBalance = await l2Wallet.getBalance()
-    
+    const l2Wallet = new Wallet(walletPrivateKey, l2Provider)    
+    const initialWalletEth2Balance = await l2Provider.getBalance(l2Wallet.address)
     const ethToL2DepositAmount = parseEther('0.0001')
+
+
+
     const L1Deposit = await (await ethers.getContractFactory('Deposit')).connect(preFundedWallet)
-    
-    console.log("Deploying Deposit contract to L1")
-    
     const l1Deposit = await L1Deposit.deploy(process.env.INBOX_ADDR)
+    console.log("Deploying Deposit contract to L1")
     await l1Deposit.deployed()
     console.log(`Deposit contract is deployed to ${l1Deposit.address}`)
 
     
-    const tx = await l1Deposit.depositEther(preFundedWallet.address, {value: ethToL2DepositAmount});
-    const rec = await tx.wait()
+
+
+
+
+
+
+    //eth.sendTransaction({from:eth.accounts[0], to:'0x[ADDRESS_HERE]', value: web3.toWei(5, "ether"), gas:100000});
+
+    const depositTx = await l1Deposit.depositEther(0, {value: ethToL2DepositAmount});
+    const rec = await depositTx.wait()
+    console.warn(
+        'deposit L1 receipt',
+        rec.transactionHash
+    )
     expect(rec.status).to.equal(1)
     
-    const l2EthBalance = await l2Provider.getBalance(l2Wallet.address)
-    expect(l2InitialBalance.add(ethToL2DepositAmount).eq(l2EthBalance))
+
+
+
+    let testWalletL2EthBalance;
+    //L2 address has expected balance after deposit eth
+    for (let i = 0; i < 60; i++) {
+        console.log('balance check attempt ' + (i + 1))
+        await wait(5000)
+        testWalletL2EthBalance = await l2Provider.getAndUpdateL2EthBalance()
+        if (!initialWalletEth2Balance.eq(testWalletL2EthBalance)) {
+            console.log(
+              `balance updated! ${initialWalletEth2Balance.toString()} ${testWalletL2EthBalance.toString()}`
+            )
+            break
+          }
+        }
+    
+    expect(testWalletL2EthBalance.gte(initialWalletEth2Balance)).to.be.true
+
+    updatedWalletEth2Balance = await l2Provider.getBalance(l2Wallet.address)
+    expect(initialWalletEth2Balance.add(ethToL2DepositAmount).eq(updatedWalletEth2Balance))
 
 
 }
