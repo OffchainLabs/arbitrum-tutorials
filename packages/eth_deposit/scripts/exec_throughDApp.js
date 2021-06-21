@@ -20,7 +20,7 @@ const main = async () => {
     
     const preFundedWallet = new Wallet(walletPrivateKey, l1Provider)
     const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
-    const L2initialbalance = await l2Wallet.getBalance()
+    const l2InitialBalance = await l2Wallet.getBalance()
     
     const ethToL2DepositAmount = parseEther('0.0001')
     const L1Deposit = await (await ethers.getContractFactory('Deposit')).connect(preFundedWallet)
@@ -36,8 +36,8 @@ const main = async () => {
     const rec = await tx.wait()
     expect(rec.status).to.equal(1)
     
-    const L2EthBalance = await l2Provider.getBalance(l2Wallet.address)
-    expect(L2initialbalance.add(ethToL2DepositAmount).eq(L2EthBalance))
+    const l2EthBalance = await l2Provider.getBalance(l2Wallet.address)
+    expect(l2InitialBalance.add(ethToL2DepositAmount).eq(l2EthBalance))
 
 
 }
