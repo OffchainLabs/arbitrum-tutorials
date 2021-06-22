@@ -36,8 +36,12 @@ const main = async () => {
 
     //Transfer ETH to L2 directly through the Inbox contract instantiation:
     const inbox = Inbox__factory.connect(process.env.INBOX_ADDR, preFundedWallet)
-    const tx = await inbox.depositEth(10000000000000, {value: ethToL2DepositAmount})
-    const rec = await tx.wait()
+    const depositTx = await inbox.depositEth(10000000000000, {value: ethToL2DepositAmount})
+    const rec = await depositTx.wait()
+    console.warn(
+        'deposit L1 receipt',
+        rec.transactionHash
+    )
 
 
 
