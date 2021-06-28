@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "hardhat compile",
-    "exec":  "hardhat run scripts/exec.js"
+    "exec": "hardhat run scripts/exec.js"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
@@ -13,6 +13,7 @@
     "hardhat": "^2.2.0"
   },
   "dependencies": {
+    "arb-ts": "^0.0.19",
     "dotenv": "^8.2.0"
   }
 }
