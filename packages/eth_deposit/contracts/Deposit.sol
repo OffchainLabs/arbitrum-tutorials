@@ -15,10 +15,7 @@ contract Deposit {
     function depositEther(address _depositContract, uint256 _maxSubmissionCost ) public payable
     {   
         
-        //inbox.depositEth{value: msg.value}(_maxSubmissionCost) ;
-        inbox.createRetryableTicket{value: msg.value}(_depositContract, 0, _maxSubmissionCost, msg.sender, msg.sender, 0, 0, '0x');        
-
-      
+        inbox.createRetryableTicket{value: msg.value}(_depositContract, 0, _maxSubmissionCost, msg.sender, msg.sender, 0, 0, '0x');       
     
     
     }

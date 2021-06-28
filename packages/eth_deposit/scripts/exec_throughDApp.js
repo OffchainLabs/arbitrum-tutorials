@@ -27,7 +27,6 @@ const main = async () => {
     
     const preFundedWallet = new Wallet(walletPrivateKey, l1Provider)
     const l2Wallet = new Wallet(walletPrivateKey, l2Provider)    
-    //const initialWalletEth2Balance = await l2Provider.getBalance(l2Wallet.address)
     const ethToL2DepositAmount = parseEther('0.0001')
     bridge = await Bridge.init(preFundedWallet, l2Wallet)
 
@@ -41,8 +40,6 @@ const main = async () => {
     console.log(`Deposit contract is deployed to ${l1Deposit.address}`)
 
     
-    
-    //const depositTx = await l1Deposit.depositEther(10000000000000, { gasLimit: 210000, value: ethToL2DepositAmount });
     const depositTx = await l1Deposit.depositEther( l1Deposit.address, BigNumber.from(10000000000000), {gasLimit: 210000, value: ethToL2DepositAmount})
 
     const rec = await depositTx.wait()

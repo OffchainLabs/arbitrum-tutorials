@@ -20,11 +20,11 @@ const main = async () => {
 
     const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
     const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
+
     const preFundedWallet = new Wallet(walletPrivateKey, l1Provider)
     const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
+
     const ethToL2DepositAmount = parseEther('0.0001')
-
-
     bridge = await Bridge.init(preFundedWallet, l2Wallet)
     
        
