@@ -2,7 +2,6 @@ const {utils, providers, Wallet, BigNumber} = require("ethers");
 const { ethers } = require("hardhat");
 const { Bridge} = require ("arb-ts") 
 const { expect } = require("chai");
-
 const { parseEther } = utils
 
 

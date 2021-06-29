@@ -87,8 +87,6 @@ const main = async () => {
     expect(l2TxnRec.status).to.equal(1)
 
 
-
-
     const finalBridgeTokenBalance = await l1DappToken.balanceOf(expectedL1GatewayAddress)
 
     expect(initialBridgeTokenBalance.add(tokenDepositAmount).eq(finalBridgeTokenBalance)).to.be.true

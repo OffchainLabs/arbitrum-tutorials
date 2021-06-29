@@ -3,6 +3,8 @@ pragma solidity ^0.7.0;
 
 
 interface IInbox {
+    
+    
     function sendL2Message(bytes calldata messageData) external returns (uint256);
 
     function sendUnsignedTransaction(
@@ -22,7 +24,7 @@ interface IInbox {
         bytes calldata data
     ) external returns (uint256);
 
-    function sendL1FundedUnsignedTransaction(
+   function sendL1FundedUnsignedTransaction(
         uint256 maxGas,
         uint256 gasPriceBid,
         uint256 nonce,
@@ -48,9 +50,7 @@ interface IInbox {
         bytes calldata data
     ) external payable returns (uint256);
 
-    function depositEth(address destAddr) external payable returns (uint256);
-
-    function depositEthRetryable(address destAddr, uint256 maxSubmissionCost, uint256 maxGas, uint256 maxGasPrice) external payable returns (uint256);
+    function depositEth(uint256 maxSubmissionCost) external payable returns (uint256);
 
     function bridge() external view returns (IBridge);
 }
@@ -94,4 +94,10 @@ interface IBridge {
     function inboxAccs(uint256 index) external view returns (bytes32);
 
     function messageCount() external view returns (uint256);
+}
+
+interface IMessageProvider {
+    event InboxMessageDelivered(uint256 indexed messageNum, bytes data);
+
+    event InboxMessageDeliveredFromOrigin(uint256 indexed messageNum);
 }

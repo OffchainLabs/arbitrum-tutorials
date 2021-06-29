@@ -23,7 +23,6 @@ cp .env-sample .env
 
 ```bash
 yarn hardhat run scripts/exec.js
-
 ```
 
 <p align="center">

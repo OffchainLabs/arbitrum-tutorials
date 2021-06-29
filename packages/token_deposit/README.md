@@ -17,7 +17,7 @@ All Ethereum to Arbitrum token transfers are initiated via the `L1GatewayRouter`
 
 ---
 
-#### **Standard ERC20 Bridging**
+#### **Standard ERC20 Deposits**
 Depositing an standard ERC20 token into Arbitrum chain is done via our Standard ERC20 gateway. Note that here we assume the token has already been registered in the `L1GatewayRouter`. Users can use the Bridge we provide to obtain the address of the ERC20 token gateway (the `L1ERC20Gateway` contract). Accessing bridging methods can be done via our `arb-ts` client side library.
 Having the Bridge installed and intiated, users can transfer tokens into Arbitrum chain by sending a `deposit(erc20L1Address,tokenDepositAmount)` transaction directly to the Bridge. See the `exec_throughBridge.js` for sample usage.
 

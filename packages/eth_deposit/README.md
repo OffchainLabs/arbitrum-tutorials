@@ -1,7 +1,7 @@
 # eth_deposit Tutorial
 
 
-eth_deposit is an example of moving Ether from Ethereum (Layer 1) onto the Arbitrum (Layer 2) chain.
+eth_deposit is an example of moving Ether from Ethereum (Layer 1) into the Arbitrum (Layer 2) chain.
 
 
 ## How it works?
@@ -20,7 +20,7 @@ Depositing ETH into Arbitrum can be done using an L1 DApp and retryable tickets.
 
 ####  **2. Through Arbitrum / Ethereum Bridge:** 
 
-Instead of having to deploy an L1 DApp, users can use the Bridge we provide to deposit ETH into Arbitrum. Accessing bridging methods can be done via our `arb-ts` library. Having the Bridge installed and intiated, users can transfer ETH into Arbitrum chain by sending a `depositETH(depositAmount)` transaction directly to the Bridge. See the `exec_throughBridge.js` for sample usage.
+Users can use the Bridge we provide to deposit ETH into Arbitrum. Accessing bridging methods can be done via our `arb-ts` client side library. Having the Bridge installed and intiated, users can transfer ETH into Arbitrum chain by sending a `depositETH(depositAmount)` transaction directly to the Bridge. See the `exec_throughBridge.js` for sample usage.
 
 ---
 
