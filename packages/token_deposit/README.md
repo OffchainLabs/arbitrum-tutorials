@@ -1,42 +1,51 @@
-# eth_deposit Tutorial
+# token_deposit Tutorial
 
-eth_deposit is an example of moving Ether from Ethereum (Layer 1) onto the Arbitrum (Layer 2) chain.
+token_deposit is an example of moving standard and custom ERC20 tokens from Ethereum (Layer 1) into the Arbitrum (Layer 2) chain.
+
+
+
+## How it works?
+---
+Three types of contracts are used to facilitate token bridging:
+
+* Asset contracts: these are the token contracts themselves, i.e., an ERC20 on L1 and it's counterpart on Arbitrum.
+* Gateways: Pairs of contracts (one on L1, one on L2) that implement a particular type of cross chain asset bridging.
+* Routers: Exactly two contracts - (one on L1, one on L2) that route each asset to its designated Gateway.
+  
+All Ethereum to Arbitrum token transfers are initiated via the `L1GatewayRouter` contract. `L1GatewayRouter` forwards the token's deposit-call to it's appropriate `L1ArbitrumGateway` contract. `L1GatewayRouter` is responsible for mapping L1 token addresses to L1Gateway, thus acting as L1/L2 address oracle and ensuring that each token corresponds to only one gateway. The `L1ArbitrumGateway` communicates to an `L2ArbitrumGateway` (typically/expectedly via retryable tickets).
+
+
+---
+
+#### **Standard ERC20 Bridging**
+Depositing an standard ERC20 token into Arbitrum chain is done via our Standard ERC20 gateway. Note that here we assume the token has already been registered in the `L1GatewayRouter`. Users can use the Bridge we provide to obtain the address of the ERC20 token gateway (the `L1ERC20Gateway` contract). Accessing bridging methods can be done via our `arb-ts` client side library.
+Having the Bridge installed and intiated, users can transfer tokens into Arbitrum chain by sending a `deposit(erc20L1Address,tokenDepositAmount)` transaction directly to the Bridge. See the `exec_throughBridge.js` for sample usage.
+
+---
 
 ## Running locally
 
-eth_deposit is configurable.  You can configure it with the following environment variables:
+---
+
+token_deposit is configurable.  You can configure it with the following environment variables:
 
 1. In the application folder, copy the ```.env-sample``` file and create a file called ```.env```.
 
 ```bash
-cp .env.example .env
+cp .env-sample .env
 ```
 
 2. Open the .env file and add the variables.
 
 
-3. Run the following command in order to compile and execute the smart contracts.
+3. Run one of the following commands (depending on which of the 3 methods you want to use to transfer ETH to the L2) in order to compile and execute the smart contracts.
 
 
 ```bash
-yarn hardhat run scripts/exec.js
+yarn hardhat run scripts/exec_throughBridge.js
+
 ```
 
-
-## How It Works?
-
-#### Inbox.sol:
-
-* This contract is the arbitrum inbox contract that resides on the Kovan testnet and allows people and contracts to transfer Ether between Ethereum and Arbitrum chain. 
-* Inbox contract address on the Kovan testnet: <span style="color: blue">0xD71d47AD1b63981E9dB8e4A78C0b30170da8a601</span>
-
-
-####  Payment.sol:
-
-* This contract executes a deposit transaction via `Inbox.depositEth(address destination)` on the Kovan testnet. This transfers funds to the Bridge contract on the L1 and credits the same funds to you inside the Arbitrum chain at the specified address.
-
-## Curious to see the output on the Arbitrum chain?
-
-Once the script is successfully executed, you can go to the [Arbitrum block explorer](https://explorer.arbitrum.io), enter your public key, and see the amount of ETH that has been assigned to your address on the Arbitrum chain!
-
-<img align=“center” src="https://offchainlabs.com/c79291eee1a8e736eebd9a2c708dbe44.png" width="350" height="100"> 
+<p align="center">
+  <img width="350" height="100" src= "https://offchainlabs.com/static/media/full-logo.3271d3e8.png" />
+</p>
