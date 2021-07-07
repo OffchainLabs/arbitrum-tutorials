@@ -33,7 +33,6 @@ interface ArbSys {
     function sendTxToL1(address destination, bytes calldata calldataForL1) external payable returns(uint);
 
 
-
     /** 
     * @notice get the number of transactions issued by the given external account or the account sequence number of the given contract
     * @param account target account

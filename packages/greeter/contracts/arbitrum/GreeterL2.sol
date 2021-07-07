@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.6.11;
 
-import "./Arbsys.sol";
+import "arb-shared-dependencies/contracts/Arbsys.sol";
 import "../Greeter.sol";
 
 contract GreeterL2 is Greeter {
