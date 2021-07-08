@@ -1,0 +1,60 @@
+exclude: |
+  (?x)(
+      ^packages/arb-avm-cpp/external/keccak/|
+      ^packages/arb-bridge-eth/installed_contracts/
+  )
+repos:
+  - repo: https://github.com/psf/black
+    rev: stable
+    hooks:
+      - id: black
+        language_version: python3
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.9.0
+    hooks:
+      - id: flake8
+  - repo: git://github.com/doublify/pre-commit-clang-format
+    rev: master
+    hooks:
+      - id: clang-format
+  - repo: git://github.com/dnephin/pre-commit-golang
+    rev: master
+    hooks:
+      - id: go-fmt
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: "v2.2.1" # Use the sha or tag you want to point at
+    hooks:
+      - id: prettier
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: "v7.24.0" # Use the sha / tag you want to point at
+    hooks:
+      - id: eslint
+        args: [--fix]
+        types: [text]
+        # ignore prettier config
+        files: \.[jt]sx?$
+        additional_dependencies:
+          - "eslint@7.3.1"
+          - "typescript@3.8.3"
+          - "@typescript-eslint/parser@3.4.0"
+          - "@typescript-eslint/eslint-plugin@3.4.0"
+          - eslint-config-prettier@6.11.0
+  - repo: https://github.com/syntaqx/git-hooks
+    rev: v0.0.16
+    hooks:
+      - id: circleci-config-validate
+  - repo: local
+    hooks:
+      - id: prettier-soldity
+        name: prettier-soldity
+        language: node
+        entry: ./node_modules/.bin/prettier --write --list-different
+        files: \.sol$
+        additional_dependencies:
+          - "prettier@2.0.5"
+          - "prettier-plugin-solidity@^1.0.0-alpha.54"
+      - id: go-vet
+        name: Go Vet
+        entry: ./scripts/run-go-packages "go list ./... | grep -v 'arb-node-core/ethbridge[^/]*contracts' | xargs go vet"
+        language: script
+        files: \.go$
