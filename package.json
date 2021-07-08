@@ -19,13 +19,11 @@
       "packages/token_deposit",
       "packages/token_withdraw",
       "packages/demo-dapp-pet-shop"
-      
     ]
   },
   "scripts": {
     "compile:greeter": "yarn workspace greeter build",
     "compile:eth_deposit": "yarn workspace eth_deposit build",
     "compile:eth_withdraw": "yarn workspace eth_withdraw build"
-
   }
 }

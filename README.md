@@ -12,7 +12,7 @@ yarn install
 
 ## What's included?
 
- :white_check_mark: Cross chain Greeter contract  
+:white_check_mark: Cross chain Greeter contract  
  :white_check_mark: Hardhat configured to Arbitrum's latest testnet  
  :white_check_mark: Solidity interfaces for the Inbox and ArbSys  
- :white_check_mark: `arb-ts` Typescript tooling for cross-layer interactions  
+ :white_check_mark: `arb-ts` Typescript tooling for cross-layer interactions

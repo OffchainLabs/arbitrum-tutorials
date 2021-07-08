@@ -1,5 +1,5 @@
 {
-  "name": "token_deposit",
+  "name": "token_withdraw",
   "license": "Apache-2.0",
   "version": "1.0.0",
   "scripts": {
