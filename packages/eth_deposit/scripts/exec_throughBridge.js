@@ -5,72 +5,106 @@ const { parseEther } = utils
 
 require('dotenv').config()
 
-const main = async () => {
-  const wait = (ms = 0) => {
+
+const wait = (ms = 0) => {
     return new Promise(res => setTimeout(res, ms || 0))
-  }
+}
 
-  const infuraKey = process.env.INFURA_KEY
-  if (!infuraKey) throw new Error('No INFURA_KEY set.')
+/**
+* Set up: instantiate L1 / L2 wallets connected to providers
+*/
+const infuraKey = process.env.INFURA_KEY
+if (!infuraKey) throw new Error('No INFURA_KEY set.')
 
-  const walletPrivateKey = process.env.DEVNET_PRIVKEY
-  if (!walletPrivateKey) throw new Error('No DEVNET_PRIVKEY set.')
+const walletPrivateKey = process.env.DEVNET_PRIVKEY
+if (!walletPrivateKey) throw new Error('No DEVNET_PRIVKEY set.')
 
-  const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
-  const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
+const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
+const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
 
-  const preFundedWallet = new Wallet(walletPrivateKey, l1Provider)
-  const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
+const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
+const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
-  const ethToL2DepositAmount = parseEther('0.0001')
-  const bridge = await Bridge.init(preFundedWallet, l2Wallet)
+/**
+* Set the amount to be depositted in L2 (in wei)
+*/
+const ethToL2DepositAmount = parseEther('0.0001')
 
-  const initialWalletEth2Balance = await bridge.getAndUpdateL2EthBalance()
-  const depositTx = await bridge.depositETH(ethToL2DepositAmount)
-  const rec = await depositTx.wait()
-  console.warn('deposit L1 receipt', rec.transactionHash)
 
-  expect(rec.status).to.equal(1)
+const main = async () => {
 
-  const seqNumArr = await bridge.getInboxSeqNumFromContractTransaction(rec)
-  if (seqNumArr === undefined) {
-    throw new Error('no seq num')
-  }
-  expect(seqNumArr.length).to.exist
+    /**
+   * Use wallets to create an arb-ts bridge instance
+   * We'll use bridge for its convenience methods around depsotting ETH to L2
+   */
+    const bridge = await Bridge.init(l1Wallet, l2Wallet)
+    
+    /**
+   * First, let's check the l2Wallet initial ETH balance (befor deposit tx)
+   */
+    const l2WalletInitialEthBalance = await bridge.getL2EthBalance()
+    
+    /**
+   * Deposit ether from L1 to L2 
+   */
+    const depositTx = await bridge.depositETH(ethToL2DepositAmount)
+    const rec = await depositTx.wait()
+    console.warn("deposit L1 receipt is:", rec.transactionHash)
+    expect(rec.status).to.equal(1)
 
-  const seqNum = seqNumArr[0]
-  const l2TxHash = await bridge.calculateL2TransactionHash(seqNum)
-  console.log('l2TxHash: ' + l2TxHash)
 
-  console.log('waiting for l2 transaction:')
-  const l2TxnRec = await l2Provider.waitForTransaction(
-    l2TxHash,
-    undefined,
-    1000 * 60 * 12
-  )
-  console.log('l2 transaction found!')
-  expect(l2TxnRec.status).to.equal(1)
+    /**
+   * Below, we run some proper checks to make sure the L2 side of the depsitETH tx is also confirmed
+   * First, we get the depositETH tx corresponding inbox sequence number
+   */
 
-  let testWalletL2EthBalance
-  //L2 address has expected balance after deposit eth
-  for (let i = 0; i < 60; i++) {
-    console.log('balance check attempt ' + (i + 1))
-    await wait(5000)
-    testWalletL2EthBalance = await bridge.getAndUpdateL2EthBalance()
-    if (!initialWalletEth2Balance.eq(testWalletL2EthBalance)) {
-      console.log(
-        `balance updated! ${initialWalletEth2Balance.toString()} ${testWalletL2EthBalance.toString()}`
-      )
-      break
+    const seqNumArr = await bridge.getInboxSeqNumFromContractTransaction(rec)
+    if (seqNumArr === undefined) {
+        throw new Error('no seq num')
     }
-  }
+    expect(seqNumArr.length).to.exist
+    console.log("corresponding inbox sequence number is found!")
+    const seqNum = seqNumArr[0]
 
-  expect(testWalletL2EthBalance.gte(initialWalletEth2Balance)).to.be.true
+   /**
+   * Now, we get the hash of the L2 txn from corresponding inbox sequence number
+   */
 
-  const walletL2EthBalance = await bridge.getAndUpdateL2EthBalance()
-  expect(
-    initialWalletEth2Balance.add(ethToL2DepositAmount).eq(walletL2EthBalance)
-  )
+    const l2TxHash = await bridge.calculateL2TransactionHash(seqNum)
+    console.log("l2TxHash is: " + l2TxHash)
+
+    /**
+   * Here we'll do a period check until the retryable ticket is created on L2
+   */
+    console.log("Waiting for l2 transaction:")
+    const l2TxnRec = await l2Provider.waitForTransaction(
+        l2TxHash,
+        undefined,
+        1000 * 60 * 12
+    )
+    console.log("L2 transaction found!")
+    expect(l2TxnRec.status).to.equal(1)
+
+    /**
+    * Now we check if the l2Wallet has been properly updated or not
+    * To do so, need to make sure the L2 side if the depositTH tx is confirmed! (It can only be confirmed after he dispute period; Arbitrum is an optimistic rollup after-all)
+    * Here we'll do a period check until the l2Wallet balance is updated.
+    */
+
+    let l2WalletUpdatedEthBalance;
+    for (let i = 0; i < 60; i++) {
+        console.log("L2 balance check attempt " + (i + 1))
+        await wait(5000)
+
+        l2WalletUpdatedEthBalance = await bridge.getL2EthBalance()
+        if (!l2WalletInitialEthBalance.eq(l2WalletUpdatedEthBalance)) {
+        console.log(
+            `Your L2 balance is updated from ${l2WalletInitialEthBalance.toString()} to ${l2WalletUpdatedEthBalance.toString()}`
+        )
+        break
+        }
+    }
+ 
 }
 
 main()
