@@ -3,7 +3,7 @@ const { Bridge } = require('arb-ts')
 const { expect } = require('chai')
 const { parseEther } = utils
 
-require('dotenv').config()
+require('dotenv').config();
 
 
 const wait = (ms = 0) => {
@@ -74,7 +74,7 @@ const main = async () => {
     console.log("l2TxHash is: " + l2TxHash)
 
     /**
-    * Here we'll do a period check until the retryable ticket is created on L2
+    * Here we'll do a period check until the retryable ticket is executed on L2
     */
     console.log("Waiting for l2 transaction:")
     const l2TxnRec = await l2Provider.waitForTransaction(
@@ -92,7 +92,7 @@ const main = async () => {
     */
 
     let l2WalletUpdatedEthBalance;
-    
+
     for (let i = 0; i < 60; i++) {
         console.log("L2 balance check attempt " + (i + 1))
         await wait(5000)
@@ -100,7 +100,7 @@ const main = async () => {
         l2WalletUpdatedEthBalance = await bridge.getL2EthBalance()
         if (!l2WalletInitialEthBalance.eq(l2WalletUpdatedEthBalance)) {
         console.log(
-            `Your L2 balance is updated from ${l2WalletInitialEthBalance.toString()} to ${l2WalletUpdatedEthBalance.toString()}`
+            `your L2 balance is updated from ${l2WalletInitialEthBalance.toString()} to ${l2WalletUpdatedEthBalance.toString()}`
         )
         break
         }
@@ -109,7 +109,7 @@ const main = async () => {
     * We can also do extra check and see if the updated is equal to l2WalletInitialEthBalance + ethToL2DepositAmount
     */
     expect(l2WalletInitialEthBalance.add(ethToL2DepositAmount).eq(l2WalletUpdatedEthBalance))
-    console.log("Your L2 balance is properly updated!")
+    console.log("your L2 balance is properly updated!")
 }
 
 main()
@@ -117,4 +117,4 @@ main()
   .catch(error => {
     console.error(error)
     process.exit(1)
-  })
+})
