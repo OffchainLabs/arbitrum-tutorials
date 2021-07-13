@@ -69,7 +69,6 @@ const main = async () => {
     /**
     * Now, we get the hash of the L2 txn from corresponding inbox sequence number
     */
-
     const l2TxHash = await bridge.calculateL2TransactionHash(seqNum)
     console.log("l2TxHash is: " + l2TxHash)
 
@@ -82,15 +81,14 @@ const main = async () => {
         undefined,
         1000 * 60 * 12
     )
-    console.log("L2 transaction found!")
     expect(l2TxnRec.status).to.equal(1)
+    console.log("L2 transaction found!")
 
     /**
     * Now we check if the l2Wallet has been updated or not
     * To do so, need to make sure the L2 side if the depositTH tx is confirmed! (It can only be confirmed after he dispute period; Arbitrum is an optimistic rollup after-all)
     * Here we'll do a period check until the l2Wallet balance is updated.
     */
-
     let l2WalletUpdatedEthBalance;
 
     for (let i = 0; i < 60; i++) {
@@ -106,7 +104,8 @@ const main = async () => {
         }
     }
     /**
-    * We can also do extra check and see if the updated is equal to l2WalletInitialEthBalance + ethToL2DepositAmount
+    * We can also do extra check and see if the l2Wallet has the expected balance after depositETH 
+    * updated is equal to l2WalletInitialEthBalance + ethToL2DepositAmount
     */
     expect(l2WalletInitialEthBalance.add(ethToL2DepositAmount).eq(l2WalletUpdatedEthBalance))
     console.log("your L2 balance is properly updated!")
