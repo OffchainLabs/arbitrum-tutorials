@@ -34,19 +34,19 @@ const ethToL2DepositAmount = parseEther('0.0001')
 const main = async () => {
 
     /**
-   * Use wallets to create an arb-ts bridge instance
-   * We'll use bridge for its convenience methods around depsotting ETH to L2
-   */
+    * Use wallets to create an arb-ts bridge instance
+    * We'll use bridge for its convenience methods around depsotting ETH to L2
+    */
     const bridge = await Bridge.init(l1Wallet, l2Wallet)
     
     /**
-   * First, let's check the l2Wallet initial ETH balance (befor deposit tx)
-   */
+    * First, let's check the l2Wallet initial ETH balance (befor deposit tx)
+    */
     const l2WalletInitialEthBalance = await bridge.getL2EthBalance()
     
     /**
-   * Deposit ether from L1 to L2 
-   */
+    * Deposit ether from L1 to L2 
+    */
     const depositTx = await bridge.depositETH(ethToL2DepositAmount)
     const rec = await depositTx.wait()
     console.warn("deposit L1 receipt is:", rec.transactionHash)
@@ -54,9 +54,9 @@ const main = async () => {
 
 
     /**
-   * Below, we run some proper checks to make sure the L2 side of the depsitETH tx is also confirmed
-   * First, we get the depositETH tx corresponding inbox sequence number
-   */
+    * Below, we run some proper checks to make sure the L2 side of the depsitETH tx is also confirmed
+    * First, we get the depositETH tx corresponding inbox sequence number
+    */
 
     const seqNumArr = await bridge.getInboxSeqNumFromContractTransaction(rec)
     if (seqNumArr === undefined) {
@@ -66,16 +66,16 @@ const main = async () => {
     console.log("corresponding inbox sequence number is found!")
     const seqNum = seqNumArr[0]
 
-   /**
-   * Now, we get the hash of the L2 txn from corresponding inbox sequence number
-   */
+    /**
+    * Now, we get the hash of the L2 txn from corresponding inbox sequence number
+    */
 
     const l2TxHash = await bridge.calculateL2TransactionHash(seqNum)
     console.log("l2TxHash is: " + l2TxHash)
 
     /**
-   * Here we'll do a period check until the retryable ticket is created on L2
-   */
+    * Here we'll do a period check until the retryable ticket is created on L2
+    */
     console.log("Waiting for l2 transaction:")
     const l2TxnRec = await l2Provider.waitForTransaction(
         l2TxHash,
@@ -86,12 +86,13 @@ const main = async () => {
     expect(l2TxnRec.status).to.equal(1)
 
     /**
-    * Now we check if the l2Wallet has been properly updated or not
+    * Now we check if the l2Wallet has been updated or not
     * To do so, need to make sure the L2 side if the depositTH tx is confirmed! (It can only be confirmed after he dispute period; Arbitrum is an optimistic rollup after-all)
     * Here we'll do a period check until the l2Wallet balance is updated.
     */
 
     let l2WalletUpdatedEthBalance;
+    
     for (let i = 0; i < 60; i++) {
         console.log("L2 balance check attempt " + (i + 1))
         await wait(5000)
@@ -104,7 +105,11 @@ const main = async () => {
         break
         }
     }
- 
+    /**
+    * We can also do extra check and see if the updated is equal to l2WalletInitialEthBalance + ethToL2DepositAmount
+    */
+    expect(l2WalletInitialEthBalance.add(ethToL2DepositAmount).eq(l2WalletUpdatedEthBalance))
+    console.log("Your L2 balance is properly updated!")
 }
 
 main()
