@@ -1,31 +1,11 @@
-const { expect } = require('chai')
-const { BigNumber, utils, providers, Wallet } = require('ethers')
-const { ethers } = require('hardhat')
+const { providers, Wallet } = require('ethers')
 const { Bridge, OutGoingMessageState } = require('arb-ts')
-const yargs = require('yargs/yargs')
 
 require('dotenv').config()
 
 const wait = (ms = 0) => {
   return new Promise(res => setTimeout(res, ms || 10000))
 }
-
-/**
- * Set up: User provides a transaction hash
- * Txn hash should of a txn that triggered an outgoing message (i.e., ArbSys.sendTxToL1)
- */
-
-// TODO command line args
-const txnHash =
-  '0x688d4ead30173aac1191b7b39c25e341e685cdc1f178398f7c955041b183cba0'
-
-if (!txnHash)
-  throw new Error(
-    'Provide a transaction hash of an L2 transaction that sends an L2 to L1 message'
-  )
-console.warn(txnHash.length)
-if (!txnHash.startsWith('0x') || txnHash.length != 34)
-  throw new Error(`Hmm, ${txnHash} doesn't look like a txn hash...`)
 
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
@@ -42,7 +22,17 @@ const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
 const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
 const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
-const main = async () => {
+module.exports = async txnHash => {
+  /**
+  / * We start with a txn hash; we assume this is transaction that triggered an L2 to L1 Message on L2 (i.e., ArbSys.sendTxToL1)
+   */
+
+  if (!txnHash)
+    throw new Error(
+      'Provide a transaction hash of an L2 transaction that sends an L2 to L1 message'
+    )
+  if (!txnHash.startsWith('0x') || txnHash.trim().length != 66)
+    throw new Error(`Hmm, ${txnHash} doesn't look like a txn hash...`)
   /**
    * Use wallets to create an arb-ts bridge instance
    * We'll use bridge for its convenience methods around outbox-execution
@@ -129,9 +119,3 @@ const main = async () => {
 
   console.log('Done! Your transaction is executed')
 }
-main()
-  .then(() => process.exit(0))
-  .catch(error => {
-    console.error(error)
-    process.exit(1)
-  })

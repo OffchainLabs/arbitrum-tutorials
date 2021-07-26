@@ -1,4 +1,7 @@
 require('@nomiclabs/hardhat-ethers')
+const main = require('./scripts/exec.js')
+
+const { task } = require('hardhat/config')
 
 const accounts = {
   mnemonic:
@@ -7,6 +10,13 @@ const accounts = {
   initialIndex: 0,
   count: 10,
 }
+
+task('outbox-exec', "Prints an account's balance")
+  .addParam('txhash', 'Hash of txn that triggered and L2 to L1 message')
+
+  .setAction(async args => {
+    main(args.txhash)
+  })
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
