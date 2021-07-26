@@ -44,7 +44,7 @@ const main = async () => {
      const l2WalletInitialEthBalance = await bridge.getL2EthBalance()
 
     /**
-    * To transfer eth to L2 directly through the Inbox, we first create an instance of this contract
+    * To transfer ETH to L2 directly through the Inbox, we first create an instance of this contract
     */
     const inbox = Inbox__factory.connect(process.env.INBOX_ADDR, l1Wallet)
     
@@ -102,7 +102,7 @@ const main = async () => {
         l2WalletUpdatedEthBalance = await bridge.getL2EthBalance()
         if (!l2WalletInitialEthBalance.eq(l2WalletUpdatedEthBalance)) {
         console.log(
-            `your L2 balance updated from ${l2WalletInitialEthBalance.toString()} to ${l2WalletUpdatedEthBalance.toString()}`
+            `your L2 balance is updated from ${l2WalletInitialEthBalance.toString()} to ${l2WalletUpdatedEthBalance.toString()}`
         )
         break
         }

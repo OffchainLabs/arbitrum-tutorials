@@ -1,57 +1,91 @@
 const { utils, providers, Wallet } = require('ethers')
 const { expect } = require('chai')
-const { ArbSys__factory, Bridge } = require('arb-ts')
+const { ArbSys__factory,  Bridge } = require('arb-ts')
 const { parseEther } = utils
 
-require('dotenv').config()
+require('dotenv').config();
+
+
+const wait = (ms = 0) => {
+    return new Promise(res => setTimeout(res, ms || 0))
+}
+
+/**
+* Set up: instantiate L1 / L2 wallets connected to providers
+*/
+const infuraKey = process.env.INFURA_KEY
+if (!infuraKey) throw new Error('No INFURA_KEY set.')
+
+const walletPrivateKey = process.env.DEVNET_PRIVKEY
+if (!walletPrivateKey) throw new Error('No DEVNET_PRIVKEY set.')
+
+const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
+const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
+
+const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
+const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
+
+/**
+* Set the amount to be withdrawn from L2 (in wei)
+*/
+const ethFromL2WithdrawAmount = parseEther('0.00001')
 
 const main = async () => {
-  const wait = (ms = 0) => {
-    return new Promise(res => setTimeout(res, ms || 0))
-  }
 
-  const infuraKey = process.env.INFURA_KEY
-  if (!infuraKey) throw new Error('No INFURA_KEY set.')
+    /**
+    * Use wallets to create an arb-ts bridge instance
+    * We'll use bridge for its convenience methods around withdrawing ETH from L2
+    */
+    const bridge = await Bridge.init(l1Wallet, l2Wallet)
 
-  const walletPrivateKey = process.env.DEVNET_PRIVKEY
-  if (!walletPrivateKey) throw new Error('No DEVNET_PRIVKEY set.')
+    /**
+    * First, let's check the l2Wallet initial ETH balance (befor withdraw tx)
+    */
+     const l2WalletInitialEthBalance = await bridge.getL2EthBalance()
 
-  const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
-  const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
+    /**
+    * To deposit ETH from L2 directly through the ArbSys, we first create an instance of this contract
+    */
+    const arbSys = ArbSys__factory.connect(process.env.ARBSYS_ADDR, l2Wallet)
 
-  const preFundedWallet = new Wallet(walletPrivateKey, l1Provider)
-  const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
+    /**
+    * Call the withdrawEth() frunction from the ArbSys contract
+    * Pass the l1Wallet.address as argument:  recipient address on L1
+    * Note that this is a convenience function, which is equivalent to calling sendTxToL1 with empty calldataForL1 (Option #2)
+    */
 
-  const ethFromL2WithdrawAmount = parseEther('0.00001')
-  const bridge = await Bridge.init(preFundedWallet, l2Wallet)
+    const withdrawTx = await arbSys.withdrawEth(l1Wallet.address, { value: ethFromL2WithdrawAmount })
+    const rec = await withdrawTx.wait()
+    expect(rec.status).to.equal(1)
+    console.warn('withdraw L2 receipt is:', rec.transactionHash)
 
-  const preWithdrawalL2Balance = await bridge.getAndUpdateL2EthBalance()
+    /**
+    * Below, we run some proper checks to make sure the L2 side of the withdrawEth tx is confirmed
+    * Here we get the L2ToL1Transaction event that was emitted by ArbSys.withdrawEth
+    * If this event exists, it means the withfraw tx has been fully excuted
+    */
+    const withdrawEventData = (await bridge.getWithdrawalsInL2Transaction(rec))[0]
+    expect(withdrawEventData).to.exist
 
-  const arbSys = ArbSys__factory.connect(process.env.ARBSYS_ADDR, l2Wallet)
 
-  //Use one of the following options to withdraw ETH from L2:
+    //Here we check if l2Wallet balance is prperly updated after withdraw ETH
+    //Note that it takes ~1 week for l1Wallet balance to be updated (once the dispute period is over)
+    wait()
+    const l2WalletUpdatedEthBalance = await bridge.getL2EthBalance()
+    expect(l2WalletUpdatedEthBalance.lt(l2WalletInitialEthBalance)).to.be.true
+    console.log(
+        `your L2 balance is updated from ${l2WalletInitialEthBalance.toString()} to ${l2WalletUpdatedEthBalance.toString()} and your L1 balance will be updated after the dispute period!`
+    )
 
-  //Option 1-- sendTxToL1(address _destAddress, bytes calldata _calldataForL1):
-  //const withdrawEthTx = await arbSys.sendTxToL1(l2Wallet.address, "0x", {value: ethFromL2WithdrawAmount});
-  //const withdrawRec = await withdrawEthTx.wait()
-  //expect(withdrawRec.status).to.equal(1)
 
-  //Option 2-- withdrawEth(_destAddress):
-  const withdrawEthTx = await arbSys.withdrawEth(l2Wallet.address, {
-    value: ethFromL2WithdrawAmount,
-  })
-  const withdrawRec = await withdrawEthTx.wait()
-  expect(withdrawRec.status).to.equal(1)
 
-  const withdrawEventData = (
-    await bridge.getWithdrawalsInL2Transaction(withdrawRec)
-  )[0]
-  expect(withdrawEventData).to.exist
+    //Use one of the following options to withdraw ETH from L2:
 
-  //Check to see if the balance is deducted after withdraw ETH
-  wait()
-  const L2EthBalance = await bridge.getAndUpdateL2EthBalance()
-  expect(L2EthBalance.lt(preWithdrawalL2Balance)).to.be.true
+    //Option 1-- sendTxToL1(address _destAddress, bytes calldata _calldataForL1):
+    //const withdrawEthTx = await arbSys.sendTxToL1(l2Wallet.address, "0x", {value: ethFromL2WithdrawAmount});
+    //const withdrawRec = await withdrawEthTx.wait()
+    //expect(withdrawRec.status).to.equal(1)
+
 }
 
 main()
@@ -59,4 +93,4 @@ main()
   .catch(error => {
     console.error(error)
     process.exit(1)
-  })
+})
