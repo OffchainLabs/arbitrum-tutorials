@@ -41,7 +41,7 @@ const main = async () => {
     /**
     * First, let's check the l2Wallet initial ETH balance (befor withdraw tx)
     */
-     const l2WalletInitialEthBalance = await bridge.getL2EthBalance()
+    const l2WalletInitialEthBalance = await bridge.getL2EthBalance()
 
     /**
     * To deposit ETH from L2 directly through the ArbSys, we first create an instance of this contract
