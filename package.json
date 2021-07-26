@@ -19,7 +19,8 @@
       "packages/token_deposit",
       "packages/token_withdraw",
       "packages/demo-dapp-pet-shop",
-      "packages/outbox-execute"
+      "packages/outbox-execute",
+      "packages/address_table"
     ]
   },
   "scripts": {
