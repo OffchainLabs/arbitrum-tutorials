@@ -61,7 +61,7 @@ module.exports = async txnHash => {
   )
 
   if (outGoingMessagesFromTxn.length === 0)
-    throw new Error(`Txn ${txnHash} did not initate an outgoing messages`)
+    throw new Error(`Txn ${txnHash} did not initiate an outgoing messages`)
 
   /**
    * Note that in principle, a single transaction could trigger any number of outgoing messages; the common case will be there's only one.
@@ -70,7 +70,7 @@ module.exports = async txnHash => {
   const { batchNumber, indexInBatch } = outGoingMessagesFromTxn[0]
 
   /**
-   * We've got batchNumber and IndexInBatch in hand; but before we try to execute out message, we need to make sure it's confirmed! (It can only be confirmed after he dispute period; Arbitrum is an optimistic rollup after-all)
+   * We've got batchNumber and IndexInBatch in hand; but before we try to execute out message, we need to make sure it's confirmed! (It can only be confirmed after the dispute period; Arbitrum is an optimistic rollup after-all)
    * Here we'll do a period check; once getOutgoingMessageState tells us our txn is confirm, we'll move on to execution
    */
   const outgoingMessageState = await bridge.getOutgoingMessageState(
