@@ -615,6 +615,11 @@
   dependencies:
     "@types/node" "*"
 
+"@uniswap/token-lists@^1.0.0-beta.24":
+  version "1.0.0-beta.24"
+  resolved "https://registry.yarnpkg.com/@uniswap/token-lists/-/token-lists-1.0.0-beta.24.tgz#6809b80bee58e4a2f235cdedc07113652c85a741"
+  integrity sha512-9IMltV7ITwxnjuK0LYXlUZhYIB8wVAdwx5NAbGjHF9ss+zKL9FTyFfWTFif/EL6PCWvST+2B15ofUwSVZd17RA==
+
 abort-controller@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/abort-controller/-/abort-controller-3.0.0.tgz#eaf54d53b62bae4138e809ca225c8439a6efb392"
@@ -765,6 +770,18 @@ arb-ts@^0.0.19:
     "@ethersproject/bignumber" "^5.1.1"
     "@ethersproject/bytes" "^5.0.8"
     "@types/promise-poller" "^1.7.0"
+    ethers "^5.0.24"
+
+arb-ts@^0.0.25:
+  version "0.0.25"
+  resolved "https://registry.yarnpkg.com/arb-ts/-/arb-ts-0.0.25.tgz#0bb40fe783d7860f1c4ac1ea8734cb82cc6b79dc"
+  integrity sha512-Pso+OYUnNUur5NuLprC2kjZ9OF0qFKvZZFf/tsbdXovqWddeuwZ1kuTdC1T2a123xTxkktJIqCzvKpSF/JRbuQ==
+  dependencies:
+    "@ethersproject/address" "^5.0.8"
+    "@ethersproject/bignumber" "^5.1.1"
+    "@ethersproject/bytes" "^5.0.8"
+    "@types/promise-poller" "^1.7.0"
+    "@uniswap/token-lists" "^1.0.0-beta.24"
     ethers "^5.0.24"
 
 argparse@^1.0.7:
