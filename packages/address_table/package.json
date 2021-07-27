@@ -12,6 +12,6 @@
     "arb-ts": "^0.0.28"
   },
   "scripts": {
-    "exec": "yarn hardhat run scripts/exec.js --network rinkArby"
+    "exec": "hardhat run scripts/exec.js --network rinkArby"
   }
 }
