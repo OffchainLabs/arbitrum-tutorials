@@ -1100,17 +1100,6 @@ arb-ts@0.0.9:
     "@types/promise-poller" "^1.7.0"
     ethers "^5.0.24"
 
-arb-ts@^0.0.19:
-  version "0.0.19"
-  resolved "https://registry.yarnpkg.com/arb-ts/-/arb-ts-0.0.19.tgz#84a2412eb109e5e9d5b619ac779139898df279ec"
-  integrity sha512-4xR/5u3U6K9omkFjec50AWjqcpmA8rOYDdL3TeTDY185F7onO9IBvpJjVULmNvPrNQol2Zsyg0knjO+1N79VqQ==
-  dependencies:
-    "@ethersproject/address" "^5.0.8"
-    "@ethersproject/bignumber" "^5.1.1"
-    "@ethersproject/bytes" "^5.0.8"
-    "@types/promise-poller" "^1.7.0"
-    ethers "^5.0.24"
-
 arb-ts@^0.0.27:
   version "0.0.27"
   resolved "https://registry.yarnpkg.com/arb-ts/-/arb-ts-0.0.27.tgz#c4411774a18d15c1611cb1ff7926bb8542545fce"

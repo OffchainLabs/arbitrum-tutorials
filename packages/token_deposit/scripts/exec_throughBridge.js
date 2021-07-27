@@ -1,4 +1,4 @@
-const { BigNumber, utils, providers, Wallet } = require('ethers')
+const { BigNumber, providers, Wallet } = require('ethers')
 const { ethers } = require('hardhat')
 const { expect } = require('chai')
 const { Bridge } = require('arb-ts')
@@ -6,10 +6,6 @@ const { Bridge } = require('arb-ts')
 
 require('dotenv').config();
 
-
-const wait = (ms = 0) => {
-    return new Promise(res => setTimeout(res, ms || 0))
-}
 
 /**
 * Set up: instantiate L1 / L2 wallets connected to providers
@@ -28,7 +24,7 @@ const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
 
 /**
-* Set the amount of token to be depositted in L2 
+* Set the amount of token to be deposited in L2 
 */
 const tokenDepositAmount = BigNumber.from(50)
 

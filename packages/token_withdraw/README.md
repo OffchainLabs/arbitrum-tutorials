@@ -18,7 +18,7 @@ All Arbitrum to Ethereum token transfers are initiated via the `L2GatewayRouter`
 
 #### **Standard ERC20 Withdrawal**
 
-Withdrawing ERC20 tokens from Arbitrum into Ethereum can be done using the Bridge that we provide in our `arb-ts` client side library. Having the Bridge installed and intiated, users can transfer tokens from Arbitrum chain by sending a `withdrawERC20( erc20Address, tokenWithdrawAmount)` transaction directly to the Bridge. See the `exec_throughBridge.js` for sample usage. In this example, (1) we deploy a sample ERC20 token called `DappToken` on L1, (2) deposit a certain amount of `DappToken` to L2, (3) and finally, withdraw a certain amount of `DappToken` from L2 to L1.
+Withdrawing ERC20 tokens from Arbitrum into Ethereum can be done using the Bridge that we provide in our `arb-ts` client side library. Having the Bridge installed and intiated, users can transfer tokens from Arbitrum chain by sending a `withdrawERC20(erc20Address, tokenWithdrawAmount)` transaction directly to the Bridge. See the `exec_throughBridge.js` for sample usage. In this example, (1) we deploy a sample ERC20 token called `DappToken` on L1, (2) deposit a certain amount of `DappToken` to L2, (3) and finally, withdraw a certain amount of `DappToken` from L2 to L1.
 
 ---
 
@@ -36,7 +36,7 @@ cp .env-sample .env
 
 2. Open the .env file and add the variables.
 
-3. Run one of the following commands (depending on which of the 3 methods you want to use to transfer ETH to the L2) in order to compile and execute the smart contracts.
+3. Run one of the following commands in order to compile and execute the smart contracts.
 
 ```bash
 yarn hardhat run scripts/exec_throughBridge.js
