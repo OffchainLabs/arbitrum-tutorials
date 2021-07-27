@@ -15,9 +15,9 @@ contract Withdraw {
         emit L2ToL1TxCreated(withdrawalId);
         return withdrawalId;
     }
+    
     function withdrawEth(address _destAddress) public payable returns(uint)
     {   
-
         uint withdrawalId = arbsys.withdrawEth(_destAddress);
         emit L2ToL1TxCreated(withdrawalId);
         return withdrawalId;
