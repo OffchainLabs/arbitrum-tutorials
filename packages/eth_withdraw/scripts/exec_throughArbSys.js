@@ -44,7 +44,7 @@ const main = async () => {
     const l2WalletInitialEthBalance = await bridge.getL2EthBalance()
 
     /**
-    * To deposit ETH from L2 directly through the ArbSys, we first create an instance of this contract
+    * To withdraw ETH from L2 directly through the ArbSys, we first create an instance of this contract
     */
     const arbSys = ArbSys__factory.connect(process.env.ARBSYS_ADDR, l2Wallet)
 
