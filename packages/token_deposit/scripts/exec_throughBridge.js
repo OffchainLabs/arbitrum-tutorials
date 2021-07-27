@@ -1,109 +1,122 @@
-const { expect } = require('chai')
 const { BigNumber, utils, providers, Wallet } = require('ethers')
 const { ethers } = require('hardhat')
+const { expect } = require('chai')
 const { Bridge } = require('arb-ts')
 
-require('dotenv').config()
+
+require('dotenv').config();
+
+
+const wait = (ms = 0) => {
+    return new Promise(res => setTimeout(res, ms || 0))
+}
+
+/**
+* Set up: instantiate L1 / L2 wallets connected to providers
+*/
+const infuraKey = process.env.INFURA_KEY
+if (!infuraKey) throw new Error('No INFURA_KEY set.')
+
+const walletPrivateKey = process.env.DEVNET_PRIVKEY
+if (!walletPrivateKey) throw new Error('No DEVNET_PRIVKEY set.')
+
+const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
+const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
+
+const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
+const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
+
+
+/**
+* Set the amount of token to be depositted in L2 
+*/
+const tokenDepositAmount = BigNumber.from(50)
+
 
 const main = async () => {
-  const wait = (ms = 0) => {
-    return new Promise(res => setTimeout(res, ms || 10000))
-  }
 
-  const infuraKey = process.env.INFURA_KEY
-  if (!infuraKey) throw new Error('No INFURA_KEY set.')
+    /**
+    * Use wallets to create an arb-ts bridge instance
+    * We'll use bridge for its convenience methods around depsotting tokens to L2
+    */
+    const bridge = await Bridge.init(l1Wallet, l2Wallet)
+    
+    /**
+    * For the purpose of our tests, here we deploy an standard ERC20 token (DappToken) to L1
+    * With the initial supply of 1000000000000000 
+    */
 
-  const walletPrivateKey = process.env.DEVNET_PRIVKEY
-  if (!walletPrivateKey) throw new Error('No DEVNET_PRIVKEY set.')
+    const L1DappToken = await ( await ethers.getContractFactory('DappToken')).connect(l1Wallet)
+    console.log('Deploying the test DappToken to L1')   
+    const l1DappToken = await L1DappToken.deploy(1000000000000000)
+    await l1DappToken.deployed()
+    console.log(`DappToken is deployed to ${l1DappToken.address}`)
+    const erc20Address = l1DappToken.address
 
-  const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
-  const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
+    /**
+    * First, let's check the l1Wallet initial DappToken balance 
+    */ 
+    const l1WalletInitialTokenBalance = await l1DappToken.balanceOf(l1Wallet.address)
+    expect(l1WalletInitialTokenBalance.eq(BigNumber.from(1000000000000000))).to.be.true
+    console.log(`your l1Wallet has 1000000000000000 DappToken`)
+    
 
-  const preFundedWallet = new Wallet(walletPrivateKey, l1Provider)
-  const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
-  const tokenDepositAmount = BigNumber.from(50)
 
-  const bridge = await Bridge.init(preFundedWallet, l2Wallet)
+    /**
+    * Allow the Bridge to spend the DappToken
+    */ 
+    const approveTx = await bridge.approveToken(erc20Address)
+    const approveRec = await approveTx.wait()
+    expect(approveRec.status).to.equal(1)
+    console.log(`you successfully allowed the Arbitrum Bridge to spend DappToken!`)
 
-  const L1DappToken = await (
-    await ethers.getContractFactory('DappToken')
-  ).connect(preFundedWallet)
-  console.log('Deploying DappToken to L1')
 
-  const l1DappToken = await L1DappToken.deploy(1000000000000000)
-  await l1DappToken.deployed()
-  console.log(`DappToken deployed to ${l1DappToken.address}`)
+    
 
-  const bal = await l1DappToken.balanceOf(preFundedWallet.address)
-  expect(bal.eq(BigNumber.from(1000000000000000))).to.be.true
+    /**
+    * Deposit DappToken to L2 using Bridge
+    * Call the deposit() function from the Bridge
+    * Pass the L1 address of the DappToke and the amount to be deposited as arguments 
+    */
+    const depositTx = await bridge.deposit(erc20Address, tokenDepositAmount)
+    const depositRec = await depositTx.wait()
+    
+    
+    /**
+    * Below, we run some checks to see if the deposit tx is successfully executed on L1 and L2 
+    */
+   
+    // First, we get the inbox sequence number for the deposit receipt
+    const seqNumArr = await bridge.getInboxSeqNumFromContractTransaction(depositRec)
+    if (seqNumArr === undefined) { throw new Error('no seq num')}
+    expect(seqNumArr.length).to.exist
+    console.log(`your deposit tx is sequences inside the Inbox!`)
 
-  const erc20Address = l1DappToken.address
+    //Next, get hash of the associated L2 tx from its corresponding inbox sequence number
+    const seqNum = seqNumArr[0]
+    const l2TxHash = await bridge.calculateL2TransactionHash(seqNum)
+    console.log('the l2TxHash associated with your deposit tx is: ' + l2TxHash)
 
-  const data = await bridge.getAndUpdateL1TokenData(erc20Address)
-  const preFundedWallettBal = data.ERC20 && data.ERC20.balance
-  expect(
-    preFundedWallettBal &&
-      preFundedWallettBal.eq(BigNumber.from(1000000000000000))
-  ).to.be.true
-  //************************************************************************************
-  //approve token for bridge contract
-  const approveTx = await bridge.approveToken(erc20Address)
-  const approveRec = await approveTx.wait()
-  expect(approveRec.status).to.equal(1)
-
-  const data2 = await bridge.getAndUpdateL1TokenData(erc20Address)
-  const allowed = data2.ERC20 && data2.ERC20.allowed
-  expect(allowed).to.be.true
-  //************************************************************************************
-
-  const expectedL1GatewayAddress = await bridge.l1Bridge.getGatewayAddress(
-    l1DappToken.address
-  )
-  const initialBridgeTokenBalance = await l1DappToken.balanceOf(
-    expectedL1GatewayAddress
-  )
-
-  const depositRes = await bridge.deposit(erc20Address, tokenDepositAmount)
-
-  const depositRec = await depositRes.wait()
-
-  const seqNumArr = await bridge.getInboxSeqNumFromContractTransaction(
-    depositRec
-  )
-  if (seqNumArr === undefined) {
-    throw new Error('no seq num')
-  }
-  expect(seqNumArr.length).to.exist
-
-  const seqNum = seqNumArr[0]
-  const l2TxHash = await bridge.calculateL2TransactionHash(seqNum)
-  console.log('l2TxHash: ' + l2TxHash)
-
-  console.log('waiting for l2 transaction:')
-  const l2TxnRec = await l2Provider.waitForTransaction(
+    //Now, we have to wait for the L2 tx to go through
+    console.log('waiting for L2 transaction:')
+    const l2TxnRec = await l2Provider.waitForTransaction
+    (
     l2TxHash,
     undefined,
     1000 * 60 * 12
-  )
-  console.log('l2 transaction found!')
-  expect(l2TxnRec.status).to.equal(1)
+    )
+    console.log('L2 transaction found! Your DappToken balance is updated!')
+    expect(l2TxnRec.status).to.equal(1)
 
-  const finalBridgeTokenBalance = await l1DappToken.balanceOf(
-    expectedL1GatewayAddress
-  )
+    /**
+    * Here, we run final checks to see if the balances are properly updated
+    */
 
-  expect(
-    initialBridgeTokenBalance
-      .add(tokenDepositAmount)
-      .eq(finalBridgeTokenBalance)
-  ).to.be.true
-  const l2Data = await bridge.getAndUpdateL2TokenData(erc20Address)
-
-  const testWalletL2Balance = l2Data && l2Data.ERC20 && l2Data.ERC20.balance
-
-  expect(testWalletL2Balance && testWalletL2Balance.eq(tokenDepositAmount)).to
-    .be.true
+    const l2Data = await bridge.getAndUpdateL2TokenData(erc20Address)
+    const l2WalletTokenBalance = l2Data && l2Data.ERC20 && l2Data.ERC20.balance
+    expect(l2WalletTokenBalance && l2WalletTokenBalance.eq(tokenDepositAmount)).to.be.true
+    console.log( `your l2Wallet has ${l2WalletTokenBalance.toString()} DappToken now!`)
 }
 
 main()

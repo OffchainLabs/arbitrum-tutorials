@@ -40,7 +40,7 @@ const main = async () => {
     const bridge = await Bridge.init(l1Wallet, l2Wallet)
     
     /**
-    * First, let's check the l2Wallet initial ETH balance (befor deposit tx)
+    * First, let's check the l2Wallet initial ETH balance 
     */
     const l2WalletInitialEthBalance = await bridge.getL2EthBalance()
     
