@@ -2,23 +2,22 @@
 
 eth_deposit is an example of moving Ether from Ethereum (Layer 1) into the Arbitrum (Layer 2) chain.
 
-## How it works?
-
+## How it works?     
 ---
-
-Depositting ETH into the Arbitrum chain can be done in 3 different ways. Here we describe the mechanics of each option:
+Depositing ETH to L2 is facilitated through the `EthBridge` contracts. There are 3 ways of interacting with these contracts from the client side when transferring ETH to L2. Our goal here is to illustrate these 3 options and describe the mechanics of each.
+Note that all these options are essentially doing similar/the same functions under the hood and are just different in terms of how they interact with the `EthBridge` contracts from the client side.
 
 ---
 
 #### **1. Through an L1 DApp and Retryables:**
 
-Depositing ETH into Arbitrum can be done using an L1 DApp and retryable tickets. Users can use the DApp to create a Retryable Ticket is with 0 Callvalue, 0 MaxGas, 0 GasPrice, and empty Calldata. When a retryable ticket is initiated from the L1, the DepositValue is credited to the sender’s account on L2. See the `exec_throughDApp.js` for sample usage.
+Depositing ETH into Arbitrum can be done using an L1 DApp and retryable tickets. Users can use the DApp to create a Retryable Ticket with 0 Callvalue, 0 MaxGas, 0 GasPrice, and empty Calldata. When a retryable ticket is initiated from the L1, the DepositValue is credited to the sender’s account on L2. See the `exec_throughDApp.js` for sample usage.
 
 ---
 
 #### **2. Through Arbitrum / Ethereum Bridge:**
 
-Users can use the Bridge we provide to deposit ETH into Arbitrum. Accessing bridging methods can be done via our `arb-ts` client side library. Having the Bridge installed and intiated, users can transfer ETH into Arbitrum chain by sending a `depositETH(depositAmount)` transaction directly to the Bridge. See the `exec_throughBridge.js` for sample usage.
+Users can use the Bridge we provide to deposit ETH into Arbitrum. Accessing bridging methods can be done via our `arb-ts` client side library. Having the Bridge installed and initiated, users can transfer ETH into Arbitrum chain by sending a `depositETH(depositAmount)` transaction directly to the Bridge. See the `exec_throughBridge.js` for sample usage.
 
 ---
 
