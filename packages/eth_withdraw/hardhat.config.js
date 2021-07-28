@@ -12,8 +12,8 @@ const accounts = {
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
-  //solidity: "0.7.0",
-  solidity: '0.6.11',
+  solidity: '0.7.0',
+  // solidity: '0.6.11',
   networks: {
     kovan: {
       url: 'https://kovan.infura.io/v3/' + process.env['INFURA_KEY'],

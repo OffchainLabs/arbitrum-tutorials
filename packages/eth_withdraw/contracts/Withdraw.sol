@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.6.11;
+pragma solidity ^0.7.0;
 
 import "arb-shared-dependencies/contracts/ArbSys.sol";
 contract Withdraw {

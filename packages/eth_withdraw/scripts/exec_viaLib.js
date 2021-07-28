@@ -1,7 +1,6 @@
 const { utils, providers, Wallet } = require('ethers')
-const { ethers } = require('hardhat')
-const { Bridge } = require('arb-ts')
 const { expect } = require('chai')
+const { Bridge } = require('arb-ts')
 const { parseEther } = utils
 
 require('dotenv').config()
@@ -50,23 +49,11 @@ const main = async () => {
   console.log('Wallet properly funded: initiating withdrawal now')
 
   /**
-   * We'll deploy a contract which we'll use to trigger an Ether withdrawal
+   * We're ready to withdraw ETH using the bridge instance from arb-ts
+   * It will use our current wallet's address as the default destination
    */
 
-  const L2Withdraw = await (
-    await ethers.getContractFactory('Withdraw')
-  ).connect(l2Wallet)
-  const l2Withdraw = await L2Withdraw.deploy()
-  console.log('Deploying Withdraw contract to L2')
-  await l2Withdraw.deployed()
-  console.log(`Withdraw contract deployed to: ${l2Withdraw.address}`)
-
-  /**
-   * Now we can call our contracts withdrawEth method, which in turn will initiate a withdrawal:
-   */
-  const withdrawTx = await l2Withdraw.withdrawEth(l1Wallet.address, {
-    value: ethFromL2WithdrawAmount,
-  })
+  const withdrawTx = await bridge.withdrawETH(ethFromL2WithdrawAmount)
   const withdrawRec = await withdrawTx.wait()
 
   /**
