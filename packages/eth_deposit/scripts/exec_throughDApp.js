@@ -57,7 +57,7 @@ const main = async () => {
    */
   const depositTx = await l1Deposit.depositEther(
     BigNumber.from(10000000000000),
-    { gasLimit: 210000, value: ethToL2DepositAmount }
+    { value: ethToL2DepositAmount }
   )
   const rec = await depositTx.wait()
   console.warn('deposit L1 receipt is:', rec.transactionHash)
