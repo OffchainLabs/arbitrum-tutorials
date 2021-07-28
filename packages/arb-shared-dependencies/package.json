@@ -5,6 +5,7 @@
   "scripts": {
     "build": "hardhat compile"
   },
+  "main": "index.js",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "arb-ts": "0.0.9",
