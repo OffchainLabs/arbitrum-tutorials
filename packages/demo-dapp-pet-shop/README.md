@@ -2,6 +2,8 @@
 
 demo-dapp-pet-shop is a simple sample example that allows you to deploy the adoption contract to Arbitrum and run its functions.
 
+The contract lives entirely on L2 / involves no direct L1 interacts; writing, deploying, and interacting with it works just like using an L1 contract.
+
 ## Running locally
 
 ---
