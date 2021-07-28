@@ -1,5 +1,6 @@
 require('@nomiclabs/hardhat-ethers')
 const main = require('./scripts/exec.js')
+const { hardhatConfig } = require('arb-shared-dependencies')
 
 const { task } = require('hardhat/config')
 
@@ -21,17 +22,4 @@ task('outbox-exec', "Prints an account's balance")
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
-module.exports = {
-  solidity: '0.7.0',
-  networks: {
-    rinkeby: {
-      url: 'https://rinkeby.infura.io/v3/' + process.env['INFURA_KEY'],
-      accounts: accounts,
-    },
-    rinkArby: {
-      gasPrice: 0,
-      url: 'https://rinkeby.arbitrum.io/rpc',
-      accounts: accounts,
-    },
-  },
-}
+module.exports = hardhatConfig

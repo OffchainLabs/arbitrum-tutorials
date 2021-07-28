@@ -1,3 +1,5 @@
+const config = require('./hardhat.config.js')
+
 const wait = (ms = 0) => {
   return new Promise(res => setTimeout(res, ms || 0))
 }
@@ -34,4 +36,5 @@ const arbLog = async text => {
 
 module.exports = {
   arbLog,
+  hardhatConfig: config,
 }
