@@ -1,7 +1,6 @@
 const { utils, providers, Wallet } = require('ethers')
 const { ethers } = require('hardhat')
-const { expect, chai } = require('chai')
-const { parseEther } = utils
+const { expect } = require('chai')
 
 require('dotenv').config()
 
@@ -14,6 +13,7 @@ const main = async () => {
 
   const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
   const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
+  console.log('Your wallet address:', l2Wallet.address)
 
   // Deploying the Adoption contract to L2
   const L2Adoption = await (
@@ -31,17 +31,21 @@ const main = async () => {
   const expectedAdopter = l2Wallet.address
 
   // Testing the adopt() function
+  console.log('Adopting pet:')
+
   const adoptionEventData = await l2adoption.adopt(expectedPetId)
   expect(adoptionEventData).to.exist
 
   // Testing retrieval of a single pet's owner
   const adopter = await l2adoption.adopters(expectedPetId)
   expect(expectedAdopter).to.equal(adopter) // The owner of the expected pet should be your l2wallet
+  console.log(`Pet adopted; owner: ${adopter}`)
 
   // Testing retrieval of all pet owners
-  var adopters = [16]
+  let adopters = [16]
   adopters = await l2adoption.getAdopters()
   expect(adopters[expectedPetId]).to.equal(expectedAdopter) // The owner of the expected pet should be your l2wallet
+  console.log('All pet owners:', adopters)
 }
 
 main()
