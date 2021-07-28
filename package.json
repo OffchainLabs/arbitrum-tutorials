@@ -18,7 +18,8 @@
       "packages/arb-shared-dependencies",
       "packages/token_deposit",
       "packages/token_withdraw",
-      "packages/demo-dapp-pet-shop"
+      "packages/demo-dapp-pet-shop",
+      "packages/outbox-execute"
     ]
   },
   "scripts": {
