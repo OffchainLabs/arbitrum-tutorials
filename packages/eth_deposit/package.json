@@ -4,7 +4,9 @@
   "version": "1.0.0",
   "scripts": {
     "build": "hardhat compile",
-    "exec": "hardhat run scripts/exec.js"
+    "deposit:inbox": "hardhat run scripts/exec_throughInbox.js",
+    "deposit:arb-ts": "hardhat run scripts/exec_throughLib.js",
+    "deposit:dapp": "hardhat run scripts/exec_throughDApp.js"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",

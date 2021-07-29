@@ -1,29 +1,58 @@
 # eth_deposit Tutorial
 
-eth_deposit is an example of moving Ether from Ethereum (Layer 1) into the Arbitrum (Layer 2) chain.
+`eth_deposit` shows how to move Ether from Ethereum (Layer 1) into the Arbitrum (Layer 2) chain.
 
-## How it works?     
----
-Depositing ETH to L2 is facilitated through the `EthBridge` contracts. There are 3 ways of interacting with these contracts from the client side when transferring ETH to L2. Our goal here is to illustrate these 3 options and describe the mechanics of each.
-Note that all these options are essentially doing similar/the same functions under the hood and are just different in terms of how they interact with the `EthBridge` contracts from the client side.
+## How it works (Under the hood)
 
 ---
 
-#### **1. Through an L1 DApp and Retryables:**
+A user deposits Ether onto Arbitrum using Arbitrum's general L1-to-L2 message passing system, and simply passing the desired Ether as callvalue and no additional data. For more info, see [Retryable Tickets documentation](https://developer.offchainlabs.com/docs/l1_l2_messages#depositing-eth-via-retryables).
 
-Depositing ETH into Arbitrum can be done using an L1 DApp and retryable tickets. Users can use the DApp to create a Retryable Ticket with 0 Callvalue, 0 MaxGas, 0 GasPrice, and empty Calldata. When a retryable ticket is initiated from the L1, the DepositValue is credited to the sender’s account on L2. See the `exec_throughDApp.js` for sample usage.
+## Demos
 
----
-
-#### **2. Through Arbitrum / Ethereum Bridge:**
-
-Users can use the Bridge we provide to deposit ETH into Arbitrum. Accessing bridging methods can be done via our `arb-ts` client side library. Having the Bridge installed and initiated, users can transfer ETH into Arbitrum chain by sending a `depositETH(depositAmount)` transaction directly to the Bridge. See the `exec_throughBridge.js` for sample usage.
+In this repo we show 3 different examples of how a client may trigger an Ether deposit.
 
 ---
 
-#### **3. Directly Through the Inbox Contract :**
+#### **1. Directly Through the Inbox Contract**
 
-`Inbox.sol` is the Arbitrum inbox contract that resides on Layer 1 and allows users and contracts to transfer ETH between Ethereum and Arbitrum chain. Users can transfer ETH into Arbitrum by sending a `depositEth(maxSubmisisonCost)` transaction directly to the this contract that is deployed on the Layer 1. See the `exec_throughInbox.js` for sample usage.
+`Inbox.sol` is an Arbitrum core protocol contract; it includes a `depositEth` method which triggers an L1-to-L2 message that will deposit Ether to the destination address. In this demo, a client connects to this contract directly to trigger their Ether deposit.
+
+See [./exec_ThroughInbox.js](./scripts/exec_ThroughInbox.js) for inline explanation.
+
+To run:
+
+```
+yarn deposit:inbox
+```
+
+---
+
+#### **2. Through an L1 DApp**
+
+[Deposit.sol](./contracts/Deposit.sol) is a contract which itself triggers an Eth deposit. Here we show a client connecting to Deposit.sol and triggering and Eth deposit that way.
+
+See [./exec_ThroughDapp.js](./scripts/exec_ThroughDApp.js) for inline explanation.
+
+To run:
+
+```
+yarn deposit:dapp
+```
+
+---
+
+#### **3. Using arb-ts tooling**
+
+Finally, our [arb-ts](https://github.com/OffchainLabs/arbitrum/tree/master/packages/arb-ts) provides a simply convenience method for depositing Ether, abstracting away the need for the client to connect to any contracts manually.
+
+See [./exec_ThroughLib.js](./scripts/exec_ThroughLib.js) for inline explanation.
+
+To run:
+
+```
+yarn deposit:arb-ts
+```
 
 ---
 
