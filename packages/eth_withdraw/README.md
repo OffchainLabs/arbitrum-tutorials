@@ -1,38 +1,62 @@
 # eth_withdraw Tutorial
 
-eth_withdraw is an example of moving Ether from Arbitrum (Layer 2) into the Ethereum (Layer 1) chain.
+`eth_withdraw` shows how to move Ether from Arbitrum (Layer 2) into the Ethereum (Layer 1) chain.
 
-## How it works?
+Note that this repo covers initiating and Ether withdrawal; for a demo on (later) releasing the funds from the Outbox, see [outbox_execute](../outbox-execute/README.md)
 
----
-
-Withdrawing ETH from L2 is facilitated through the `EthBridge` contracts. There are 3 ways of interacting with these contracts from the client side when withdrawing ETH from L2. Our goal here is to illustrate these 3 options and describe the mechanics of each.
-Note that all these options are essentially doing similar/the same functions under the hood and are just different in terms of how they interact with the `EthBridge` contracts from the client side.
+## How it works (Under the hood)
 
 ---
 
-#### **1. Through an L2 DApp:**
-
-Withdrawing ETH from Arbitrum can be done using an L2 DApp that executes a withdraw transaction on L2. As you can see in the `exec_throughDApp.js` sample, users can initiate the withdraw transaction in 2 ways (see below). Note that both these options are essentially the same and are just different in terms of interacting with the `Ethbridge` contracts from the client side. Withdrawing ETH will burn the Ether balance on the Arbitrum side, and will later make it available on the Ethereum side
-
-
-- `sendTxToL1(address _destAddress, bytes calldata _calldataForL1)`: This function executes a withdraw transaction via `ArbSys(100).sendTxToL1(address destination)` on the Arbitrum. Arbsys is a pre-compiled contract that exists in every Arbitrum chain at address(100 0x0000000000000000000000000000000000000064 and exposes a variety of system-level functionality. `sendTxToL1(address _destAddress, bytes calldata _calldataForL1)` sends a transaction to L1 that gives the given amount of ETH to the specified L1 recipient address from sender and returns a unique identifier for this L2-to-L1 transaction. `calldataForL1` is the calldata for L1 contract call (optional).
-
-- `withdrawEth(_destAddress)`: This is a convenience function, which is equivalent to calling `ArbSys(100).sendTxToL1(address destination, bytes calldata calldataForL1)` with empty calldataForL1.
-
-See the `exec_throughDApp.js` for sample usage.
+To withdraw Ether from Arbitrum, a client creates an outgoing / L2 to L1 message using the `ArbSys` interface that later lets them release Ether from its escrow in the L1 Bridge.sol contract. For more info, see [Outgoing messages documentation](https://developer.offchainlabs.com/docs/l1_l2_messages#l2-to-l1-messages-lifecycle).
 
 ---
 
-#### **2. Through Arbitrum / Ethereum Bridge:**
+## Demos
 
-Users can use the Bridge we provide to withdraw ETH from Arbitrum ino Ethereum. Accessing bridging methods can be done via our `arb-ts` client side library. Having the Bridge installed and initiated, users can withdraw ETH by sending a `withdrawETH(ethFromL2WithdrawAmount)` transaction directly to the Bridge. See the `exec_throughBridge.js` for sample usage.
+In this repo we show 3 different examples of how a client may trigger an Ether withdrawal.
+
+_Note: Executing scripts will require your L2 account be funded with .000001 Eth._
+
+#### **1. Directly Through the ArbSys Contract**
+
+[ArbSys](https://developer.offchainlabs.com/docs/arbsys) is a pre-compiled contract that exists in every Arbitrum Chain at address [0x0000000000000000000000000000000000000064](https://explorer.arbitrum.io/address/0x0000000000000000000000000000000000000064). Its interface includes a `withdrawEth` method that can be called on L2 to initiate an Ether-withdrawal outgoing message (`sendTxToL1` can also be used to withdraw Ether).
+
+See [./exec_ThroughArbSys.js](./scripts/exec_ThroughArbSys.js) for inline explanation.
+
+To run:
+
+```
+yarn run withdraw:arbsys
+```
 
 ---
 
-#### **3. Directly Through the ArbSys Contract :**
+#### **2. Through an L2 DApp:**
 
-ArbSys is a pre-compiled contract that exists in every Arbitrum Chain. As its name would imply, ArbSys provides systems functionality useful to some Arbitrum contracts. Any contract running on an Arbitrum Chain can call the chain's ArbSys. ArbSys lives at address `0x0000000000000000000000000000000000000064`. Users can withdraw ETH from Arbitrum by sending a `withdrawEth(_destAddress)` or `sendTxToL1(address _destAddress, bytes calldata _calldataForL1)` directly to the ArbSys contract that lives on L2. See the `exec_throughArbsys.js` for sample usage.
+[Withdraw.sol](./contracts/Deposit.sol)) is an L2 contract that itself can make an external call to trigger a withdrawal. Our script connects to it and uses it to trigger an Ether withdrawal.
+
+See [./exec_ThroughDApp.js](./scripts/exec_ThroughDApps.js) for inline explanation.
+
+To run:
+
+```
+yarn run withdraw:dapp
+```
+
+---
+
+#### **Via Arb-ts**
+
+Finally, our [arb-ts](https://github.com/OffchainLabs/arbitrum/tree/master/packages/arb-ts) provides a simply convenience method for withdrawing Ether, abstracting away the need for the client to connect to any contracts manually.
+
+See [./exec_viaLib.js](./scripts/exec_viaLib.js) for inline explanation.
+
+To run:
+
+```
+yarn deposit:arb-ts
+```
 
 ---
 
