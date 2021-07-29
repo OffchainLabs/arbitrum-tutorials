@@ -21,7 +21,7 @@ const l2Signer = signer.connect(l2Provider)
 
 const main = async () => {
   /**
-   * Use wallets to create an arb-ts bridge instance to use its convenience methods methods
+   * Use wallets to create an arb-ts bridge instance to use its convenience methods
    */
   const bridge = await Bridge.init(l1Signer, l2Signer)
 
