@@ -1,21 +1,16 @@
 const { utils, providers, Wallet } = require('ethers')
 const { ethers } = require('hardhat')
-const { Bridge } = require('arb-ts')
+const { BridgeHelper } = require('arb-ts')
 const { parseEther } = utils
-const { arbLog } = require('arb-shared-dependencies')
+const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
-const wait = (ms = 0) => {
-  return new Promise(res => setTimeout(res, ms || 1000))
-}
+
+requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC'])
 
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
  */
-const infuraKey = process.env.INFURA_KEY
-if (!infuraKey) throw new Error('No INFURA_KEY set.')
-
 const walletPrivateKey = process.env.DEVNET_PRIVKEY
-if (!walletPrivateKey) throw new Error('No DEVNET_PRIVKEY set.')
 
 const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
 const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
@@ -34,12 +29,13 @@ const main = async () => {
    * Use wallets to create an arb-ts bridge instance
    * We'll use bridge for convenience methods
    */
-  const bridge = await Bridge.init(l1Wallet, l2Wallet)
 
   /**
    * First, let's check our L2 wallet's initial ETH balance and ensure there's some ETH to withdraw
    */
-  const l2WalletInitialEthBalance = await bridge.getL2EthBalance()
+  const l2WalletInitialEthBalance = await l2Provider.getBalance(
+    l2Wallet.address
+  )
 
   if (l2WalletInitialEthBalance.lt(ethFromL2WithdrawAmount)) {
     console.log(
@@ -76,7 +72,7 @@ const main = async () => {
    */
 
   const withdrawEventData = (
-    await bridge.getWithdrawalsInL2Transaction(withdrawRec)
+    await BridgeHelper.getWithdrawalsInL2Transaction(withdrawRec, l2Provider)
   )[0]
 
   console.log(`Ether withdrawal initiated! 🥳 ${withdrawRec.transactionHash}`)

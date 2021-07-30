@@ -6,7 +6,7 @@
     "build": "hardhat compile",
     "withdraw:arbsys": "hardhat run scripts/exec_throughArbSys.js",
     "withdraw:dapp": "hardhat run scripts/exec_throughDApp.js",
-    "withdraw:arb-ts": "hardhat run scripts/exec_throughLib.js"
+    "withdraw:arb-ts": "hardhat run scripts/exec_viaLib.js"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
