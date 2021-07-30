@@ -2,15 +2,14 @@ const hre = require('hardhat')
 const ethers = require('ethers')
 const { Bridge } = require('arb-ts')
 const { hexDataLength } = require('@ethersproject/bytes')
-const { arbLog } = require('arb-shared-dependencies')
+const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
+requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
+
 /**
  * Instantiate wallets and providers for bridge
  */
-const infuraKey = process.env.INFURA_KEY
-if (!infuraKey) throw new Error('No INFURA_KEY set.')
 
 const walletPrivateKey = process.env.DEVNET_PRIVKEY
-if (!walletPrivateKey) throw new Error('No DEVNET_PRIVKEY set.')
 
 const l1Provider = new ethers.providers.JsonRpcProvider(process.env.L1RPC)
 const l2Provider = new ethers.providers.JsonRpcProvider(process.env.L2RPC)
