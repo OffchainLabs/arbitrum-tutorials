@@ -14,34 +14,23 @@ We use our [arb-ts](https://github.com/OffchainLabs/arbitrum/tree/master/package
 
 See [./exec.js](./scripts/exec.js) for inline explanation.
 
-To run:
+### Config Environment Variables
+
+Set the values shown in `.env-sample` as environmental variables. To copy it into a `.env` file:
+
+```bash
+cp .env-sample .env
+```
+
+(you'll still need to edit some variables, i.e., `DEVNET_PRIVKEY`)
+
+### Run:
 
 ```
 yarn run token_deposit
 ```
 
 ---
-
-## Running locally
-
----
-
-token_deposit is configurable. You can configure it with the following environment variables:
-
-1. In the application folder, copy the `.env-sample` file and create a file called `.env`.
-
-```bash
-cp .env-sample .env
-```
-
-2. Open the .env file and add the variables.
-
-3. Run one of the following commands in order to compile and execute the smart contracts.
-
-```bash
-yarn hardhat run scripts/exec_throughBridge.js
-
-```
 
 <p align="center">
   <img width="350" height="100" src= "https://offchainlabs.com/static/media/full-logo.3271d3e8.png" />

@@ -4,21 +4,17 @@ demo-dapp-pet-shop is a simple sample example that allows you to deploy the adop
 
 The contract lives entirely on L2 / involves no direct L1 interacts; writing, deploying, and interacting with it works just like using an L1 contract.
 
-## Running locally
+## Config Environment Variables
 
----
-
-demo-dapp-pet-shop is configurable. You can configure it with the following environment variables:
-
-1. In the application folder, copy the `.env-sample` file and create a file called `.env`.
+Set the values shown in `.env-sample` as environmental variables. To copy it into a `.env` file:
 
 ```bash
 cp .env-sample .env
 ```
 
-2. Open the .env file and add the variables.
+(you'll still need to edit some variables, i.e., `DEVNET_PRIVKEY`)
 
-3. Run the following in order to compile and execute the smart contract.
+### Run Demo
 
 ```bash
 yarn hardhat run scripts/exec.js

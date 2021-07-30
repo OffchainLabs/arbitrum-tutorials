@@ -8,28 +8,20 @@ he script and contracts demonstrate how to interact with Arbitrum's core bridge 
 
 See [./exec.js](./scripts/exec.js) for inline explanation.
 
-To run:
+[Click here](https://developer.offchainlabs.com/docs/l1_l2_messages) for more info on retryable tickets.
+
+### Run Demo:
 
 ```
 yarn run greeter
 ```
 
-[Click here](https://developer.offchainlabs.com/docs/l1_l2_messages) for more info on retryable tickets.
+## Config Environment Variables
 
-## Running locally
-
-Greeter is configurable. You can configure it with the following environment variables:
-
-1. In the application folder, copy the `.env-sample` file and create a file called `.env`.
+Set the values shown in `.env-sample` as environmental variables. To copy it into a `.env` file:
 
 ```bash
 cp .env-sample .env
 ```
 
-2. Open the .env file and add the variables.
-
-3. Run the following command in order to compile and execute the smart contracts.
-
-```bash
-yarn hardhat run scripts/exec.js
-```
+(you'll still need to edit some variables, i.e., `DEVNET_PRIVKEY`)

@@ -56,29 +56,17 @@ yarn deposit:arb-ts
 
 ---
 
-## Running locally
+## Config Environment Variables
 
----
-
-eth_deposit is configurable. You can configure it with the following environment variables:
-
-1. In the application folder, copy the `.env-sample` file and create a file called `.env`.
+Set the values shown in `.env-sample` as environmental variables. To copy it into a `.env` file:
 
 ```bash
 cp .env-sample .env
 ```
 
-2. Open the .env file and add the variables.
+(you'll still need to edit some variables, i.e., `DEVNET_PRIVKEY`)
 
-3. Run one of the following commands (depending on which of the 3 methods you want to use to transfer ETH to the L2) in order to compile and execute the smart contracts.
-
-```bash
-1- yarn hardhat run scripts/exec_throughDApp.js
-2- yarn hardhat run scripts/exec_throughBridge.js
-3- yarn hardhat run scripts/exec_throughInbox.js
-```
-
-## Curious to see the output on the Arbitrum chain?
+---
 
 Once the script is successfully executed, you can go to the [Arbitrum block explorer](https://rinkeby-explorer.arbitrum.io/#), enter your address, and see the amount of ETH that has been assigned to your address on the Arbitrum chain!
 

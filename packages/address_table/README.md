@@ -12,9 +12,15 @@ See `exec.js` for inline comments / explanation.
  yarn run exec
 ```
 
-### Set up
+## Config Environment Variables
 
-See .env.sample for required environmental variables.
+Set the values shown in `.env-sample` as environmental variables. To copy it into a `.env` file:
+
+```bash
+cp .env-sample .env
+```
+
+(you'll still need to edit some variables, i.e., `DEVNET_PRIVKEY`)
 
 ### More info
 
