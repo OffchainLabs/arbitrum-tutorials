@@ -20,19 +20,19 @@ yarn install
 
 #### :white_check_mark: Moving Stuff around
 
-- ⤴️ 🔹 [Deposit Ether](./packages/eth_deposit/README.md)
-- ⤵️ 🔹 [Withdraw Ether](./packages/eth_withdraw/README.md)
-- ⤴️ 💸 [Deposit Token](./packages/token_deposit/README.md)
-- ⤵️ 💸 [Withdraw token](./packages/token_withdraw/README.md)
+- ⤴️ 🔹 [Deposit Ether](./packages/eth_deposit/)
+- ⤵️ 🔹 [Withdraw Ether](./packages/eth_withdraw/)
+- ⤴️ 💸 [Deposit Token](./packages/token_deposit/)
+- ⤵️ 💸 [Withdraw token](./packages/token_withdraw/)
 
 #### :white_check_mark: General Interop
 
-- 🤝 [Greeter](./packages/greeter/README.md) (L1 to L2)
-- 📤 [Outbox](./packages/outbox-execute/README.md) (L2 to L1)
+- 🤝 [Greeter](./packages/greeter/) (L1 to L2)
+- 📤 [Outbox](./packages/outbox-execute/) (L2 to L1)
 
 #### :white_check_mark: Advanced Features
 
-- ®️ [Arb Address Table](./packages/address_table/README.md)
+- ®️ [Arb Address Table](./packages/address_table/)
 
 <p align="center">
   <img width="350" height="100" src= "https://arbitrum.io/wp-content/uploads/2021/01/cropped-Arbitrum_Horizontal-Logo-Full-color-White-background-scaled-1.jpg" />
