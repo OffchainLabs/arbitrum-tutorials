@@ -2,7 +2,7 @@ const hre = require('hardhat')
 const ethers = require('ethers')
 const { Bridge } = require('arb-ts')
 const { hexDataLength } = require('@ethersproject/bytes')
-
+const { arbLog } = require('arb-shared-dependencies')
 /**
  * Instantiate wallets and providers for bridge
  */
@@ -20,6 +20,7 @@ const l1Signer = signer.connect(l1Provider)
 const l2Signer = signer.connect(l2Provider)
 
 const main = async () => {
+  await arbLog('Cross-chain Greeter')
   /**
    * Use wallets to create an arb-ts bridge instance to use its convenience methods
    */

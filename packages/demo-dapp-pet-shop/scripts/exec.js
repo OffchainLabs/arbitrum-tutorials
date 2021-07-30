@@ -1,10 +1,11 @@
 const { utils, providers, Wallet } = require('ethers')
 const { ethers } = require('hardhat')
 const { expect } = require('chai')
-
+const { arbLog } = require('arb-shared-dependencies')
 require('dotenv').config()
 
 const main = async () => {
+  await arbLog('Simple Pet Shop DApp')
   const infuraKey = process.env.INFURA_KEY
   if (!infuraKey) throw new Error('No INFURA_KEY set.')
 

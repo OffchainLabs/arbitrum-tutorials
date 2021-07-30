@@ -1,7 +1,9 @@
 const hre = require('hardhat')
 const { ArbAddressTable__factory } = require('arb-ts')
 
+const { arbLog } = require('arb-shared-dependencies')
 async function main() {
+  await arbLog('Using the Address Table')
   /**
    * Deploy ArbitrumVIP contract to L2
    */

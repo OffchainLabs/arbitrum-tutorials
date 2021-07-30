@@ -2,7 +2,7 @@ const { utils, providers, Wallet, BigNumber } = require('ethers')
 const { ethers } = require('hardhat')
 const { Bridge } = require('arb-ts')
 const { parseEther } = utils
-
+const { arbLog } = require('arb-shared-dependencies')
 require('dotenv').config()
 
 /**
@@ -26,6 +26,7 @@ const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 const ethToL2DepositAmount = parseEther('0.0001')
 
 const main = async () => {
+  await arbLog('Deposit Eth via a DApp')
   /**
    * Use wallets to create an arb-ts bridge instance
    * We'll use bridge for its convenience methods around checking txn statuses and ETH balances

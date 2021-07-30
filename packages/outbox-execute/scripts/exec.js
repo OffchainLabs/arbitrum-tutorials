@@ -1,6 +1,6 @@
 const { providers, Wallet } = require('ethers')
 const { Bridge, OutGoingMessageState } = require('arb-ts')
-
+const { arbLog } = require('arb-shared-dependencies')
 require('dotenv').config()
 
 const wait = (ms = 0) => {
@@ -23,8 +23,9 @@ const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
 const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
 module.exports = async txnHash => {
+  await arbLog('Outbox Execution')
   /**
-  / * We start with a txn hash; we assume this is transaction that triggered an L2 to L1 Message on L2 (i.e., ArbSys.sendTxToL1)
+   / * We start with a txn hash; we assume this is transaction that triggered an L2 to L1 Message on L2 (i.e., ArbSys.sendTxToL1)
    */
 
   if (!txnHash)
