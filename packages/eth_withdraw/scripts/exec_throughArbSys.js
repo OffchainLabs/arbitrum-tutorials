@@ -1,13 +1,8 @@
 const { utils, providers, Wallet } = require('ethers')
-const { expect } = require('chai')
 const { ArbSys__factory, Bridge } = require('arb-ts')
 const { parseEther } = utils
 const { arbLog } = require('arb-shared-dependencies')
 require('dotenv').config()
-
-const wait = (ms = 0) => {
-  return new Promise(res => setTimeout(res, ms || 0))
-}
 
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
