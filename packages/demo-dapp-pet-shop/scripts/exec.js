@@ -1,22 +1,16 @@
-const { utils, providers, Wallet } = require('ethers')
 const { ethers } = require('hardhat')
 const { expect } = require('chai')
-const { arbLog } = require('arb-shared-dependencies')
+const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
+
+requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC'])
 
 const main = async () => {
   await arbLog('Simple Pet Shop DApp')
-  const infuraKey = process.env.INFURA_KEY
-  if (!infuraKey) throw new Error('No INFURA_KEY set.')
 
-  const walletPrivateKey = process.env.DEVNET_PRIVKEY
-  if (!walletPrivateKey) throw new Error('No DEVNET_PRIVKEY set.')
-
-  const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
-  const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
+  const l2Wallet = (await hre.ethers.getSigners())[0]
   console.log('Your wallet address:', l2Wallet.address)
 
-  // Deploying the Adoption contract to L2
   const L2Adoption = await (
     await ethers.getContractFactory('Adoption')
   ).connect(l2Wallet)
