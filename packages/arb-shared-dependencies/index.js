@@ -1,4 +1,5 @@
-const config = require('./hardhat.config.js')
+const hardhatConfig = require('./hardhat.config.js')
+require('dotenv').config()
 
 const wait = (ms = 0) => {
   return new Promise(res => setTimeout(res, ms || 0))
@@ -34,7 +35,16 @@ const arbLog = async text => {
   console.log('')
 }
 
+const requireEnvVariables = envVars => {
+  for (const envVar of envVars) {
+    if (!process.env[envVar]) {
+      throw new Error(`Error: set your '${envVar}' environmental variable `)
+    }
+  }
+  console.log('Environmental variables properly set 👍')
+}
 module.exports = {
   arbLog,
-  hardhatConfig: config,
+  hardhatConfig,
+  requireEnvVariables,
 }

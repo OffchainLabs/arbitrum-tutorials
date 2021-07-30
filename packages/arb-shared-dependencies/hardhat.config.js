@@ -5,17 +5,17 @@ const accounts = {
   initialIndex: 0,
   count: 10,
 }
-
+require('dotenv').config()
 module.exports = {
   solidity: '0.7.0',
   networks: {
     rinkeby: {
-      url: 'https://rinkeby.infura.io/v3/' + process.env['INFURA_KEY'],
+      url: process.env['L1RPC'] || '',
       accounts: accounts,
     },
     rinkArby: {
       gasPrice: 0,
-      url: 'https://rinkeby.arbitrum.io/rpc',
+      url: process.env['L2RPC'] || '',
       accounts: accounts,
     },
   },
