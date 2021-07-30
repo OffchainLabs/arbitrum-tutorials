@@ -46,7 +46,7 @@ yarn run withdraw:dapp
 
 ---
 
-#### **Via Arb-ts**
+#### 3. **Via Arb-ts**
 
 Finally, our [arb-ts](https://github.com/OffchainLabs/arbitrum/tree/master/packages/arb-ts) provides a simply convenience method for withdrawing Ether, abstracting away the need for the client to connect to any contracts manually.
 
