@@ -1,17 +1,11 @@
 require('@nomiclabs/hardhat-waffle')
 
+const {
+  hardhatConfig,
+  requireEnvVariables,
+} = require('arb-shared-dependencies')
 require('dotenv').config()
 
-const privKey = process.env.DEVNET_PRIVKEY
+requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC'])
 
-if (!privKey) throw new Error('Set DEVNET_PRIVKEY env variable ')
-
-module.exports = {
-  solidity: '0.7.0',
-  networks: {
-    rinkArby: {
-      url: 'https://rinkeby.arbitrum.io/rpc',
-      accounts: [privKey],
-    },
-  },
-}
+module.exports = hardhatConfig
