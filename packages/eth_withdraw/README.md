@@ -22,7 +22,7 @@ _Note: Executing scripts will require your L2 account be funded with .000001 Eth
 
 [ArbSys](https://developer.offchainlabs.com/docs/arbsys) is a pre-compiled contract that exists in every Arbitrum Chain at address [0x0000000000000000000000000000000000000064](https://explorer.arbitrum.io/address/0x0000000000000000000000000000000000000064). Its interface includes a `withdrawEth` method that can be called on L2 to initiate an Ether-withdrawal outgoing message (`sendTxToL1` can also be used to withdraw Ether).
 
-See [./exec_ThroughArbSys.js](./scripts/exec_ThroughArbSys.js) for inline explanation.
+See [./exec_throughArbSys.js](./scripts/exec_throughArbSys.js) for inline explanation.
 
 To run:
 
@@ -34,9 +34,9 @@ yarn run withdraw:arbsys
 
 #### **2. Through an L2 DApp:**
 
-[Withdraw.sol](./contracts/Deposit.sol)) is an L2 contract that itself can make an external call to trigger a withdrawal. Our script connects to it and uses it to trigger an Ether withdrawal.
+[Withdraw.sol](./contracts/Deposit.sol) is an L2 contract that itself can make an external call to trigger a withdrawal. Our script connects to it and uses it to trigger an Ether withdrawal.
 
-See [./exec_ThroughDApp.js](./scripts/exec_ThroughDApps.js) for inline explanation.
+See [./exec_throughDApp.js](./scripts/exec_throughDApps.js) for inline explanation.
 
 To run:
 

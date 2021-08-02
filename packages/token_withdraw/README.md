@@ -1,6 +1,6 @@
 # token_withdraw Tutorial
 
-`token_withdraw` shows how to moveERC20 tokens from Arbitrum (Layer 2) into Ethereum (Layer 1).
+`token_withdraw` shows how to move ERC20 tokens from Arbitrum (Layer 2) into Ethereum (Layer 1).
 
 Note that this repo covers initiating a token withdrawal; for a demo on (later) releasing the funds from the Outbox, see [outbox_execute](../outbox-execute/README.md)
 
@@ -8,7 +8,7 @@ Note that this repo covers initiating a token withdrawal; for a demo on (later) 
 
 ---
 
-To withdraw a token from Arbitrum, a message is send from a Gateway contract which burns the token on L2, and sends a message to L1, which allow the token to be released from escrow once the dispute period is expired. a For more info, see [Outgoing messages documentation](https://developer.offchainlabs.com/docs/l1_l2_messages#l2-to-l1-messages-lifecycle).
+To withdraw a token from Arbitrum, a message is send from a Gateway contract which burns the token on L2, and sends a message to L1, which allow the token to be released from escrow once the dispute period is expired. For more info, see [Outgoing messages documentation](https://developer.offchainlabs.com/docs/l1_l2_messages#l2-to-l1-messages-lifecycle).
 
 ---
 

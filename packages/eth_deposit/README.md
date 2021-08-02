@@ -18,7 +18,7 @@ In this repo we show 3 different examples of how a client may trigger an Ether d
 
 `Inbox.sol` is an Arbitrum core protocol contract; it includes a `depositEth` method which triggers an L1-to-L2 message that will deposit Ether to the destination address. In this demo, a client connects to this contract directly to trigger their Ether deposit.
 
-See [./exec_ThroughInbox.js](./scripts/exec_ThroughInbox.js) for inline explanation.
+See [./exec_throughInbox.js](./scripts/exec_throughInbox.js) for inline explanation.
 
 To run:
 
@@ -32,7 +32,7 @@ yarn deposit:inbox
 
 [Deposit.sol](./contracts/Deposit.sol) is a contract which itself triggers an Eth deposit. Here we show a client connecting to Deposit.sol and triggering and Eth deposit that way.
 
-See [./exec_ThroughDapp.js](./scripts/exec_ThroughDApp.js) for inline explanation.
+See [./exec_throughDapp.js](./scripts/exec_throughDApp.js) for inline explanation.
 
 To run:
 
@@ -46,7 +46,7 @@ yarn deposit:dapp
 
 Finally, our [arb-ts](https://github.com/OffchainLabs/arbitrum/tree/master/packages/arb-ts) provides a simply convenience method for depositing Ether, abstracting away the need for the client to connect to any contracts manually.
 
-See [./exec_ThroughLib.js](./scripts/exec_ThroughLib.js) for inline explanation.
+See [./exec_throughLib.js](./scripts/exec_throughLib.js) for inline explanation.
 
 To run:
 

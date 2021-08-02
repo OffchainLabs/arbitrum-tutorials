@@ -4,7 +4,7 @@ The Outbox contract is responsible for receiving and executing all "outgoing" me
 
 The (expected) most-common use-case is withdrawals (of, i.e., Ether or tokens), but the Outbox handles any arbitrary contract call, as this demo illustrates.
 
-See `exec.js` for inline comments / explanation.
+See [./exec.js](./scripts/exec.js) for inline comments / explanation.
 
 ## Config Environment Variables
 
