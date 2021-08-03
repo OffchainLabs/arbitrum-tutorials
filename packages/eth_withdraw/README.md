@@ -36,7 +36,7 @@ yarn run withdraw:arbsys
 
 [Withdraw.sol](./contracts/Deposit.sol) is an L2 contract that itself can make an external call to trigger a withdrawal. Our script connects to it and uses it to trigger an Ether withdrawal.
 
-See [./exec_throughDApp.js](./scripts/exec_throughDApps.js) for inline explanation.
+See [./exec_throughDApp.js](./scripts/exec_throughDApp.js) for inline explanation.
 
 To run:
 
