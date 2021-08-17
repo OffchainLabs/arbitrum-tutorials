@@ -16,7 +16,7 @@ task('outbox-exec', "Prints an account's balance")
   .addParam('txhash', 'Hash of txn that triggered and L2 to L1 message')
 
   .setAction(async args => {
-    main(args.txhash)
+    await main(args.txhash)
   })
 
 /**
