@@ -4,7 +4,7 @@ const { parseEther } = utils
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
 
-requireEnvVariables('DEVNET_PRIVKEY', 'L1RPC', 'L2RPC', 'INBOX_ADDR')
+requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC', 'INBOX_ADDR'])
 
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
