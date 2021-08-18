@@ -21,7 +21,7 @@ const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
 const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
 const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
-module.exports = async txnHash => {
+const main =  async (txnHash) => {
   await arbLog('Outbox Execution')
   /**
    / * We start with a txn hash; we assume this is transaction that triggered an L2 to L1 Message on L2 (i.e., ArbSys.sendTxToL1)
@@ -119,3 +119,12 @@ module.exports = async txnHash => {
 
   console.log('Done! Your transaction is executed')
 }
+
+
+
+main()
+  .then(() => process.exit(0))
+  .catch(error => {
+    console.error(error)
+    process.exit(1)
+  })
