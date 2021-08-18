@@ -3,8 +3,7 @@
   "license": "Apache-2.0",
   "version": "1.0.0",
   "scripts": {
-    "build": "hardhat compile",
-    "deploy": "hardhat run scripts/exec.js"
+    "build": "hardhat compile"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
