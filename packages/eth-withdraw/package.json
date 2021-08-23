@@ -1,19 +1,20 @@
 {
-  "name": "token_deposit",
+  "name": "eth-withdraw",
   "license": "Apache-2.0",
   "version": "1.0.0",
   "scripts": {
     "build": "hardhat compile",
-    "token_deposit": "hardhat run scripts/exec.js"
+    "withdraw:arbsys": "hardhat run scripts/exec-viaArbSys.js",
+    "withdraw:dapp": "hardhat run scripts/exec-viaDApp.js",
+    "withdraw:arb-ts": "hardhat run scripts/exec-viaLib.js"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
-    "arb-ts": "^0.0.28",
-    "chai": "^4.3.4",
     "ethers": "^5.1.2",
     "hardhat": "^2.2.0"
   },
   "dependencies": {
+    "arb-ts": "^0.0.28",
     "dotenv": "^8.2.0"
   }
 }

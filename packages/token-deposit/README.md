@@ -1,6 +1,6 @@
-# token_deposit Tutorial
+# token-deposit Tutorial
 
-`token_deposit` demonstrates moving a token from Ethereum (Layer 1) into the Arbitrum (Layer 2) chain using the Standard Token Gateway in Arbitrum's token bridging system.
+`token-deposit` demonstrates moving a token from Ethereum (Layer 1) into the Arbitrum (Layer 2) chain using the Standard Token Gateway in Arbitrum's token bridging system.
 
 For info on how it works under the hood, see our [token bridging docs](https://developer.offchainlabs.com/docs/bridging_assets).
 
@@ -27,7 +27,7 @@ cp .env-sample .env
 ### Run:
 
 ```
-yarn run token_deposit
+yarn run token-deposit
 ```
 
 ---

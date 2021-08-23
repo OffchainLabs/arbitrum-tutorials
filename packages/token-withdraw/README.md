@@ -1,8 +1,8 @@
-# token_withdraw Tutorial
+# token-withdraw Tutorial
 
-`token_withdraw` shows how to move ERC20 tokens from Arbitrum (Layer 2) into Ethereum (Layer 1).
+`token-withdraw` shows how to move ERC20 tokens from Arbitrum (Layer 2) into Ethereum (Layer 1).
 
-Note that this repo covers initiating a token withdrawal; for a demo on (later) releasing the funds from the Outbox, see [outbox_execute](../outbox-execute/README.md)
+Note that this repo covers initiating a token withdrawal; for a demo on (later) releasing the funds from the Outbox, see [outbox-execute](../outbox-execute/README.md)
 
 ## How it works (Under the hood)
 
@@ -33,7 +33,7 @@ cp .env-sample .env
 ### Run
 
 ```
-yarn withdraw_token
+yarn withdraw-token
 ```
 
 ---
