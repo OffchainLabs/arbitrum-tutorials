@@ -3,7 +3,7 @@ const ethers = require('ethers')
 const { Bridge } = require('arb-ts')
 const { hexDataLength } = require('@ethersproject/bytes')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
+requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC', "INBOX_ADDR"])
 
 /**
  * Instantiate wallets and providers for bridge
@@ -176,9 +176,18 @@ const main = async () => {
     `waiting for L2 tx 🕐... (should take < 10 minutes, current time: ${new Date().toTimeString()}`
   )
 
+
+
+
   const retryRec = await l2Provider.waitForTransaction(retryableTxnHash)
 
   console.log(`L2 retryable txn executed 🥳 ${retryRec.transactionHash}`)
+
+  /**
+   * Note that during L2 execution, a retryable's sender address is transformed to its L2 alias.
+   * Thus, when GreeterL2 checks that the message came from the L1, we check that the sender is this L2 Alias.
+   * See setGreeting in GreeterL2.sol for this check.
+   */
 
   /**
    * Now when we call greet again, we should see our new string on L2!

@@ -2,6 +2,7 @@
 pragma solidity ^0.7.0;
 
 import "arb-shared-dependencies/contracts/ArbSys.sol";
+import "arb-shared-dependencies/contracts/AddressAliasHelper.sol";
 import "../Greeter.sol";
 
 contract GreeterL2 is Greeter {
@@ -33,7 +34,8 @@ contract GreeterL2 is Greeter {
 
     /// @notice only l1Target can update greeting
     function setGreeting(string memory _greeting) public override {
-        require(msg.sender == l1Target, "Greeting only updateable by L1");
+        // To check that message came from L1, we check that the sender is the L1 contract's L2 alias.
+        require(msg.sender == AddressAliasHelper.applyL1ToL2Alias(l1Target), "Greeting only updateable by L1");
         Greeter.setGreeting(_greeting);
     }
 }
