@@ -1,7 +1,7 @@
 {
-  "name": "arbitrum-interop-quickstart",
+  "name": "arbitrum-tutorials",
   "version": "1.0.0",
-  "description": "The Arbitrum Interoperability Quickstart Monorepo",
+  "description": "The Arbitrum Tutorials Monorepo",
   "author": "Offchain Labs, Inc.",
   "license": "Apache-2.0",
   "private": "true",
@@ -13,20 +13,15 @@
   "workspaces": {
     "packages": [
       "packages/greeter",
-      "packages/eth_deposit",
-      "packages/eth_withdraw",
+      "packages/eth-deposit",
+      "packages/eth-withdraw",
       "packages/arb-shared-dependencies",
-      "packages/token_deposit",
-      "packages/token_withdraw",
+      "packages/token-deposit",
+      "packages/token-withdraw",
       "packages/demo-dapp-pet-shop",
       "packages/demo-dapp-election",
       "packages/outbox-execute",
-      "packages/address_table"
+      "packages/address-table"
     ]
-  },
-  "scripts": {
-    "compile:greeter": "yarn workspace greeter build",
-    "compile:eth_deposit": "yarn workspace eth_deposit build",
-    "compile:eth_withdraw": "yarn workspace eth_withdraw build"
   }
 }

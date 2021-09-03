@@ -1,12 +1,12 @@
 {
-  "name": "eth_deposit",
+  "name": "eth-deposit",
   "license": "Apache-2.0",
   "version": "1.0.0",
   "scripts": {
     "build": "hardhat compile",
-    "deposit:inbox": "hardhat run scripts/exec_throughInbox.js",
-    "deposit:arb-ts": "hardhat run scripts/exec_throughLib.js",
-    "deposit:dapp": "hardhat run scripts/exec_throughDApp.js"
+    "deposit:inbox": "hardhat run scripts/exec-viaInbox.js",
+    "deposit:arb-ts": "hardhat run scripts/exec-viaLib.js",
+    "deposit:dapp": "hardhat run scripts/exec-viaDApp.js"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",

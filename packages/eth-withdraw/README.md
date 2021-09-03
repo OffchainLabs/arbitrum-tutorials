@@ -1,8 +1,8 @@
-# eth_withdraw Tutorial
+# eth-withdraw Tutorial
 
-`eth_withdraw` shows how to move Ether from Arbitrum (Layer 2) into the Ethereum (Layer 1) chain.
+`eth-withdraw` shows how to move Ether from Arbitrum (Layer 2) into the Ethereum (Layer 1) chain.
 
-Note that this repo covers initiating and Ether withdrawal; for a demo on (later) releasing the funds from the Outbox, see [outbox_execute](../outbox-execute/README.md)
+Note that this repo covers initiating and Ether withdrawal; for a demo on (later) releasing the funds from the Outbox, see [outbox-execute](../outbox-execute/README.md)
 
 ## How it works (Under the hood)
 
@@ -22,7 +22,7 @@ _Note: Executing scripts will require your L2 account be funded with .000001 Eth
 
 [ArbSys](https://developer.offchainlabs.com/docs/arbsys) is a pre-compiled contract that exists in every Arbitrum Chain at address [0x0000000000000000000000000000000000000064](https://explorer.arbitrum.io/address/0x0000000000000000000000000000000000000064). Its interface includes a `withdrawEth` method that can be called on L2 to initiate an Ether-withdrawal outgoing message (`sendTxToL1` can also be used to withdraw Ether).
 
-See [./exec_throughArbSys.js](./scripts/exec_throughArbSys.js) for inline explanation.
+See [./exec-viaArbSys.js](./scripts/exec-viaArbSys.js) for inline explanation.
 
 To run:
 
@@ -36,7 +36,7 @@ yarn run withdraw:arbsys
 
 [Withdraw.sol](./contracts/Deposit.sol) is an L2 contract that itself can make an external call to trigger a withdrawal. Our script connects to it and uses it to trigger an Ether withdrawal.
 
-See [./exec_throughDApp.js](./scripts/exec_throughDApp.js) for inline explanation.
+See [./exec-viaDApp.js](./scripts/exec-viaDApp.js) for inline explanation.
 
 To run:
 
@@ -50,7 +50,7 @@ yarn run withdraw:dapp
 
 Finally, our [arb-ts](https://github.com/OffchainLabs/arbitrum/tree/master/packages/arb-ts) provides a simply convenience method for withdrawing Ether, abstracting away the need for the client to connect to any contracts manually.
 
-See [./exec_viaLib.js](./scripts/exec_viaLib.js) for inline explanation.
+See [./exec-viaLib.js](./scripts/exec-viaLib.js) for inline explanation.
 
 To run:
 
