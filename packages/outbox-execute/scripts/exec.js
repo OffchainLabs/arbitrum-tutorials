@@ -71,9 +71,9 @@ module.exports = async txnHash => {
 
   /**
    * We've got batchNumber and IndexInBatch in hand; but before we try to execute out message, we need to make sure it's confirmed! (It can only be confirmed after the dispute period; Arbitrum is an optimistic rollup after-all)
-   * Here we'll do a period check; once getOutgoingMessageState tells us our txn is confirm, we'll move on to execution
+   * Here we'll do a period check; once getOutGoingMessageState tells us our txn is confirm, we'll move on to execution
    */
-  const outgoingMessageState = await bridge.getOutgoingMessageState(
+  const outgoingMessageState = await bridge.getOutGoingMessageState(
     batchNumber,
     indexInBatch
   )
@@ -83,7 +83,7 @@ module.exports = async txnHash => {
 
   while (!outgoingMessageState === OutGoingMessageState.CONFIRMED) {
     await wait(1000 * 60)
-    const outgoingMessageState = await bridge.getOutgoingMessageState(
+    const outgoingMessageState = await bridge.getOutGoingMessageState(
       batchNumber,
       indexInBatch
     )
