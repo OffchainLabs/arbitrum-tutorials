@@ -1,11 +1,11 @@
 const { utils, providers, Wallet, BigNumber } = require('ethers')
 const { ethers } = require('hardhat')
-const { Bridge } = require('arb-ts')
+const { Bridge, networks } = require('arb-ts')
 const { parseEther } = utils
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
 
-requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC', 'INBOX_ADDR'])
+requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
 
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
@@ -27,6 +27,13 @@ const ethToL2DepositAmount = parseEther('0.0001')
 const main = async () => {
   await arbLog('Deposit Eth via a DApp')
   /**
+   * Use arb-ts networks file to retrieve the Rinkeby Inbox address
+   */
+  const l1ChainId = await l1Wallet.getChainId()
+  const l1Network = await networks[l1ChainId]
+  const inboxAddress = await l1Network.ethBridge.inbox;
+
+  /**
    * Use wallets to create an arb-ts bridge instance
    * We'll use bridge for its convenience methods around checking txn statuses and ETH balances
    */
@@ -44,7 +51,7 @@ const main = async () => {
   const L1Deposit = await (
     await ethers.getContractFactory('Deposit')
   ).connect(l1Wallet)
-  const l1Deposit = await L1Deposit.deploy(process.env.INBOX_ADDR)
+  const l1Deposit = await L1Deposit.deploy(inboxAddress)
 
   console.log('Deploying Deposit contract to L1')
   await l1Deposit.deployed()
