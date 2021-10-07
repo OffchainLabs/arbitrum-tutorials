@@ -68,56 +68,56 @@ const main = async () => {
    * Now we track the status of our retryable ticket
    */
 
-  // //  First, we get our txn's sequence number from the event logs (using a handy utility method). This number uniquely identifies our L1 to L2 message (i.e., our token deposit)
-  // const seqNumArr = await bridge.getInboxSeqNumFromContractTransaction(
-  //   depositRec
-  // )
+  //  First, we get our txn's sequence number from the event logs (using a handy utility method). This number uniquely identifies our L1 to L2 message (i.e., our token deposit)
+  const seqNumArr = await bridge.getInboxSeqNumFromContractTransaction(
+    depositRec
+  )
 
-  // /**
-  //  * Note that a single txn could (in theory) trigger many l1-to-l2 messages; we know ours only triggered 1 tho.
-  //  */
-  // const seqNum = seqNumArr[0]
-  // console.log(
-  //   `Sequence number for your transaction found: ${seqNum.toNumber()}`
-  // )
+  /**
+   * Note that a single txn could (in theory) trigger many l1-to-l2 messages; we know ours only triggered 1 tho.
+   */
+  const seqNum = seqNumArr[0]
+  console.log(
+    `Sequence number for your transaction found: ${seqNum.toNumber()}`
+  )
 
-  // /**
-  //  *  Now we can get compute the txn hashes of the transactions associated with our retryable ticket:
-  //  * (Note that we don't necessarily need all of these (and will only use one of them ), but we include them all for completeness)
-  //  */
-  // // retryableTicket: quasi-transaction that can be redeemed, triggering some L2 message
-  // const retryableTicket = await bridge.calculateL2TransactionHash(seqNum)
-  // //  autoRedeem: record that "automatic" redemption successfully occurred
-  // const autoRedeem = await bridge.calculateRetryableAutoRedeemTxnHash(seqNum)
-  // // L2 message (in our case, mint new token)
-  // const redeemTransaction = await bridge.calculateL2RetryableTransactionHash(
-  //   seqNum
-  // )
+  /**
+   *  Now we can get compute the txn hashes of the transactions associated with our retryable ticket:
+   * (Note that we don't necessarily need all of these (and will only use one of them ), but we include them all for completeness)
+   */
+  // retryableTicket: quasi-transaction that can be redeemed, triggering some L2 message
+  const retryableTicket = await bridge.calculateL2TransactionHash(seqNum)
+  //  autoRedeem: record that "automatic" redemption successfully occurred
+  const autoRedeem = await bridge.calculateRetryableAutoRedeemTxnHash(seqNum)
+  // L2 message (in our case, mint new token)
+  const redeemTransaction = await bridge.calculateL2RetryableTransactionHash(
+    seqNum
+  )
 
-  // /** Now, we have to wait for the L2 tx to go through; i.e., for the Sequencer to include it in its off-chain queue. This should take ~10 minutes at most
-  //  * If the redeem succeeds, that implies that the retryableTicket has been included, and autoRedeem succeeded as well
-  //  */
-  // console.log('waiting for L2 transaction:')
-  // const l2TxnRec = await l2Provider.waitForTransaction(
-  //   redeemTransaction,
-  //   undefined,
-  //   1000 * 60 * 12
-  // )
+  /** Now, we have to wait for the L2 tx to go through; i.e., for the Sequencer to include it in its off-chain queue. This should take ~10 minutes at most
+   * If the redeem succeeds, that implies that the retryableTicket has been included, and autoRedeem succeeded as well
+   */
+  console.log('waiting for L2 transaction:')
+  const l2TxnRec = await l2Provider.waitForTransaction(
+    redeemTransaction,
+    undefined,
+    1000 * 60 * 12
+  )
 
-  // console.log(
-  //   `L2 transaction found! Your DappToken balance is updated! ${l2TxnRec.transactionHash}`
-  // )
+  console.log(
+    `L2 transaction found! Your DappToken balance is updated! ${l2TxnRec.transactionHash}`
+  )
 
-  // /**
-  //  * Not that our txn has succeeded, we know that a token contract has been deployed on L2, and our tokens have been deposited onto it.
-  //  * Let's confirm our new token balance on L2!
-  //  */
+  /**
+   * Not that our txn has succeeded, we know that a token contract has been deployed on L2, and our tokens have been deposited onto it.
+   * Let's confirm our new token balance on L2!
+   */
 
-  // const l2Data = await bridge.getAndUpdateL2TokenData(erc20Address)
-  // const l2WalletTokenBalance = l2Data && l2Data.ERC20 && l2Data.ERC20.balance
-  // console.log(
-  //   `your l2Wallet has ${l2WalletTokenBalance.toString()} DappToken now!`
-  // )
+  const l2Data = await bridge.getAndUpdateL2TokenData(erc20Address)
+  const l2WalletTokenBalance = l2Data && l2Data.ERC20 && l2Data.ERC20.balance
+  console.log(
+    `your l2Wallet has ${l2WalletTokenBalance.toString()} DappToken now!`
+  )
 }
 
 main()

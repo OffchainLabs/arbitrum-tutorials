@@ -36,8 +36,4 @@ cp .env-sample .env
 yarn withdraw-token
 ```
 
----
-
-<p align="center">
-  <img width="350" height="100" src= "https://offchainlabs.com/wp-content/themes/offchain/images/home/footer/logo.svg" />
-</p>
+<p align="center"><img src="../../assets/offchain_labs_logo.png" width="600"></p>
