@@ -29,5 +29,5 @@ cp .env-sample .env
 See our [developer documentation on messaging between layers](https://developer.offchainlabs.com/docs/l1_l2_messages).
 
 <p align="center">
-  <img width="350" height="100" src= "https://offchainlabs.com/static/media/full-logo.3271d3e8.png" />
+  <img width="350" height="100" src= "https://offchainlabs.com/wp-content/themes/offchain/images/home/footer/logo.svg" />
 </p>

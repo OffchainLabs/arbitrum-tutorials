@@ -39,5 +39,5 @@ yarn withdraw-token
 ---
 
 <p align="center">
-  <img width="350" height="100" src= "https://offchainlabs.com/static/media/full-logo.3271d3e8.png" />
+  <img width="350" height="100" src= "https://offchainlabs.com/wp-content/themes/offchain/images/home/footer/logo.svg" />
 </p>

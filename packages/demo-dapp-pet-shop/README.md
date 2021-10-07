@@ -25,5 +25,5 @@ yarn run exec
 Once the script is successfully executed, you can go to the [Arbitrum block explorer](https://rinkeby-explorer.arbitrum.io/#), enter your L2 address, and see the corresponding transactions on the Arbitrum chain!
 
 <p align="center">
-  <img width="350" height="100" src= "https://offchainlabs.com/static/media/full-logo.3271d3e8.png" />
+  <img width="350" height="100" src= "https://offchainlabs.com/wp-content/themes/offchain/images/home/footer/logo.svg" />
 </p>

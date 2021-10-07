@@ -7,7 +7,6 @@ module.exports = {
       accounts: [process.env['DEVNET_PRIVKEY']],
     },
     l2: {
-      gasPrice: 0,
       url: process.env['L2RPC'] || '',
       accounts: [process.env['DEVNET_PRIVKEY']],
     },

@@ -25,3 +25,7 @@ cp .env-sample .env
 ```
 
 (you'll still need to edit some variables, i.e., `DEVNET_PRIVKEY`)
+
+<p align="center">
+  <img width="350" height="100" src= "https://offchainlabs.com/wp-content/themes/offchain/images/home/footer/logo.svg" />
+</p>

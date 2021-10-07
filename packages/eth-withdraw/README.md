@@ -46,7 +46,7 @@ yarn run withdraw:dapp
 
 ---
 
-#### 3. **Via Arb-ts**
+#### 3. **Using arb-ts tooling**
 
 Finally, our [arb-ts](https://github.com/OffchainLabs/arbitrum/tree/master/packages/arb-ts) provides a simply convenience method for withdrawing Ether, abstracting away the need for the client to connect to any contracts manually.
 
@@ -55,7 +55,7 @@ See [./exec-viaLib.js](./scripts/exec-viaLib.js) for inline explanation.
 To run:
 
 ```
-yarn deposit:arb-ts
+yarn run withdraw:arb-ts
 ```
 
 ---
@@ -77,5 +77,5 @@ cp .env-sample .env
 Once the script is successfully executed, you can go to the [Arbitrum block explorer](https://rinkeby-explorer.arbitrum.io/#), enter your address and see the amount of ETH has been deducted from your Layer 2 balance. Note that your Layer 1 balance will only be updated after rollup's confirmation period is over.
 
 <p align="center">
-  <img width="350" height="100" src= "https://offchainlabs.com/static/media/full-logo.3271d3e8.png" />
+  <img width="350" height="100" src= "https://offchainlabs.com/wp-content/themes/offchain/images/home/footer/logo.svg" />
 </p>

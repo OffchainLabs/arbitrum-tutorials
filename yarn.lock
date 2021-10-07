@@ -821,20 +821,6 @@ arb-ts@0.0.28, arb-ts@^0.0.28:
     dotenv "^10.0.0"
     ethers "^5.0.24"
 
-arb-ts@0.0.29:
-  version "0.0.29"
-  resolved "https://registry.yarnpkg.com/arb-ts/-/arb-ts-0.0.29.tgz#1185e044242612b682aa96878330b18f8be091fb"
-  integrity sha512-o6C+KllE8XkVMBMAIsROXREeVKD2hZvst8y54a9wkwcUXEWZ8vwEP+GZey/yfr/mwa4iuC1wpV6a1PmzQnTdBQ==
-  dependencies:
-    "@ethersproject/address" "^5.0.8"
-    "@ethersproject/bignumber" "^5.1.1"
-    "@ethersproject/bytes" "^5.0.8"
-    "@nomiclabs/hardhat-ethers" "^2.0.2"
-    "@types/promise-poller" "^1.7.0"
-    "@uniswap/token-lists" "^1.0.0-beta.24"
-    dotenv "^10.0.0"
-    ethers "^5.1.0"
-
 arb-ts@0.0.9:
   version "0.0.9"
   resolved "https://registry.yarnpkg.com/arb-ts/-/arb-ts-0.0.9.tgz#4522cf08cc6d1bc33d4a8684e8aa51c4769fea9e"
@@ -846,6 +832,18 @@ arb-ts@0.0.9:
     "@types/promise-poller" "^1.7.0"
     ethers "^5.0.24"
 
+arb-ts@1.0.0-beta.4, arb-ts@^1.0.0-beta.4:
+  version "1.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/arb-ts/-/arb-ts-1.0.0-beta.4.tgz#e9b8b10d4bf58686ba7d9b6458aa76c0893720b4"
+  integrity sha512-ErKnchU3TPaXhNVNkDISFg1+9JFLClTCN5zIFPJrngFnsuywcx38osWWFKVI5XiJ23A86j6fBb/9U81Q2XB2kg==
+  dependencies:
+    "@ethersproject/address" "^5.0.8"
+    "@ethersproject/bignumber" "^5.1.1"
+    "@ethersproject/bytes" "^5.0.8"
+    "@nomiclabs/hardhat-ethers" "^2.0.2"
+    dotenv "^10.0.0"
+    ethers "^5.1.0"
+
 arb-ts@^0.0.25:
   version "0.0.25"
   resolved "https://registry.yarnpkg.com/arb-ts/-/arb-ts-0.0.25.tgz#0bb40fe783d7860f1c4ac1ea8734cb82cc6b79dc"
@@ -856,19 +854,6 @@ arb-ts@^0.0.25:
     "@ethersproject/bytes" "^5.0.8"
     "@types/promise-poller" "^1.7.0"
     "@uniswap/token-lists" "^1.0.0-beta.24"
-    ethers "^5.0.24"
-
-arb-ts@^0.0.27:
-  version "0.0.27"
-  resolved "https://registry.yarnpkg.com/arb-ts/-/arb-ts-0.0.27.tgz#c4411774a18d15c1611cb1ff7926bb8542545fce"
-  integrity sha512-VmaerNciK+J3+ntA8wss+mNBpPo6ivt1O3pj2YD3oYOtoE9oTwlscq2qjo2IRo74UpQyE2RIrAfvTjfEplJsOQ==
-  dependencies:
-    "@ethersproject/address" "^5.0.8"
-    "@ethersproject/bignumber" "^5.1.1"
-    "@ethersproject/bytes" "^5.0.8"
-    "@types/promise-poller" "^1.7.0"
-    "@uniswap/token-lists" "^1.0.0-beta.24"
-    dotenv "^10.0.0"
     ethers "^5.0.24"
 
 argparse@^1.0.7:
