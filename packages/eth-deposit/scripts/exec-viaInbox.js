@@ -1,14 +1,14 @@
 const { utils, providers, Wallet } = require('ethers')
-const { Inbox__factory, Bridge } = require('arb-ts')
+const { Inbox__factory, Bridge, networks } = require('arb-ts')
 const { parseEther } = utils
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
 
-requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC', 'INBOX_ADDR'])
+requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
 
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
- */
+*/
 
 const walletPrivateKey = process.env.DEVNET_PRIVKEY
 
@@ -18,13 +18,24 @@ const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
 const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
 const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
+
 /**
  * Set the amount to be depositted in L2 (in wei)
  */
 const ethToL2DepositAmount = parseEther('0.0001')
 
 const main = async () => {
-  await arbLog('Deposit Eth vi the Inbox')
+
+  await arbLog('Deposit Eth via the Inbox')
+
+  /**
+   * Use arb-ts networks file to retrieve the Rinkeby Inbox address
+   */
+
+  const l1ChainId = await l1Wallet.getChainId()
+  const l1Network = await networks[l1ChainId]
+  const inboxAddress = await l1Network.ethBridge.inbox;
+   
   /**
    * Use wallets to create an arb-ts bridge instance
    * We'll use bridge for its convenience methods around checking txn statuses and ETH balances
@@ -39,7 +50,7 @@ const main = async () => {
   /**
    * To transfer ETH to L2 directly through the Inbox, we first create an instance of this contract
    */
-  const inbox = Inbox__factory.connect(process.env.INBOX_ADDR, l1Wallet)
+  const inbox = Inbox__factory.connect(inboxAddress, l1Wallet)
 
   /**
    * Call the depositEth() function from the Inbox contract
