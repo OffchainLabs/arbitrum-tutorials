@@ -14,7 +14,8 @@
     "hardhat": "^2.2.0"
   },
   "dependencies": {
-    "arb-ts": "^1.0.0-beta.0",
+
+    "arb-ts": "^1.0.0-beta.4",
     "dotenv": "^8.2.0"
   }
 }

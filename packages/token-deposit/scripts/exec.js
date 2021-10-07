@@ -9,12 +9,13 @@ requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
  * Set up: instantiate L1 / L2 wallets connected to providers
  */
 
-const walletPrivateKey = process.env.DEVNET_PRIVKEY
-const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
-const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
+ const walletPrivateKey = process.env.DEVNET_PRIVKEY
 
-const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
-const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
+ const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
+ const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
+ 
+ const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
+ const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
 /**
  * Set the amount of token to be deposited in L2
@@ -42,6 +43,7 @@ const main = async () => {
   await l1DappToken.deployed()
   console.log(`DappToken is deployed to L1 at ${l1DappToken.address}`)
   const erc20Address = l1DappToken.address
+  console.log(erc20Address)
 
   /**
    * The Standard Gateway contract will ultimately be making the token transfer call; thus, that's the contract we need to approve.
@@ -58,6 +60,7 @@ const main = async () => {
    * The bridge.deposit method handles computing the necessary fees for automatic-execution of retryable tickets — maxSubmission cost & l2 gas price * gas — and will automatically forward the fees to L2 as callvalue
    * Also note that since this is the first DappToken deposit onto L2, a standard Arb ERC20 contract will automatically be deployed.
    */
+
   const depositTx = await bridge.deposit(erc20Address, tokenDepositAmount)
   const depositRec = await depositTx.wait()
 
