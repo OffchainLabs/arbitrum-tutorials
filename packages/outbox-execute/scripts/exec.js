@@ -84,7 +84,7 @@ module.exports = async txnHash => {
 
   const timeToWaitMs = 1000 * 60
   while (outgoingMessageState !== OutgoingMessageState.CONFIRMED) {
-    console.log(`Message not yet confirmed; we'll wait ${timeToWaitMs / 3600} minutes and try again`)
+    console.log(`Message not yet confirmed; we'll wait ${timeToWaitMs / 3600} seconds and try again`)
     await wait(timeToWaitMs)
     const outgoingMessageState = await bridge.getOutGoingMessageState(
       batchNumber,
