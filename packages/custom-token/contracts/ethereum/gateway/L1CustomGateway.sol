@@ -90,17 +90,15 @@ contract L1CustomGateway is L1ArbitrumExtendedGateway, ICustomGateway {
      * param _creditBackAddress address for crediting back overpayment of _maxSubmissionCost
      * return Retryable ticket ID
      */
-    function registerTokenToL2(
-        address, /* _l2Address */
-        uint256, /* _maxGas */
-        uint256, /* _gasPriceBid */
-        uint256, /* _maxSubmissionCost */
-        address /* _creditBackAddress */
+function registerTokenToL2(
+        address _l2Address,
+        uint256 _maxGas,
+        uint256 _gasPriceBid,
+        uint256 _maxSubmissionCost,
+        address _creditBackAddress
     ) public payable returns (uint256) {
-        revert("SELF_REGISTRATION_DISABLED");
-        /*
         require(
-            ArbitrumEnabledToken(msg.sender).isArbitrumEnabled() == uint8(0xa4b1),
+            ArbitrumEnabledToken(msg.sender).isArbitrumEnabled() == uint8(uint(0xa4b1)),
             "NOT_ARB_ENABLED"
         );
 
@@ -119,12 +117,11 @@ contract L1CustomGateway is L1ArbitrumExtendedGateway, ICustomGateway {
 
         emit TokenSet(l1Addresses[0], l2Addresses[0]);
 
-        bytes memory _data =
-            abi.encodeWithSelector(
-                L2CustomGateway.registerTokenFromL1.selector,
-                l1Addresses,
-                l2Addresses
-            );
+        bytes memory _data = abi.encodeWithSelector(
+            L2CustomGateway.registerTokenFromL1.selector,
+            l1Addresses,
+            l2Addresses
+        );
 
         return
             sendTxToL2(
@@ -138,7 +135,6 @@ contract L1CustomGateway is L1ArbitrumExtendedGateway, ICustomGateway {
                 _gasPriceBid,
                 _data
             );
-        */
     }
 
     /**

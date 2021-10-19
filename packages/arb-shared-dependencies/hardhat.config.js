@@ -22,8 +22,11 @@ module.exports = {
   },
   networks: {
     l1: {
+      gas: 2100000, 
+      gasLimit: 0,
       url: process.env['L1RPC'] || '',
       accounts: [process.env['DEVNET_PRIVKEY']],
+    
     },
     l2: {
       url: process.env['L2RPC'] || '',
