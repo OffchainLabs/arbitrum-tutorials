@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+
 pragma solidity >=0.6.11;
 
 import "arb-shared-dependencies/contracts/Whitelist.sol";
@@ -24,6 +25,8 @@ import { ArbitrumEnabledToken } from "../ICustomToken.sol";
 import "../L1ArbitrumMessenger.sol";
 import "../../libraries/gateway/GatewayRouter.sol";
 import "../../arbitrum/gateway/L2GatewayRouter.sol";
+import "../../@openzeppelin/contracts/utils/Address.sol";
+
 
 /**
  * @title Handles deposits from Erhereum into Arbitrum. Tokens are routered to their appropriate L1 gateway (Router itself also conforms to the Gateway itnerface).
@@ -32,6 +35,7 @@ import "../../arbitrum/gateway/L2GatewayRouter.sol";
 contract L1GatewayRouter is WhitelistConsumer, L1ArbitrumMessenger, GatewayRouter {
     address public owner;
     address public inbox;
+    using Address for address;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "ONLY_OWNER");
@@ -144,7 +148,6 @@ contract L1GatewayRouter is WhitelistConsumer, L1ArbitrumMessenger, GatewayRoute
 
     /**
      * @notice Allows L1 Token contract to trustlessly register its gateway. (other setGateway method allows excess eth recovery from _maxSubmissionCost and is recommended)
-
      * @param _gateway l1 gateway address
      * @param _maxGas max gas for L2 retryable exrecution 
      * @param _gasPriceBid gas price for L2 retryable ticket 
@@ -170,16 +173,14 @@ contract L1GatewayRouter is WhitelistConsumer, L1ArbitrumMessenger, GatewayRoute
      * return Retryable ticket ID
      */
     function setGateway(
-        address, /* _gateway */
-        uint256, /* _maxGas */
-        uint256, /* _gasPriceBid */
-        uint256, /* _maxSubmissionCost */
-        address /* _creditBackAddress */
+        address _gateway,
+        uint256 _maxGas,
+        uint256 _gasPriceBid,
+        uint256 _maxSubmissionCost,
+        address _creditBackAddress
     ) public payable returns (uint256) {
-        revert("SELF_REGISTRATION_DISABLED");
-        /*
         require(
-            ArbitrumEnabledToken(msg.sender).isArbitrumEnabled() == uint8(0xa4b1),
+            ArbitrumEnabledToken(msg.sender).isArbitrumEnabled() == uint8(uint(0xa4b1)),
             "NOT_ARB_ENABLED"
         );
         require(_gateway.isContract(), "NOT_TO_CONTRACT");
@@ -205,7 +206,6 @@ contract L1GatewayRouter is WhitelistConsumer, L1ArbitrumMessenger, GatewayRoute
                 _maxSubmissionCost,
                 _creditBackAddress
             );
-        */
     }
 
     function setGateways(

@@ -90,7 +90,7 @@ contract L1CustomGateway is L1ArbitrumExtendedGateway, ICustomGateway {
      * param _creditBackAddress address for crediting back overpayment of _maxSubmissionCost
      * return Retryable ticket ID
      */
-function registerTokenToL2(
+    function registerTokenToL2(
         address _l2Address,
         uint256 _maxGas,
         uint256 _gasPriceBid,
