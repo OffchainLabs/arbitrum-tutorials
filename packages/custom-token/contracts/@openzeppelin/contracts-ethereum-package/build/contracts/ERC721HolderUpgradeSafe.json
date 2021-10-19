@@ -1,0 +1,597 @@
+{
+  "fileName": "ERC721Holder.sol",
+  "contractName": "ERC721HolderUpgradeSafe",
+  "source": "pragma solidity ^0.6.0;\n\nimport \"./IERC721Receiver.sol\";\nimport \"../../Initializable.sol\";\n\ncontract ERC721HolderUpgradeSafe is Initializable, IERC721Receiver {\n    function __ERC721Holder_init() internal initializer {\n        __ERC721Holder_init_unchained();\n    }\n\n    function __ERC721Holder_init_unchained() internal initializer {\n\n\n    }\n\n    function onERC721Received(address, address, uint256, bytes memory) public virtual override returns (bytes4) {\n        return this.onERC721Received.selector;\n    }\n\n    uint256[50] private __gap;\n}\n",
+  "sourcePath": "contracts/token/ERC721/ERC721Holder.sol",
+  "sourceMap": "92:452:88:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;92:452:88;;;;;;;",
+  "deployedSourceMap": "92:452:88:-:0;;;;5:9:-1;2:2;;;27:1;24;17:12;2:2;92:452:88;;;;;;;;;;;;;;;;12:1:-1;9;2:12;348:162:88;;;;;;15:3:-1;10;7:12;4:2;;;32:1;29;22:12;4:2;-1:-1;;;;;348:162:88;;;;;;;;;;;;;;;;;;;;;;;;;;;;;27:11:-1;11:28;;8:2;;;52:1;49;42:12;8:2;348:162:88;;41:9:-1;34:4;18:14;14:25;11:40;8:2;;;64:1;61;54:12;8:2;348:162:88;;;;;;100:9:-1;95:1;81:12;77:20;67:8;63:35;60:50;39:11;25:12;22:29;11:107;8:2;;;131:1;128;121:12;8:2;348:162:88;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;30:3:-1;22:6;14;1:33;99:1;81:16;;74:27;;;;-1:-1;348:162:88;;-1:-1:-1;348:162:88;;-1:-1:-1;;;;;348:162:88:i;:::-;;;;-1:-1:-1;;;;;;348:162:88;;;;;;;;;;;;;;;-1:-1:-1;;;348:162:88;;;;;;:::o",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "name": "onERC721Received",
+      "outputs": [
+        {
+          "internalType": "bytes4",
+          "name": "",
+          "type": "bytes4"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "ast": {
+    "absolutePath": "contracts/token/ERC721/ERC721Holder.sol",
+    "exportedSymbols": {
+      "ERC721HolderUpgradeSafe": [
+        12308
+      ]
+    },
+    "id": 12309,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 12263,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:88"
+      },
+      {
+        "absolutePath": "contracts/token/ERC721/IERC721Receiver.sol",
+        "file": "./IERC721Receiver.sol",
+        "id": 12264,
+        "nodeType": "ImportDirective",
+        "scope": 12309,
+        "sourceUnit": 12555,
+        "src": "25:31:88",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "contracts/Initializable.sol",
+        "file": "../../Initializable.sol",
+        "id": 12265,
+        "nodeType": "ImportDirective",
+        "scope": 12309,
+        "sourceUnit": 1408,
+        "src": "57:33:88",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 12266,
+              "name": "Initializable",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 1407,
+              "src": "128:13:88",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_Initializable_$1407",
+                "typeString": "contract Initializable"
+              }
+            },
+            "id": 12267,
+            "nodeType": "InheritanceSpecifier",
+            "src": "128:13:88"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 12268,
+              "name": "IERC721Receiver",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 12554,
+              "src": "143:15:88",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IERC721Receiver_$12554",
+                "typeString": "contract IERC721Receiver"
+              }
+            },
+            "id": 12269,
+            "nodeType": "InheritanceSpecifier",
+            "src": "143:15:88"
+          }
+        ],
+        "contractDependencies": [
+          1407,
+          12554
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 12308,
+        "linearizedBaseContracts": [
+          12308,
+          12554,
+          1407
+        ],
+        "name": "ERC721HolderUpgradeSafe",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 12277,
+              "nodeType": "Block",
+              "src": "217:48:88",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [],
+                    "expression": {
+                      "argumentTypes": [],
+                      "id": 12274,
+                      "name": "__ERC721Holder_init_unchained",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 12284,
+                      "src": "227:29:88",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_nonpayable$__$returns$__$",
+                        "typeString": "function ()"
+                      }
+                    },
+                    "id": 12275,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "227:31:88",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 12276,
+                  "nodeType": "ExpressionStatement",
+                  "src": "227:31:88"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 12278,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [
+              {
+                "arguments": null,
+                "id": 12272,
+                "modifierName": {
+                  "argumentTypes": null,
+                  "id": 12271,
+                  "name": "initializer",
+                  "nodeType": "Identifier",
+                  "overloadedDeclarations": [],
+                  "referencedDeclaration": 1380,
+                  "src": "205:11:88",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_modifier$__$",
+                    "typeString": "modifier ()"
+                  }
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "205:11:88"
+              }
+            ],
+            "name": "__ERC721Holder_init",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 12270,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "193:2:88"
+            },
+            "returnParameters": {
+              "id": 12273,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "217:0:88"
+            },
+            "scope": 12308,
+            "src": "165:100:88",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 12283,
+              "nodeType": "Block",
+              "src": "333:9:88",
+              "statements": []
+            },
+            "documentation": null,
+            "id": 12284,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [
+              {
+                "arguments": null,
+                "id": 12281,
+                "modifierName": {
+                  "argumentTypes": null,
+                  "id": 12280,
+                  "name": "initializer",
+                  "nodeType": "Identifier",
+                  "overloadedDeclarations": [],
+                  "referencedDeclaration": 1380,
+                  "src": "321:11:88",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_modifier$__$",
+                    "typeString": "modifier ()"
+                  }
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "321:11:88"
+              }
+            ],
+            "name": "__ERC721Holder_init_unchained",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 12279,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "309:2:88"
+            },
+            "returnParameters": {
+              "id": 12282,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "333:0:88"
+            },
+            "scope": 12308,
+            "src": "271:71:88",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "internal"
+          },
+          {
+            "baseFunctions": [
+              12553
+            ],
+            "body": {
+              "id": 12302,
+              "nodeType": "Block",
+              "src": "456:54:88",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "expression": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 12298,
+                        "name": "this",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": -28,
+                        "src": "473:4:88",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_ERC721HolderUpgradeSafe_$12308",
+                          "typeString": "contract ERC721HolderUpgradeSafe"
+                        }
+                      },
+                      "id": 12299,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "onERC721Received",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 12303,
+                      "src": "473:21:88",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_uint256_$_t_bytes_memory_ptr_$returns$_t_bytes4_$",
+                        "typeString": "function (address,address,uint256,bytes memory) external returns (bytes4)"
+                      }
+                    },
+                    "id": 12300,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "lValueRequested": false,
+                    "memberName": "selector",
+                    "nodeType": "MemberAccess",
+                    "referencedDeclaration": null,
+                    "src": "473:30:88",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes4",
+                      "typeString": "bytes4"
+                    }
+                  },
+                  "functionReturnParameters": 12297,
+                  "id": 12301,
+                  "nodeType": "Return",
+                  "src": "466:37:88"
+                }
+              ]
+            },
+            "documentation": null,
+            "functionSelector": "150b7a02",
+            "id": 12303,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onERC721Received",
+            "nodeType": "FunctionDefinition",
+            "overrides": {
+              "id": 12294,
+              "nodeType": "OverrideSpecifier",
+              "overrides": [],
+              "src": "430:8:88"
+            },
+            "parameters": {
+              "id": 12293,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 12286,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 12303,
+                  "src": "374:7:88",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 12285,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "374:7:88",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 12288,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 12303,
+                  "src": "383:7:88",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 12287,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "383:7:88",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 12290,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 12303,
+                  "src": "392:7:88",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 12289,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "392:7:88",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 12292,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 12303,
+                  "src": "401:12:88",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 12291,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "401:5:88",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "373:41:88"
+            },
+            "returnParameters": {
+              "id": 12297,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 12296,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 12303,
+                  "src": "448:6:88",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes4",
+                    "typeString": "bytes4"
+                  },
+                  "typeName": {
+                    "id": 12295,
+                    "name": "bytes4",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "448:6:88",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes4",
+                      "typeString": "bytes4"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "447:8:88"
+            },
+            "scope": 12308,
+            "src": "348:162:88",
+            "stateMutability": "nonpayable",
+            "virtual": true,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 12307,
+            "mutability": "mutable",
+            "name": "__gap",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 12308,
+            "src": "516:25:88",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_array$_t_uint256_$50_storage",
+              "typeString": "uint256[50]"
+            },
+            "typeName": {
+              "baseType": {
+                "id": 12304,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "516:7:88",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "id": 12306,
+              "length": {
+                "argumentTypes": null,
+                "hexValue": "3530",
+                "id": 12305,
+                "isConstant": false,
+                "isLValue": false,
+                "isPure": true,
+                "kind": "number",
+                "lValueRequested": false,
+                "nodeType": "Literal",
+                "src": "524:2:88",
+                "subdenomination": null,
+                "typeDescriptions": {
+                  "typeIdentifier": "t_rational_50_by_1",
+                  "typeString": "int_const 50"
+                },
+                "value": "50"
+              },
+              "nodeType": "ArrayTypeName",
+              "src": "516:11:88",
+              "typeDescriptions": {
+                "typeIdentifier": "t_array$_t_uint256_$50_storage_ptr",
+                "typeString": "uint256[50]"
+              }
+            },
+            "value": null,
+            "visibility": "private"
+          }
+        ],
+        "scope": 12309,
+        "src": "92:452:88"
+      }
+    ],
+    "src": "0:545:88"
+  },
+  "bytecode": "0x608060405234801561001057600080fd5b50610159806100206000396000f3fe608060405234801561001057600080fd5b506004361061002b5760003560e01c8063150b7a0214610030575b600080fd5b6100f66004803603608081101561004657600080fd5b6001600160a01b0382358116926020810135909116916040820135919081019060808101606082013564010000000081111561008157600080fd5b82018360208201111561009357600080fd5b803590602001918460018302840111640100000000831117156100b557600080fd5b91908080601f016020809104026020016040519081016040528093929190818152602001838380828437600092019190915250929550610113945050505050565b604080516001600160e01b03199092168252519081900360200190f35b630a85bd0160e11b94935050505056fea2646970667358221220c884c5185e37eead726e3d5439e653afee29ed9140f76112f5fe0f8d34b9245f64736f6c63430006070033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061002b5760003560e01c8063150b7a0214610030575b600080fd5b6100f66004803603608081101561004657600080fd5b6001600160a01b0382358116926020810135909116916040820135919081019060808101606082013564010000000081111561008157600080fd5b82018360208201111561009357600080fd5b803590602001918460018302840111640100000000831117156100b557600080fd5b91908080601f016020809104026020016040519081016040528093929190818152602001838380828437600092019190915250929550610113945050505050565b604080516001600160e01b03199092168252519081900360200190f35b630a85bd0160e11b94935050505056fea2646970667358221220c884c5185e37eead726e3d5439e653afee29ed9140f76112f5fe0f8d34b9245f64736f6c63430006070033",
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.7+commit.b8d736ae.Emscripten.clang",
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "evmVersion": "petersburg"
+  }
+}
