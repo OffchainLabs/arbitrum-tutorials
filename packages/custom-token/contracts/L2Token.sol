@@ -20,7 +20,7 @@ pragma solidity ^0.6.11;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract L1Token is ERC20 {
+contract L2Token is ERC20 {
     constructor() ERC20("L2CustomToken", "L2CT") public {}
 
     function getChainId() public returns (uint256 chainId) {

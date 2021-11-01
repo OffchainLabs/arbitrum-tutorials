@@ -20,7 +20,7 @@ requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC', 'BRIDGE_ADDR'])
 
 
 const main = async () => {
-  const bridge = await Bridge.init(l1Signer, l2Signer)
+  const bridge = await Bridge.init(l1Wallet, l2Wallet)
 
   const l1ChainId = await l1Wallet.getChainId()
   const l1Network = networks[l1ChainId]
