@@ -51,10 +51,9 @@ const main = async () => {
   const maxGasCustomBridge = 10000000
   const maxGasRouter = 10000000
 
-  const callValue = _submissionPriceWeiForCustomBridge
-    .add(_submissionPriceWeiForRouter)
-    .add(gasPriceBid.mul(maxGasCustomBridge))
-    .add(gasPriceBid.mul(maxGasRouter))
+  const valueForGateway = _submissionPriceWeiForCustomBridge.add(gasPriceBid.mul(maxGasCustomBridge))
+  const valueForRouter = _submissionPriceWeiForRouter.add(gasPriceBid.mul(maxGasRouter))
+  const callValue = valueForGateway.add(valueForRouter)
 
   // register with the gateways
   const tx = await l1CustomToken.registerTokenOnL2(
@@ -64,6 +63,8 @@ const main = async () => {
     maxGasCustomBridge,
     maxGasRouter,
     gasPriceBid,
+    valueForGateway,
+    valueForRouter,
     l2Wallet.address,
     {
       value: callValue

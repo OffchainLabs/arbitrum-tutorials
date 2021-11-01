@@ -82,13 +82,15 @@ contract L1Token is ICustomToken, ERC20 {
         uint256 maxGasForCustomBridge,
         uint256 maxGasForRouter,
         uint256 gasPriceBid,
+        uint256 valueForGateway,
+        uint256 valueForRouter,
         address creditBackAddress
-    ) public override {
+    ) public payable override {
         // we temporarily set `shouldRegisterGateway` to true for the callback in registerTokenToL2 to succeed
         bool prev = shouldRegisterGateway;
         shouldRegisterGateway = true;
 
-        ICustomGateway(bridge).registerTokenToL2(
+        ICustomGateway(bridge).registerTokenToL2{value: valueForGateway}(
             l2CustomTokenAddress,
             maxGasForCustomBridge,
             gasPriceBid,
@@ -96,7 +98,7 @@ contract L1Token is ICustomToken, ERC20 {
             creditBackAddress
         );
 
-        IGatewayRouter(router).setGateway(
+        IGatewayRouter(router).setGateway{value: valueForRouter}(
             bridge,
             maxGasForRouter,
             gasPriceBid,
