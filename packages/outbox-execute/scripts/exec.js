@@ -1,5 +1,5 @@
 const { providers, Wallet } = require('ethers')
-const { Bridge, OutGoingMessageState } = require('arb-ts')
+const { Bridge, OutgoingMessageState } = require('arb-ts')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 
 require('dotenv').config()
@@ -80,27 +80,29 @@ module.exports = async txnHash => {
   console.log(
     `Waiting for message to be confirmed: Batchnumber: ${batchNumber}, IndexInBatch ${indexInBatch}`
   )
+  console.log(`Outgoing message state: ${OutgoingMessageState[outgoingMessageState]}`)
 
-  while (!outgoingMessageState === OutGoingMessageState.CONFIRMED) {
-    await wait(1000 * 60)
+  const timeToWaitMs = 1000 * 60
+  while (outgoingMessageState !== OutgoingMessageState.CONFIRMED) {
+    console.log(`Message not yet confirmed; we'll wait ${timeToWaitMs / 1000} seconds and try again`)
+    await wait(timeToWaitMs)
     const outgoingMessageState = await bridge.getOutGoingMessageState(
       batchNumber,
       indexInBatch
     )
 
     switch (outgoingMessageState) {
-      case OutGoingMessageState.NOT_FOUND: {
+      case OutgoingMessageState.NOT_FOUND: {
         console.log('Message not found; something strange and bad happened')
         process.exit(1)
         break
       }
-      case OutGoingMessageState.EXECUTED: {
+      case OutgoingMessageState.EXECUTED: {
         console.log(`Message already executed! Nothing else to do here`)
         process.exit(1)
         break
       }
-      case OutGoingMessageState.UNCONFIRMED: {
-        console.log(`Message not yet confirmed; we'll wait a bit and try again`)
+      case OutgoingMessageState.UNCONFIRMED: {
         break
       }
 
@@ -117,5 +119,5 @@ module.exports = async txnHash => {
   const res = await bridge.triggerL2ToL1Transaction(batchNumber, indexInBatch)
   const rec = await res.wait()
 
-  console.log('Done! Your transaction is executed')
+  console.log('Done! Your transaction is executed', rec)
 }
