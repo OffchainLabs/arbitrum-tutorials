@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /*
- * Copyright 2021, Offchain Labs, Inc.
+ * Copyright 2019-2020, Offchain Labs, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,25 @@
  * limitations under the License.
  */
 
-pragma solidity >=0.7.0;
+pragma solidity >=0.6.11;
 
-interface IOutbox {
-    event OutboxEntryCreated(
-        uint256 indexed batchNum,
-        uint256 outboxIndex,
-        bytes32 outputRoot,
-        uint256 numInBatch
-    );
+import "./ICloneable.sol";
 
-    function l2ToL1Sender() external view returns (address);
+contract Cloneable is ICloneable {
+    string private constant NOT_CLONE = "NOT_CLONE";
 
-    function l2ToL1Block() external view returns (uint256);
+    bool private isMasterCopy;
 
-    function l2ToL1EthBlock() external view returns (uint256);
+    constructor() public {
+        isMasterCopy = true;
+    }
 
-    function l2ToL1Timestamp() external view returns (uint256);
+    function isMaster() external view override returns (bool) {
+        return isMasterCopy;
+    }
 
-    function processOutgoingMessages(bytes calldata sendsData, uint256[] calldata sendLengths)
-        external;
+    function safeSelfDestruct(address payable dest) internal {
+        require(!isMasterCopy, NOT_CLONE);
+        selfdestruct(dest);
+    }
 }

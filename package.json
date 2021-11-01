@@ -21,7 +21,8 @@
       "packages/demo-dapp-pet-shop",
       "packages/demo-dapp-election",
       "packages/outbox-execute",
-      "packages/address-table"
+      "packages/address-table",
+      "packages/custom-token"
     ]
   }
 }

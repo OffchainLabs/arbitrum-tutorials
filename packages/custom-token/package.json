@@ -1,0 +1,19 @@
+{
+  "name": "custom-token",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "hardhat compile",
+    "token-deposit": "hardhat run scripts/exec.js"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@openzeppelin/contracts": "^3.4.2",
+    "chai": "^4.3.4",
+    "ethers": "^5.1.2",
+    "hardhat": "^2.6.6"
+  },
+  "dependencies": {
+    "arb-ts": "^1.0.0-beta.4",
+    "dotenv": "^8.2.0"
+  }
+}
