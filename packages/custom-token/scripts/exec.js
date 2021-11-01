@@ -58,8 +58,8 @@ const main = async () => {
   // register with the gateways
   const tx = await l1CustomToken.registerTokenOnL2(
     l2CustomToken.address,
-    maxSubmissionCostForCustomBridge,
-    maxSubmissionCostForRouter,
+    _submissionPriceWeiForCustomBridge,
+    _submissionPriceWeiForRouter,
     maxGasCustomBridge,
     maxGasRouter,
     gasPriceBid,
