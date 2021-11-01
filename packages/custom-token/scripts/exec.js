@@ -1,6 +1,6 @@
 const { BigNumber, providers, Wallet } = require('ethers')
 const { ethers } = require('hardhat')
-const { Bridge } = require('arb-ts')
+const { Bridge, networks } = require('arb-ts')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC', 'BRIDGE_ADDR'])
@@ -20,18 +20,72 @@ requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC', 'BRIDGE_ADDR'])
 
 
 const main = async () => {
-  //await arbLog('Deposit token using arb-ts')
+  const bridge = await Bridge.init(l1Signer, l2Signer)
 
-  const L1CustomToken = await (
-    await ethers.getContractFactory('TestCustomTokenL1')
-  ).connect(l1Wallet)
-  console.log('Deploying TestCustomTokenL1 to L1')
-  const l1CustomToken = await L1CustomToken.deploy(process.env.BRIDGE_ADDR, process.env.ROUTER_ADDR)
+  const l1ChainId = await l1Wallet.getChainId()
+  const l1Network = networks[l1ChainId]
+
+  const L1CustomToken = await ( await ethers.getContractFactory('L1Token') ).connect(l1Wallet)
+  const L2CustomToken = await ( await ethers.getContractFactory('L2Token') ).connect(l2Wallet)
+
+  const customGateway = l1Network.tokenBridge.l1CustomGateway
+  const router = l1Network.tokenBridge.l1GatewayRouter
+  const premine = ethers.utils.parseEther("10")
+
+  const l1CustomToken = await L1CustomToken.deploy(customGateway, router, premine)
   await l1CustomToken.deployed()
   console.log(`TestCustomTokenL1 is deployed to L1 at ${l1CustomToken.address}`)
+
+  const l2CustomToken = await L2CustomToken.deploy()
+  await l2CustomToken.deployed()
+
+  // TODO: calculate the correct calldata size instead of this hardcoded estimate
+  const customBridgeCalldataSize = 1000
+  const routerCalldataSize = 1000
+  
+  const [ _submissionPriceWeiForCustomBridge, ] = await bridge.l2Bridge.getTxnSubmissionPrice(customBridgeCalldataSize)
+  const [ _submissionPriceWeiForRouter, ] = await bridge.l2Bridge.getTxnSubmissionPrice(routerCalldataSize)
+  const gasPriceBid = await bridge.l2Provider.getGasPrice()
+
+  // TODO: calculate max gas querying NodeInterface instead of hardcoding
+  const maxGasCustomBridge = 10000000
+  const maxGasRouter = 10000000
+
+  const callValue = _submissionPriceWeiForCustomBridge
+    .add(_submissionPriceWeiForRouter)
+    .add(gasPriceBid.mul(maxGasCustomBridge))
+    .add(gasPriceBid.mul(maxGasRouter))
+
+  // register with the gateways
+  const tx = await l1CustomToken.registerTokenOnL2(
+    l2CustomToken.address,
+    maxSubmissionCostForCustomBridge,
+    maxSubmissionCostForRouter,
+    maxGasCustomBridge,
+    maxGasRouter,
+    gasPriceBid,
+    l2Wallet.address,
+    {
+      value: callValue
+    }
+  )
+  const receipt = await tx.wait()
  
+  const inboxSeqNums = await bridge.getInboxSeqNumFromContractTransaction(
+    receipt
+  )
 
+  if(inboxSeqNums.length !== 2) {
+    throw new Error("Inbox triggered incorrectly")
+  }
 
+  const [
+    customBridgeSeqNum,
+    routerSeqNum
+  ] = inboxSeqNums
+
+  const customBridgeL2Tx = await bridge.calculateL2RetryableTransactionHash(customBridgeSeqNum)
+  const routerL2Tx = await bridge.calculateL2RetryableTransactionHash(routerSeqNum)
 
 }
 

@@ -79,7 +79,8 @@ contract L1Token is ICustomToken, ERC20 {
         address l2CustomTokenAddress,
         uint256 maxSubmissionCostForCustomBridge,
         uint256 maxSubmissionCostForRouter,
-        uint256 maxGas,
+        uint256 maxGasForCustomBridge,
+        uint256 maxGasForRouter,
         uint256 gasPriceBid,
         address creditBackAddress
     ) public override {
@@ -89,7 +90,7 @@ contract L1Token is ICustomToken, ERC20 {
 
         ICustomGateway(bridge).registerTokenToL2(
             l2CustomTokenAddress,
-            maxGas,
+            maxGasForCustomBridge,
             gasPriceBid,
             maxSubmissionCostForCustomBridge,
             creditBackAddress
@@ -97,12 +98,18 @@ contract L1Token is ICustomToken, ERC20 {
 
         IGatewayRouter(router).setGateway(
             bridge,
-            maxGas,
+            maxGasForRouter,
             gasPriceBid,
             maxSubmissionCostForRouter,
             creditBackAddress
         );
 
         shouldRegisterGateway = prev;
+    }
+
+    function getChainId() public returns (uint256 chainId) {
+        assembly {
+            chainId := chainid()
+        }
     }
 }
