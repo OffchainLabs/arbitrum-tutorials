@@ -20,12 +20,54 @@ pragma solidity ^0.6.11;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract L2Token is ERC20 {
-    constructor() ERC20("L2CustomToken", "L2CT") public {}
+interface IArbToken {
+    /**
+     * @notice should increase token supply by amount, and should (probably) only be callable by the L1 bridge.
+     */
+    function bridgeMint(address account, uint256 amount) external;
+
+    /**
+     * @notice should decrease token supply by amount, and should (probably) only be callable by the L1 bridge.
+     */
+    function bridgeBurn(address account, uint256 amount) external;
+
+    /**
+     * @return address of layer 1 token
+     */
+    function l1Address() external view returns (address);
+}
+
+contract L2Token is ERC20, IArbToken {
+    address public l2Gateway;
+    address public override l1Address;
+
+    constructor(address _l2Gateway, address _l1TokenAddress) ERC20("L2CustomToken", "L2CT") public {
+        l2Gateway = _l2Gateway;
+        l1Address = _l1TokenAddress;
+    }
 
     function getChainId() public returns (uint256 chainId) {
         assembly {
             chainId := chainid()
         }
+    }
+
+    modifier onlyL2Gateway {
+        require(msg.sender == l2Gateway, "NOT_GATEWAY");
+        _;
+    }
+
+    /**
+     * @notice should increase token supply by amount, and should (probably) only be callable by the L1 bridge.
+     */
+    function bridgeMint(address account, uint256 amount) external override onlyL2Gateway {
+        _mint(account, amount);
+    }
+
+    /**
+     * @notice should decrease token supply by amount, and should (probably) only be callable by the L1 bridge.
+     */
+    function bridgeBurn(address account, uint256 amount) external override onlyL2Gateway {
+        _burn(account, amount);
     }
 }
