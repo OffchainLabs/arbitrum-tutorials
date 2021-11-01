@@ -25,6 +25,9 @@ const main = async () => {
   const l1ChainId = await l1Wallet.getChainId()
   const l1Network = networks[l1ChainId]
 
+  const l2ChainId = await l2Wallet.getChainId()
+  const l2Network = networks[l2ChainId]
+
   const L1CustomToken = await ( await ethers.getContractFactory('L1Token') ).connect(l1Wallet)
   const L2CustomToken = await ( await ethers.getContractFactory('L2Token') ).connect(l2Wallet)
 
@@ -36,7 +39,10 @@ const main = async () => {
   await l1CustomToken.deployed()
   console.log(`TestCustomTokenL1 is deployed to L1 at ${l1CustomToken.address}`)
 
-  const l2CustomToken = await L2CustomToken.deploy()
+
+
+  const l2Gateway = l2Network.tokenBridge.l2CustomGateway
+  const l2CustomToken = await L2CustomToken.deploy(l2Gateway,l1CustomToken.address)
   await l2CustomToken.deployed()
 
   // TODO: calculate the correct calldata size instead of this hardcoded estimate
