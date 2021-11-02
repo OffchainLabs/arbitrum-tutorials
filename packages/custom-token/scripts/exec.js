@@ -53,8 +53,24 @@ const main = async () => {
   const [ _submissionPriceWeiForRouter, ] = await bridge.l2Bridge.getTxnSubmissionPrice(routerCalldataSize)
   const gasPriceBid = await bridge.l2Provider.getGasPrice()
 
-  // TODO: calculate max gas querying NodeInterface instead of hardcoding
-  const maxGasCustomBridge = 10000000
+
+  const l1Gateway = l1Network.tokenBridge.l1CustomGateway
+  
+  const maxGasCustomBridge = await nodeInterface.estimateRetryableTicket(
+    l1Gateway,
+    parseEther('0.05').add(
+      callValue
+    ) /** we add a 0.05 "deposit" buffer to pay for execution in the gas estimation  */,
+    l2Gateway,
+    callValue,
+    _submissionPriceWeiForCustomBridge,
+    l1Wallet,
+    l1Wallet,
+    0,
+    gasPriceBid,
+    1000
+  )
+  //const maxGasCustomBridge = 10000000
   const maxGasRouter = 10000000
 
   const valueForGateway = _submissionPriceWeiForCustomBridge.add(gasPriceBid.mul(maxGasCustomBridge))
