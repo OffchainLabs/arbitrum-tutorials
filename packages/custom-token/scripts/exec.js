@@ -106,7 +106,18 @@ const main = async () => {
   console.log(
     `Registering the custom token on L2 with ${callValue.toString()} callValue for L2 fees:`
   )
-
+  /** 
+    * Execute regsiterToken)nL2 function from our l1CustomToken
+    * Arguments include:
+    * l2CustomToken.address: The L2 address of your custom token
+    * _submissionPriceWeiForCustomBridge: Base submission price (in wei) that is needed to cover the cost for creating the retryable tickets for registering the token on custom gateway
+    * _submissionPriceWeiForRouter: Base submission price (in wei) that is needed to cover the cost for creating the retryable tickets for registering the token on gateway router
+    * maxGasCustomBridge: Gas limit for immediate L2 execution of registering the token on custom gateway
+    * maxGasRouter: Gas limit for immediate L2 execution of registering the token on router 
+    * gasPriceBid: The L2 gas price
+    * valueForGateway: the callvalue we need for our custom gateway
+    * valueForRouter: the callvalue we need for the router
+    */ 
   const registerTokenTx = await l1CustomToken.registerTokenOnL2(
     l2CustomToken.address,
     _submissionPriceWeiForCustomBridge,
