@@ -27,7 +27,7 @@ cp .env-sample .env
 ### Run:
 
 ```
-yarn run token-deposit
+yarn run custom-token-bridging
 ```
 
 

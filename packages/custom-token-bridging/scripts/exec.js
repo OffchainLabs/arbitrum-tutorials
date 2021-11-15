@@ -3,7 +3,7 @@ const { ethers } = require('hardhat')
 const { Bridge, networks } = require('arb-ts')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
-requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC', 'BRIDGE_ADDR'])
+requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
 
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
