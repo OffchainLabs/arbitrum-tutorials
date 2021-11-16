@@ -1,9 +1,9 @@
 {
-  "name": "custom-token",
+  "name": "custom-token-bridging",
   "version": "1.0.0",
   "scripts": {
     "build": "hardhat compile",
-    "token-deposit": "hardhat run scripts/exec.js"
+    "custom-token-bridging": "hardhat run scripts/exec.js"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",

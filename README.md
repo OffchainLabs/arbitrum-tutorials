@@ -34,6 +34,7 @@ yarn install
 #### :white_check_mark: Advanced Features
 
 - ®️ [Arb Address Table](./packages/address-table/)
+- 🌉 [Bridging Custom Token](./packages/custom-token-bridging/)
 
 <p align="center">
   <img width="350" height="100" src= "https://arbitrum.io/wp-content/uploads/2021/01/cropped-Arbitrum_Horizontal-Logo-Full-color-White-background-scaled-1.jpg" />
