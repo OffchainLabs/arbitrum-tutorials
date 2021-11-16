@@ -19,8 +19,9 @@ const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
 /**
 * Set the initial supply of L1 token that we want to bridge
+* Note that you can change the value 
 */
-const premine = ethers.utils.parseEther("10")
+const premine = ethers.utils.parseEther("3")
 
 
 const main = async () => {
@@ -140,15 +141,16 @@ const main = async () => {
 
   /**
    * The L1 side is confirmed; now we listen and wait for the for the Sequencer to include the L2 side; we can do this by computing the expected txn hash of the L2 transaction.
-   * To compute this txn hash, we need our message's "sequence number", a unique identifier. We'll fetch from the event logs with a helper method
+   * To compute this txn hash, we need our message's "sequence numbers", unique identifiers of each L1 to L2 message. We'll fetch them from the event logs with a helper method
    */
   const inboxSeqNums = await bridge.getInboxSeqNumFromContractTransaction(
     registerTokenRec
   )
 
   /**
-   * In principle, a single txn can trigger many messages (each with its own sequencer number); in this case, we know our txn triggered 2. Let's get them, and use them to calculate our expected transaction hash.
-   */
+   * In principle, a single L1 txn can trigger any number of L1-to-L2 messages (each with its own sequencer number). 
+   * In this case, the registerTokenOnL2 method created 2 L1-to-L2 messages; (1) one to set the L1 token to the Custom Gateway via the Router, and (2) another to set the L1 token to its L2 token address via the Generic-Custom Gateway
+  */
 
   if(inboxSeqNums.length !== 2) {
     throw new Error("Inbox triggered incorrectly")
@@ -159,9 +161,8 @@ const main = async () => {
   const customBridgeL2Tx = await bridge.calculateL2RetryableTransactionHash(customBridgeSeqNum)
   const routerL2Tx = await bridge.calculateL2RetryableTransactionHash(routerSeqNum)
 
-
   /**
-   * Now we wait for the Sequencer to include it in its off chain inbox.
+   * Now we wait for the Sequencer to include both messages in its off chain inbox.
    */
    console.log(
     `waiting for L2 tx 🕐... (should take < 10 minutes, current time: ${new Date().toTimeString()}`
