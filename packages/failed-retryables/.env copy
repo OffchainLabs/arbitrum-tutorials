@@ -1,0 +1,9 @@
+INFURA_KEY = 8838d00c028a46449be87e666387c71a 
+
+DEVNET_PRIVKEY = 0xd113969f1cdcce0a73c20f80d317000dbdb0710f107429e4d03d17d5a874dfa4
+
+L2RPC = https://rinkeby.arbitrum.io/rpc
+
+L1RPC = https://rinkeby.infura.io/v3/54a803131f2a4669835eedbeaf6c45b2
+
+INBOX_ADDR=0x578bade599406a8fe3d24fd7f7211c0911f5b29e

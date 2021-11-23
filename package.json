@@ -22,7 +22,8 @@
       "packages/demo-dapp-election",
       "packages/outbox-execute",
       "packages/address-table",
-      "packages/custom-token"
+      "packages/custom-token",
+      "failed-retryables"
     ]
   }
 }
