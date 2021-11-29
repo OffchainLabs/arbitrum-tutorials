@@ -1,20 +1,16 @@
-# Greeter Tutorial
+# Redeem Frailed Retryable Ticket Tutorial
 
-`greeter` is a simple demo of Arbitrum's L1-to-L2 message passing system (aka "retryable tickets").
-
-It deploys 2 contracts - one to L1, and another to L2, and has the L1 contract send a message to the L2 contract to be executed automatically.
-
-The script and contracts demonstrate how to interact with Arbitrum's core bridge contracts to create these retryable messages, how to calculate and forward appropriate fees from L1 to L2, and how to use Arbitrum's L1-to-L2 message [address aliasing](https://developer.offchainlabs.com/docs/l1_l2_messages#address-aliasing).
+Retryable tickets are the Arbitrum protocol’s canonical method for passing generalized messages from Ethereum to Arbitrum. A retryable ticket is an L2 message encoded and delivered by L1; if gas is provided, it will be executed immediately. If no gas is provided or the execution reverts, it will be placed in the L2 retry buffer, where any user can re-execute for some fixed period (roughly one week).
+`redeem-failed-retryable` shows you how to redeem (re-execute) a ticket that is stting in the L2 retry buffer.
 
 See [./exec.js](./scripts/exec.js) for inline explanation.
-
-[Click here](https://developer.offchainlabs.com/docs/l1_l2_messages) for more info on retryable tickets.
 
 ### Run Demo:
 
 ```
-yarn run greeter
+ yarn hardhat redeem-failed-retryable --txhash 0xmytxnhash
 ```
+- _0xmytxnhash_ is expected to be the transaction hash of an L1 transaction that triggered an L1 to L2 message.
 
 ## Config Environment Variables
 
@@ -25,5 +21,9 @@ cp .env-sample .env
 ```
 
 (you'll still need to edit some variables, i.e., `DEVNET_PRIVKEY`)
+
+### More info
+
+For more information on the retryable tickets, see our [developer documentation on messaging between layers](https://developer.offchainlabs.com/docs/l1_l2_messages).
 
 <p align="center"><img src="../../assets/offchain_labs_logo.png" width="600"></p>
