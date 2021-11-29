@@ -23,7 +23,7 @@
       "packages/outbox-execute",
       "packages/address-table",
       "packages/custom-token",
-      "failed-retryables"
+      "packages/redeem-failed-retryable"
     ]
   }
 }

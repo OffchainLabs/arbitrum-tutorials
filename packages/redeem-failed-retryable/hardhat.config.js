@@ -6,7 +6,7 @@ const { task } = require('hardhat/config')
 
 
 task('redeem-failed-retryable')
-  .addParam('txhash', 'Hash of L1 txn that created the retryable ticket')
+  .addParam('txhash', 'Hash of the L1 txn that created the retryable ticket')
 
   .setAction(async args => {
     await main(args.txhash)
