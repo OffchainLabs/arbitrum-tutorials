@@ -50,10 +50,7 @@ contract GreeterL1 is Greeter {
 
     /// @notice only l2Target can update greeting
     function setGreeting(string memory _greeting) public override {
-        IOutbox outbox = IOutbox(inbox.bridge().activeOutbox());
-        address l2Sender = outbox.l2ToL1Sender();
-        require(l2Sender == l2Target, "Greeting only updateable by L2");
-
+        require(msg.sender == l2Target, "Greeting only updateable by L2");
         Greeter.setGreeting(_greeting);
     }
 }
