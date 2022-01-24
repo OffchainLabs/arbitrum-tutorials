@@ -11,7 +11,7 @@ library BuddyUtil {
         pure
         returns (address)
     {
-        bytes32 salt = bytes32(uint256(_l1Address));
+        bytes32 salt = bytes32(uint256(uint160(_l1Address)));
         bytes32 hash = keccak256(
             abi.encodePacked(
                 bytes1(0xff),
