@@ -1,34 +1,16 @@
-//const hre = require('hardhat')
 const { ethers } = require("hardhat");
-//const ethers = require('ethers')
-const { Bridge } = require('arb-ts')
-const {  Contract, ContractFactory  } = require('ethers')
-const { SignerWithAddress } = require('@nomiclabs/hardhat-ethers/dist/src/signer-with-address')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 var assert = require('assert');
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC', "INBOX_ADDR"])
 
-const walletPrivateKey = process.env.DEVNET_PRIVKEY
 
-const l1Provider = new ethers.providers.JsonRpcProvider(process.env.L1RPC)
-const l2Provider = new ethers.providers.JsonRpcProvider(process.env.L2RPC)
-const signer = new ethers.Wallet(walletPrivateKey)
-
-const l1Signer = signer.connect(l1Provider)
-const l2Signer = signer.connect(l2Provider)
 
 const main = async () => {
-  //await arbLog('Bridge peripherals layer 1 integrations')
+  await arbLog('Bridge peripherals layer 1 integrations')
 
-  //let accounts =  SignerWithAddress[]
-  //let TestBridge=  ContractFactory
-  //let testBridge=  Contract
-
-  //let inbox= Contract
   const maxSubmissionCost = 1
   const maxGas = 1000000000
   const gasPrice = 0
-  //let l2Address: string
 
     accounts = await ethers.getSigners()
     l2Address = accounts[0].address
