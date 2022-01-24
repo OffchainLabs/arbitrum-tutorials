@@ -6,7 +6,7 @@ import "../L1PassiveFastExitManager.sol";
 
 contract FastExitMock is IExitLiquidityProvider, ITransferAndCallReceiver {
     uint256 fee = 0;
-    bytes constant RETVALUE = "0x1234";
+    bytes constant RETVALUE = "";
 
     function setFee(uint256 _fee) external {
         fee = _fee;

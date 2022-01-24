@@ -14,12 +14,13 @@ describe('Bridge peripherals layer 1 integrations', () => {
   const maxSubmissionCost = 1
   const maxGas = 1000000000
   const gasPrice = 0
-  const l2Address = '0x1100000000000000000000000000000000000011'
+  let l2Address: string
 
   before(async function () {
     accounts = await ethers.getSigners()
+    l2Address = accounts[0].address
 
-    TestBridge = await ethers.getContractFactory('L1ERC20Gateway')
+    TestBridge = await ethers.getContractFactory('L1GatewayTester')
     testBridge = await TestBridge.deploy()
 
     const Inbox = await ethers.getContractFactory('InboxMock')
@@ -97,7 +98,7 @@ describe('Bridge peripherals layer 1 integrations', () => {
       ]
     )
     // doesn't make a difference since the passive fast exit manager transfers the exit again
-    const newData = 0
+    const newData = "0x"
     
 
     await testBridge.transferExitAndCall(
@@ -134,15 +135,6 @@ describe('Bridge peripherals layer 1 integrations', () => {
       inboundData
     )
     const finalizeTxReceipt = await finalizeTx.wait()
-
-    // event emitted when fast exit mock is triggered
-    const expectedTopic =
-      '0x2f0c0af451e6330658fba0c08f7d82acdb1feff8d2904044a765af1b27df3e1f'
-    const logs = finalizeTxReceipt.events
-      .filter((curr: any) => curr.topics[0] === expectedTopic)
-      .map((curr: any) => fastExitMock.interface.parseLog(curr))
-
-    assert.equal(logs.length, 1, 'Fast exit mock not called on withdrawal')
 
     const postLPBalance = await token.balanceOf(fastExitMock.address)
 
