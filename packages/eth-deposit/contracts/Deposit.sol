@@ -1,7 +1,6 @@
-pragma solidity ^0.7.0;
+pragma solidity  >=0.6.11;
 
-
-import "arb-shared-dependencies/contracts/Inbox.sol";
+import "arb-bridge-eth/contracts/bridge/Inbox.sol";
 
 contract Deposit {
 
