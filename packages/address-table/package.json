@@ -1,8 +1,14 @@
 {
   "name": "address-table",
+  "license": "Apache-2.0",
+  "version": "1.0.0",
+  "scripts": {
+    "exec": "hardhat run scripts/exec.js --network l2"
+  },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "arb-bridge-peripherals": "^1.0.5",
     "chai": "^4.3.4",
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.4.2",
@@ -10,9 +16,5 @@
   },
   "dependencies": {
     "arb-ts": "^1.0.0-beta.4"
-  },
-  "scripts": {
-    "exec": "hardhat run scripts/exec.js --network l2"
   }
 }
-
