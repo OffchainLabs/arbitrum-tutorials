@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "scripts": {
         "build": "hardhat compile",
-        "buddyBridgeL1": "hardhat run scripts/exec.js"
+        "fast-exit": "hardhat run scripts/exec.js"
     },
     "devDependencies": {
         "@nomiclabs/hardhat-ethers": "^2.0.0",
@@ -11,8 +11,6 @@
         "@types/chai": "^4.2.21",
         "@types/mocha": "^8.2.3",
         "@types/node": "^16.3.3",
-        "arb-bridge-eth": "^0.7.4",
-        "arb-bridge-peripherals": "^1.0.5",
         "chai": "^4.3.4",
         "ethereum-waffle": "^3.0.0",
         "ethers": "^5.0.0",
