@@ -27,7 +27,7 @@ const main = async () => {
 
   /**
    * Use l2Network to create an arb-ts EthBridger instance
-   * We'll use EthBridger for its convenience methods around depositing ETH to L2
+   * We'll use EthBridger for its convenience methods around transferring ETH to L2
    */
 
   const l2Network = await getL2Network(l2Provider)
@@ -42,8 +42,8 @@ const main = async () => {
    * transfer ether from L1 to L2
    * This convenience method automatically queries for the retryable's max submission cost and forwards the appropriate amount to L2
    * Arguments required are: 
-   * (1) amount: The amount of ETH to be deposited
-   * (2) l1Sifner: The L1 address transferiinf ETH to L2
+   * (1) amount: The amount of ETH to be transferred to L2
+   * (2) l1Signer: The L1 address transferring ETH to L2
    * (3) l2Provider: An l2 provider
    */
 
