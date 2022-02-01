@@ -25,7 +25,7 @@ const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 const ethToL2DepositAmount = parseEther('0.0001')
 
 const main = async () => {
-  await arbLog('Deposit Eth via a DApp')
+  //await arbLog('Deposit Eth via arb-ts')
   /**
    * Use arb-ts networks file to retrieve the Rinkeby Inbox address
    */

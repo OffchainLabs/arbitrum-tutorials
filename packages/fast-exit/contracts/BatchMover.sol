@@ -6,8 +6,6 @@ import "./MMR.sol";
 import "arb-bridge-peripherals/contracts/tokenbridge/arbitrum/StandardArbERC20.sol";
 import "arb-bridge-peripherals/contracts/tokenbridge/arbitrum/gateway/L2ArbitrumGateway.sol";
 
-//import "arbos-precompiles/arbos/builtin/ArbSys.sol";
-
 import "./helpers/buddy-bridge/ethereum/L1Buddy.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 

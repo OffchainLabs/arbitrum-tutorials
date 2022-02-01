@@ -1,5 +1,5 @@
 {
-    "name": "buddy-bridge",
+    "name": "fast-exit",
     "version": "1.0.0",
     "scripts": {
         "build": "hardhat compile",
