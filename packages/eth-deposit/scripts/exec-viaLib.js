@@ -53,26 +53,23 @@ const main = async () => {
     l2Provider: l2Provider
   })
 
-  const rec = await depositTx.wait()
-  console.warn('deposit L1 receipt is:', rec.transactionHash)
+  const depositRec = await depositTx.wait()
+  console.warn('deposit L1 receipt is:', depositRec.transactionHash)
   
   /**
    * With the transaction confirmed on L1, we now wait and check for the L2 side (i.e., balance credited to L2) to be confirmed as well.
    * First, we get our our L1-to-L2 message
    */
 
-  const l1ToL2Msg = await rec.getL1ToL2Message(l2Wallet)
+  const l1ToL2Msg = await depositRec.getL1ToL2Message(l2Wallet)
 
   /**
-   * ... and now we wait. Here we're waiting for our L2 transaction to be executed.
+   * ... and now we wait. Here we're waiting for the Sequencer to include the L2 message in its off-chain queue. The Sequencer should include it in under 10 minutes.
    */
   
   console.warn('Now we wait for L2 side of the transaction to be executed ⏳')
 
-  const l1ToL2MsgState = await l1ToL2Msg.wait(
-    1000 * 60 * 12,
-    undefined
-  ) 
+  const l1ToL2MsgState = await l1ToL2Msg.wait()
   /**
    * Here we get the status of our L2 transaction.
    * If it is REDEEMED (i.e., succesfully executed), our L2 balance should be updated

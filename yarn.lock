@@ -1566,7 +1566,7 @@ arb-ts@1.0.0-beta.4, arb-ts@^1.0.0-beta.4:
     dotenv "^10.0.0"
     ethers "^5.1.0"
 
-arb-ts@^2.0.0-beta.10:
+arb-ts@2.0.0-beta.10, arb-ts@^2.0.0-beta.10:
   version "2.0.0-beta.10"
   resolved "https://registry.yarnpkg.com/arb-ts/-/arb-ts-2.0.0-beta.10.tgz#5a161ca5ed7d93c876ffce946472d3f2ad1141c1"
   integrity sha512-Cjieof1jBQ6tm9UwrWbXvuZcrTzL+voFKXHIJG09C8fiKxCs9aOV2uJ620+6tEr4tiSESFhk8HTv625gXypTEQ==
