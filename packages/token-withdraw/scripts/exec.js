@@ -1,10 +1,8 @@
 const { BigNumber, providers, Wallet } = require('ethers')
-const { ethers } = require('hardhat')
-const { Bridge } = require('arb-ts')
+const { TokenBridger, getL2Network, L1ToL2MessageStatus} = require("arb-ts")
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
-
-requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
+requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
 
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
@@ -18,68 +16,118 @@ const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
 const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
 /**
- * Set the amount of token to be deposited and then withdrawn
+ * Set the amount of token to be transferred to L2 and then withdrawn
  */
 const tokenDepositAmount = BigNumber.from(50)
 const tokenWithdrawAmount = BigNumber.from(20)
 
 const main = async () => {
-  await arbLog('Withdraw token')
-  /**
-   * Use wallets to create an arb-ts bridge instance
-   */
-  const bridge = await Bridge.init(l1Wallet, l2Wallet)
+  await arbLog('Withdraw token arb-ts')
 
   /**
-   * Setup: we'll deploy a token contract, then approve and deposit onto L2 so we have some coin to withdraw
+   * Use l2Network to create an arb-ts TokenBridger instance
+   * We'll use TokenBridger for its convenience methods around transferring token to L2 and back to L1
+   */
+   const l2Network = await getL2Network(l2Provider)
+   const tokenBridge = new TokenBridger(l2Network)
+
+  /**
+   * Setup: we'll deploy a token contract, then approve and transfer onto L2 so we have some tokens to withdraw to L1
    * (For play-by-play details on the deposit flow, see token_deposit repo)
    */
 
-  console.log('Deploying token:')
+   console.log('Deploying the test DappToken to L1:')
   const L1DappToken = await (
     await ethers.getContractFactory('DappToken')
   ).connect(l1Wallet)
   const l1DappToken = await L1DappToken.deploy(1000000000000000)
   await l1DappToken.deployed()
-  console.log('Deployed! Approving:')
+  console.log(`DappToken is deployed to L1 at ${l1DappToken.address}`)
+  console.log('Approving:')
 
   const erc20Address = l1DappToken.address
-  const approveTx = await bridge.approveToken(erc20Address)
-  await approveTx.wait()
-  console.log('Approved! Depositing:')
+  /**
+   * The Standard Gateway contract will ultimately be making the token transfer call; thus, that's the contract we need to approve.
+   * tokenBridge.approveToken handles this approval
+   * Arguments required are: 
+   * (1) l1Signer: The L1 address transferring token to L2
+   * (2) erc20L1Address: L1 address of the ERC20 token to be depositted to L2
+   */
+   const approveTx = await tokenBridge.approveToken({
+    l1Signer: l1Wallet,
+    erc20L1Address: erc20Address
+  })  
 
-  const depositTx = await bridge.deposit(erc20Address, tokenDepositAmount)
+  const approveRec = await approveTx.wait()
+  console.log(
+    `You successfully allowed the Arbitrum Bridge to spend DappToken ${approveRec.transactionHash}`
+  )
+  console.log('Transferring DappToken to L2:')
+
+  /**
+   * Deposit DappToken to L2 using TokenBridge. This will escrow funds in the Gateway contract on L1, and send a message to mint tokens on L2.
+   * The tokenBridge.deposit method handles computing the necessary fees for automatic-execution of retryable tickets — maxSubmission cost & l2 gas price * gas — and will automatically forward the fees to L2 as callvalue
+   * Also note that since this is the first DappToken deposit onto L2, a standard Arb ERC20 contract will automatically be deployed.
+   * Arguments required are: 
+   * (1) amount: The amount of tokens to be transferred to L2
+   * (2) erc20L1Address: L1 address of the ERC20 token to be depositted to L2
+   * (2) l1Signer: The L1 address transferring token to L2
+   * (3) l2Provider: An l2 provider
+   */
+
+   const depositTx = await tokenBridge.deposit({
+    amount: tokenDepositAmount,
+    erc20L1Address: erc20Address,
+    l1Signer: l1Wallet,
+    l2Provider: l2Provider
+  })    
+
   const depositRec = await depositTx.wait()
   console.log(
     `Deposit initiated: waiting for L2 retryable (takes < 10 minutes; current time: ${new Date().toTimeString()}) `
   )
+  console.warn('deposit L1 receipt is:', depositRec.transactionHash)
 
-  const seqNumArr = await bridge.getInboxSeqNumFromContractTransaction(
-    depositRec
-  )
-  const seqNum = seqNumArr[0]
-  const l2TxHash = await bridge.calculateL2RetryableTransactionHash(seqNum)
+  const l1ToL2Msg = await depositRec.getL1ToL2Message(l2Wallet)
 
-  //Now, we have to wait for the L2 tx to go through
-  await l2Provider.waitForTransaction(l2TxHash, undefined, 1000 * 60 * 12)
-  const l2Data = await bridge.getAndUpdateL2TokenData(erc20Address)
-  const l2WalletTokenBalance = l2Data && l2Data.ERC20 && l2Data.ERC20.balance
+  /**
+   * ... and now we wait. Here we're waiting for the Sequencer to include the L2 message in its off-chain queue. The Sequencer should include it in under 10 minutes.
+   */
+  
+  console.warn('Now we wait for L2 side of the transaction to be executed ⏳')
 
-  console.log(
-    `Setup complete: your l2Wallet has ${l2WalletTokenBalance.toString()} DappToken now!`
-  )
+  const l1ToL2MsgState = await l1ToL2Msg.wait()
+
+  /**
+   * Here we get the status of our L2 transaction.
+   * If it is REDEEMED (i.e., succesfully executed), our L2 token balance should be updated
+   */
+  
+  if (l1ToL2MsgState.status == L1ToL2MessageStatus.REDEEMED) {
+
+    console.log(`Setup complete`)
+  }  
+  else { 
+    console.log(`L2 transaction failed`)
+  }
   console.log('Withdrawing:')
 
   /**
-   * ... Okay, Now we begin withdrawing DappToken from L2. To withdraw, we'll use the arb-ts helper method withdrawERC20
-   * withdrawERC20 will call our L2 Gateway Router to initiate a withdrawal via the Standard ERC20 gateway
+   * ... Okay, Now we begin withdrawing DappToken from L2. To withdraw, we'll use TokenBridge helper method withdraw
+   * withdraw will call our L2 Gateway Router to initiate a withdrawal via the Standard ERC20 gateway
    * This transaction is constructed and paid for like any other L2 transaction (it just happens to (ultimately) make a call to ArbSys.sendTxToL1)
+   * Arguments required are: 
+   * (1) amount: The amount of tokens to be transferred to L1
+   * (2) erc20L1Address: L1 address of the ERC20 token 
+   * (3) l2Signer: The L2 address transferring token to L1
    */
 
-  const withdrawTx = await bridge.withdrawERC20(
-    erc20Address,
-    tokenWithdrawAmount
-  )
+  const withdrawTx = await tokenBridge.withdraw({
+    amount:tokenWithdrawAmount,
+    erc20l1Address: erc20Address,
+    l2Signer: l2Wallet,
+  })
+  
   const withdrawRec = await withdrawTx.wait()
 
   /**
@@ -88,9 +136,17 @@ const main = async () => {
    * We'll display the withdrawals event data here:
    */
 
-  const withdrawEventData = (
-    await bridge.getWithdrawalsInL2Transaction(withdrawRec)
-  )[0]
+
+
+  const gatewayAddress = await tokenBridge.getL2GatewayAddress(erc20Address, l2Provider)
+  const tokenWithdrawEvents = await tokenBridge.getL2WithdrawalEvents(
+    l2Provider,
+    gatewayAddress,
+    erc20Address,
+    l2Wallet
+  )
+
+  const withdrawEventData = tokenWithdrawEvents[0]
 
   console.log(`Token withdrawal initiated! 🥳 ${withdrawRec.transactionHash}`)
   console.log('Withdrawal data:', withdrawEventData)

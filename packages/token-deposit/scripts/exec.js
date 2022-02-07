@@ -36,13 +36,14 @@ const main = async () => {
    * It sends its deployer (us) the initial supply of 1000000000000000
    */
 
+  console.log('Deploying the test DappToken to L1:')
   const L1DappToken = await (
     await ethers.getContractFactory('DappToken')
   ).connect(l1Wallet)
-  console.log('Deploying the test DappToken to L1')
   const l1DappToken = await L1DappToken.deploy(1000000000000000)
   await l1DappToken.deployed()
   console.log(`DappToken is deployed to L1 at ${l1DappToken.address}`)
+  console.log('Approving:')
   const erc20Address = l1DappToken.address
   
 
@@ -82,6 +83,9 @@ const main = async () => {
   })
   
   const depositRec = await depositTx.wait()
+  console.log(
+    `Deposit initiated: waiting for L2 retryable (takes < 10 minutes; current time: ${new Date().toTimeString()}) `
+  )
   console.warn('deposit L1 receipt is:', depositRec.transactionHash)
 
   const l1ToL2Msg = await depositRec.getL1ToL2Message(l2Wallet)
