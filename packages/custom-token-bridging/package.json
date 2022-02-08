@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "build": "hardhat compile",
-    "custom-token-bridging": "hardhat run scripts/exec.js"
+    "custom-token-bridging:arb-ts": "hardhat run scripts/exec-viaLib.js",
+    "custom-token-bridging:dapp": "hardhat run scripts/exec-viaDApp.js"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
@@ -13,7 +14,7 @@
     "hardhat": "^2.6.6"
   },
   "dependencies": {
-    "arb-ts": "^1.0.0-beta.4",
+    "arb-ts": "2.0.0-beta.10",
     "dotenv": "^8.2.0"
   }
 }
