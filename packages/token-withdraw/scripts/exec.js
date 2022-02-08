@@ -1,4 +1,5 @@
 const { BigNumber, providers, Wallet } = require('ethers')
+const { expect } = require('chai')
 const { TokenBridger, getL2Network, L1ToL2MessageStatus} = require("arb-ts")
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
@@ -22,7 +23,7 @@ const tokenDepositAmount = BigNumber.from(50)
 const tokenWithdrawAmount = BigNumber.from(20)
 
 const main = async () => {
-  await arbLog('Withdraw token arb-ts')
+  await arbLog('Withdraw token using arb-ts')
 
   /**
    * Use l2Network to create an arb-ts TokenBridger instance
@@ -46,13 +47,15 @@ const main = async () => {
   console.log('Approving:')
 
   const erc20Address = l1DappToken.address
+
   /**
    * The Standard Gateway contract will ultimately be making the token transfer call; thus, that's the contract we need to approve.
    * tokenBridge.approveToken handles this approval
    * Arguments required are: 
    * (1) l1Signer: The L1 address transferring token to L2
-   * (2) erc20L1Address: L1 address of the ERC20 token to be depositted to L2
+   * (2) erc20L1Address: L1 address of the ERC20 token to be deposited to L2
    */
+
    const approveTx = await tokenBridge.approveToken({
     l1Signer: l1Wallet,
     erc20L1Address: erc20Address
@@ -70,7 +73,7 @@ const main = async () => {
    * Also note that since this is the first DappToken deposit onto L2, a standard Arb ERC20 contract will automatically be deployed.
    * Arguments required are: 
    * (1) amount: The amount of tokens to be transferred to L2
-   * (2) erc20L1Address: L1 address of the ERC20 token to be depositted to L2
+   * (2) erc20L1Address: L1 address of the ERC20 token to be deposited to L2
    * (2) l1Signer: The L1 address transferring token to L2
    * (3) l2Provider: An l2 provider
    */
@@ -125,35 +128,36 @@ const main = async () => {
   const withdrawTx = await tokenBridge.withdraw({
     amount:tokenWithdrawAmount,
     erc20l1Address: erc20Address,
-    l2Signer: l2Wallet,
+    l2Signer: l2Wallet
   })
   
   const withdrawRec = await withdrawTx.wait()
-
+  console.log(`Token withdrawal initiated! 🥳 ${withdrawRec.transactionHash}`)
   /**
    * And with that, our withdrawal is initiated! No additional time-sensitive actions are required.
    * Any time after the transaction's assertion is confirmed, funds can be transferred out of the bridge via the outbox contract
-   * We'll display the withdrawals event data here:
+   * We'll check our l2Wallet DappToken balance here:
    */
 
-
-
-  const gatewayAddress = await tokenBridge.getL2GatewayAddress(erc20Address, l2Provider)
-  const tokenWithdrawEvents = await tokenBridge.getL2WithdrawalEvents(
+  const l2Token = tokenBridge.getL2TokenContract(
     l2Provider,
-    gatewayAddress,
-    erc20Address,
-    l2Wallet
+    await tokenBridge.getL2ERC20Address(erc20Address, l1Provider)
   )
 
-  const withdrawEventData = tokenWithdrawEvents[0]
+  const l2WalletBalance = (
+    await l2Token.functions.balanceOf(await l2Wallet.getAddress())
+  )[0]
+    
+  expect(
+    l2WalletBalance.add(tokenWithdrawAmount).eq(tokenDepositAmount),
+    'token withdraw balance not deducted'
+  ).to.be.true
 
-  console.log(`Token withdrawal initiated! 🥳 ${withdrawRec.transactionHash}`)
-  console.log('Withdrawal data:', withdrawEventData)
 
   console.log(
-    `To to claim funds (after dispute period), see outbox-execute repo ✌️`
+     `To to claim funds (after dispute period), see outbox-execute repo ✌️`
   )
+
 }
 
 main()
