@@ -1,6 +1,5 @@
- const { providers, Wallet } = require('ethers')
-const { TokenBridger, getL2Network } = require("arb-ts")
-
+const { providers, Wallet } = require('ethers')
+const { getL2Network } = require("arb-ts")
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 const { AdminTokenBridger } = require('arb-ts/dist/lib/assetBridger/tokenBridger')
 require('dotenv').config()
@@ -33,8 +32,7 @@ const main = async () => {
    * Use l2Network to create an arb-ts TokenBridger instance
    * We'll use TokenBridger for its convenience methods around registering tokens to the custom gateway
    */
-   const l2Network = await getL2Network(l2Provider)
-   const tokenBridge = new TokenBridger(l2Network)
+  const l2Network = await getL2Network(l2Provider)
    
   const adminTokenBridger = new AdminTokenBridger(l2Network)
 
@@ -47,7 +45,7 @@ const main = async () => {
   * We give the custom token contract the address of l1CustomGateway and l1GatewayRouter as well as the initial supply (premine) 
   */
   const L1CustomToken = await ( await ethers.getContractFactory('L1Token') ).connect(l1Wallet)
-  console.log('Deploying the cutsom token to L1')
+  console.log('Deploying cutsom token to L1')
   const l1CustomToken = await L1CustomToken.deploy(l1Gateway, l1Router, premine)
   await l1CustomToken.deployed()
   console.log(`custom token is deployed to L1 at ${l1CustomToken.address}`)
@@ -57,13 +55,13 @@ const main = async () => {
   * We give the custom token contract the address of l2CustomGateway and our l1CustomToken 
   */
   const L2CustomToken = await ( await ethers.getContractFactory('L2Token') ).connect(l2Wallet)
-  console.log('Deploying the cutsom token to L2')
+  console.log('Deploying cutsom token to L2')
   const l2CustomToken = await L2CustomToken.deploy(l2Gateway,l1CustomToken.address)
   await l2CustomToken.deployed()
   console.log(`custom token is deployed to L2 at ${l2CustomToken.address}`)
 
   
-  console.log("Registering the custom token on L2:")
+  console.log("Registering custom token on L2:")
   
   
   const registerTokenTx = await adminTokenBridger.registerCustomToken(
