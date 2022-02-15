@@ -34,7 +34,7 @@ const main = async () => {
    */
   const l2Network = await getL2Network(l2Provider)
    
-  const adminTokenBridger = new AdminTokenBridger(l2Network)
+  const adminTokenBridge = new AdminTokenBridger(l2Network)
 
   const l1Gateway = l2Network.tokenBridge.l1CustomGateway
   const l1Router = l2Network.tokenBridge.l1GatewayRouter
@@ -64,7 +64,7 @@ const main = async () => {
   console.log("Registering custom token on L2:")
   
   
-  const registerTokenTx = await adminTokenBridger.registerCustomToken(
+  const registerTokenTx = await adminTokenBridge.registerCustomToken(
     l1CustomToken.address,
     l2CustomToken.address,
     l1Wallet,
