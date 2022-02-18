@@ -48,7 +48,12 @@ const main = async () => {
   await approveTx.wait()
   console.log('Approved! Depositing:')
 
-  const depositTx = await bridge.deposit(erc20Address, tokenDepositAmount)
+  const param = {
+        erc20L1Address: erc20Address,
+        amount: tokenDepositAmount,
+        destinationAddress: l1Wallet.address
+  }
+  const depositTx =await bridge.deposit(param)
   const depositRec = await depositTx.wait()
   console.log(
     `Deposit initiated: waiting for L2 retryable (takes < 10 minutes; current time: ${new Date().toTimeString()}) `
@@ -62,8 +67,9 @@ const main = async () => {
 
   //Now, we have to wait for the L2 tx to go through
   await l2Provider.waitForTransaction(l2TxHash, undefined, 1000 * 60 * 12)
-  const l2Data = await bridge.getAndUpdateL2TokenData(erc20Address)
-  const l2WalletTokenBalance = l2Data && l2Data.ERC20 && l2Data.ERC20.balance
+  const l2ERC20Address = await bridge.getERC20L2Address(erc20Address)
+  const l2Data = await bridge.l2Bridge.getL2TokenData(l2ERC20Address)
+  const l2WalletTokenBalance = l2Data.balance
 
   console.log(
     `Setup complete: your l2Wallet has ${l2WalletTokenBalance.toString()} DappToken now!`
