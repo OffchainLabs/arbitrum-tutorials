@@ -60,8 +60,12 @@ const main = async () => {
    * The bridge.deposit method handles computing the necessary fees for automatic-execution of retryable tickets — maxSubmission cost & l2 gas price * gas — and will automatically forward the fees to L2 as callvalue
    * Also note that since this is the first DappToken deposit onto L2, a standard Arb ERC20 contract will automatically be deployed.
    */
-
-  const depositTx = await bridge.deposit(erc20Address, tokenDepositAmount)
+  const param = {
+        erc20L1Address: erc20Address,
+        amount: tokenDepositAmount,
+        destinationAddress: l1Wallet.address
+  }
+  const depositTx =await bridge.deposit(param)
   const depositRec = await depositTx.wait()
 
   /**
@@ -112,9 +116,9 @@ const main = async () => {
    * Not that our txn has succeeded, we know that a token contract has been deployed on L2, and our tokens have been deposited onto it.
    * Let's confirm our new token balance on L2!
    */
-
-  const l2Data = await bridge.getAndUpdateL2TokenData(erc20Address)
-  const l2WalletTokenBalance = l2Data && l2Data.ERC20 && l2Data.ERC20.balance
+  const l2ERC20Address = await bridge.getERC20L2Address(erc20Address)
+  const l2Data = await bridge.l2Bridge.getL2TokenData(l2ERC20Address)
+  const l2WalletTokenBalance = l2Data.balance
   console.log(
     `your l2Wallet has ${l2WalletTokenBalance.toString()} DappToken now!`
   )
