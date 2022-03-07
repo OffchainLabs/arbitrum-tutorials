@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "arb-ts": "https://github.com/OffchainLabs/arbitrum#747f527750a61a12ea1efc715ef8f543c3890e1f",
-    "arbitrum": "https://github.com/OffchainLabs/arbitrum#747f527750a61a12ea1efc715ef8f543c3890e1f",
     "dotenv": "^8.2.0"
   }
 }
