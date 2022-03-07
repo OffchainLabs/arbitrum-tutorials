@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "build": "hardhat compile",
-    "custom-token-bridging:arb-ts": "hardhat run scripts/exec-viaLib.js",
-    "custom-token-bridging:dapp": "hardhat run scripts/exec-viaDApp.js"
+    "deposit:arb-ts": "hardhat run scripts/exec-viaLib.js",
+    "deposit:dapp": "hardhat run scripts/exec-viaDApp.js"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
@@ -14,7 +14,8 @@
     "hardhat": "^2.6.6"
   },
   "dependencies": {
-    "arb-ts": "2.0.0-beta.10",
+    "arb-ts": "https://github.com/OffchainLabs/arbitrum#747f527750a61a12ea1efc715ef8f543c3890e1f",
+    "arbitrum": "https://github.com/OffchainLabs/arbitrum#747f527750a61a12ea1efc715ef8f543c3890e1f",
     "dotenv": "^8.2.0"
   }
 }

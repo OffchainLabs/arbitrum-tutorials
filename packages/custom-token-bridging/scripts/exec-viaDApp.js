@@ -1,8 +1,9 @@
-const { providers, Wallet } = require('ethers')
-const { TokenBridger, getL2Network} = require("arb-ts")
+const { providers, Wallet } = require('ethers') 
+
+const { TokenBridger, getL2Network} = require('../node_modules/arb-ts/packages/arb-ts/src/index')
 
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-const { L1ToL2MessageGasEstimator } = require('arb-ts/dist/lib/message/L1ToL2MessageGasEstimator')
+const { L1ToL2MessageGasEstimator } = require('../node_modules/arb-ts/packages/arb-ts/src/lib/message/L1ToL2MessageGasEstimator')
 
 require('dotenv').config()
 requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
@@ -28,8 +29,9 @@ const premine = ethers.utils.parseEther("3")
 
 const main = async () => {
 
-  await arbLog('Setting Up Your Token With The Generic Custom Gateway')
+  //await arbLog('Setting Up Your Token With The Generic Custom Gateway')
   
+
   const l2Network = await getL2Network(l2Provider)
    
 
