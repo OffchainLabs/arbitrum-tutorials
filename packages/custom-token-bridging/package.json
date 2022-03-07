@@ -14,7 +14,7 @@
     "hardhat": "^2.6.6"
   },
   "dependencies": {
-    "arb-ts": "https://github.com/OffchainLabs/arbitrum#747f527750a61a12ea1efc715ef8f543c3890e1f",
+    "arb-ts": "https://gitpkg.now.sh/OffchainLabs/arbitrum/packages/arb-ts?arb-ts-next",
     "dotenv": "^8.2.0"
   }
 }

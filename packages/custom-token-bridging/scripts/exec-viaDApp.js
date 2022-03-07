@@ -1,9 +1,9 @@
 const { providers, Wallet } = require('ethers') 
 
-const { TokenBridger, getL2Network} = require('../node_modules/arb-ts/packages/arb-ts/src/index')
+const { TokenBridger, getL2Network} = require('arb-ts/dist/index')
 
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-const { L1ToL2MessageGasEstimator } = require('../node_modules/arb-ts/packages/arb-ts/src/lib/message/L1ToL2MessageGasEstimator')
+const { L1ToL2MessageGasEstimator } = require('arb-ts/src/lib/message/L1ToL2MessageGasEstimator')
 
 require('dotenv').config()
 requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
