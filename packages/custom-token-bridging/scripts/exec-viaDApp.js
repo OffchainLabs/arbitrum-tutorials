@@ -1,8 +1,6 @@
 const { providers, Wallet } = require('ethers') 
-
-const { TokenBridger, getL2Network} = require('arb-ts/dist/index')
-
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
+const { getL2Network, Erc20Bridger } = require('arb-ts/src')
 const { L1ToL2MessageGasEstimator } = require('arb-ts/src/lib/message/L1ToL2MessageGasEstimator')
 
 require('dotenv').config()
@@ -32,11 +30,9 @@ const main = async () => {
   //await arbLog('Setting Up Your Token With The Generic Custom Gateway')
   
 
-  const l2Network = await getL2Network(l2Provider)
-   
+  const erc20bridger = new Erc20Bridger(getL2Network)
 
 
-  const tokenBridge = new TokenBridger(l2Network)
   const l1ToL2MessageGasEstimate = new L1ToL2MessageGasEstimator(l2Provider)
 
   
