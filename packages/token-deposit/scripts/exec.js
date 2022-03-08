@@ -22,7 +22,7 @@ requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
 const tokenDepositAmount = BigNumber.from(50)
 
 const main = async () => {
-  //await arbLog('Deposit token using arb-ts')
+  await arbLog('Deposit token using arb-ts')
 
   /**
    * Use l2Network to create an arb-ts Erc20Bridger instance
@@ -45,8 +45,12 @@ const main = async () => {
   console.log('Approving:')
   const erc20Address = l1DappToken.address
   
+  /**
+   * We get the address of L1 Gateway for our DappToken, which later helps us to get the initial token balance of Bridge (before deposit)
+   */
   const expectedL1GatewayAddress = await erc20Bridge.getL1GatewayAddress(erc20Address, l1Provider)
   const initialBridgeTokenBalance = await l1DappToken.balanceOf(expectedL1GatewayAddress)
+
   /**
    * The Standard Gateway contract will ultimately be making the token transfer call; thus, that's the contract we need to approve.
    * erc20Bridge.approveToken handles this approval
@@ -63,8 +67,6 @@ const main = async () => {
   console.log(
     `You successfully allowed the Arbitrum Bridge to spend DappToken ${approveRec.transactionHash}`
   )
-
-  
 
   /**
    * Deposit DappToken to L2 using erc20Bridge. This will escrow funds in the Gateway contract on L1, and send a message to mint tokens on L2.
@@ -84,12 +86,22 @@ const main = async () => {
     l2Provider: l2Provider
   })
   
-  const depositRec = await depositTx.wait()
-  
-  const finalBridgeTokenBalance = await l1DappToken.balanceOf(
-    expectedL1GatewayAddress
-  )
+  /**
+   * Now we wait for L1 and L2 side of transactions to be confirmed
+   */
 
+  const depositRec = await depositTx.wait()
+  const message = await depositRec.getL1ToL2Message(l2Provider)
+  const waitRes = await message.waitForStatus()  
+  
+  /**
+   * Get the Bridge token balance
+   */
+  const finalBridgeTokenBalance = await l1DappToken.balanceOf(expectedL1GatewayAddress)
+
+  /**
+   * Check if Bridge balance has been updated correctly
+   */
   expect(
     initialBridgeTokenBalance
       .add(tokenDepositAmount)
@@ -97,19 +109,19 @@ const main = async () => {
     'bridge balance not updated after L1 token deposit txn'
   ).to.be.true
   
-  
+  /**
+   * Check if our l2 wallet DappToken balance has been updated correctly
+   * To do so, we use erc20Bridge to get the l2Token address and contract
+   */
   const l2TokenAddress = await erc20Bridge.getL2ERC20Address(erc20Address, l1Provider)
   const l2Token = erc20Bridge.getL2TokenContract(l2Provider,l2TokenAddress )
-  
-  
 
-  const testWalletL2Balance = (
-    await l2Token.functions.balanceOf(l2Wallet.address))[0]
-
+  const testWalletL2Balance = (await l2Token.functions.balanceOf(l2Wallet.address))[0]
   expect(
     testWalletL2Balance.eq(tokenDepositAmount),
     'l2 wallet not updated after deposit'
   ).to.be.true
+
 }
 
 main()
