@@ -2,15 +2,12 @@ const { providers, Wallet } = require('ethers')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 const { getL2Network } = require('arb-ts')
 const { L1ToL2MessageGasEstimator } = require('arb-ts/dist/lib/message/L1ToL2MessageGasEstimator')
-
-
 require('dotenv').config()
 requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
 
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
  */
-
 const walletPrivateKey = process.env.DEVNET_PRIVKEY
 
 const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
@@ -25,16 +22,16 @@ const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 */
 const premine = ethers.utils.parseEther("3")
 
-
 const main = async () => {
+  await arbLog('Setting Up Your Token With The Generic Custom Gateway')
 
-  //await arbLog('Setting Up Your Token With The Generic Custom Gateway')
-
+  /**
+   * Use l2Network to create an arb-ts L1ToL2MessageGasEstimator instance
+   * We'll use L1ToL2MessageGasEstimator for its convenience methods around gas estimations
+   */
   const l2Network = await getL2Network(l2Provider)
-
   const l1ToL2MessageGasEstimate = new L1ToL2MessageGasEstimator(l2Provider)
   
-
   const l1Gateway = l2Network.tokenBridge.l1CustomGateway
   const l1Router = l2Network.tokenBridge.l1GatewayRouter
   const l2Gateway= l2Network.tokenBridge.l2CustomGateway
@@ -69,7 +66,6 @@ const main = async () => {
   * Base submission cost is a special cost for creating a retryable ticket.
   * We query the submission price using a helper method; the first value returned tells us the best cost of our transaction; that's what we'll be using.
   */
-
   const estimatedPricesForBridge = await l1ToL2MessageGasEstimate.estimateSubmissionPrice(customBridgeCalldataSize)
   const estimatedPricesForRouter = await l1ToL2MessageGasEstimate.estimateSubmissionPrice(routerCalldataSize)
 
@@ -79,10 +75,10 @@ const main = async () => {
   console.log(
     `Current retryable base submission prices for custom bridge and raouter are: ${_submissionPriceWeiForCustomBridge.toString(), _submissionPriceWeiForRouter.toString()}`
   )
+
   /**
   * For the L2 gas price, we simply query it from the L2 provider, as we would when using L1
   */
-  
   const gasPriceBid = await l2Provider.getGasPrice()
   console.log(`L2 gas price: ${gasPriceBid.toString()}`)
 
@@ -91,7 +87,6 @@ const main = async () => {
   */
   const maxGasCustomBridge = 10000000
   const maxGasRouter = 10000000
-
 
   /**
   * With these three values (base submission price, gas price, gas kinit), we can calculate the total callvalue we'll need our L1 transaction to send to L2
@@ -103,8 +98,9 @@ const main = async () => {
   console.log(
     `Registering custom token on L2 with ${callValue.toString()} callValue for L2 fees:`
   )
+
   /** 
-    * Execute regsiterToken)nL2 function from our l1CustomToken
+    * Execute regsiterTokenOnL2() function from our l1CustomToken
     * Arguments include:
     * l2CustomToken.address: The L2 address of your custom token
     * _submissionPriceWeiForCustomBridge: Base submission price (in wei) that is needed to cover the cost for creating the retryable tickets for registering the token on custom gateway

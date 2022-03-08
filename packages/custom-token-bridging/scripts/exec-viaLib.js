@@ -3,14 +3,12 @@ const { getL2Network } = require("arb-ts")
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 const { AdminErc20Bridger } = require('arb-ts/dist/lib/assetBridger/erc20Bridger')
 const { expect } = require ('chai')
-
 require('dotenv').config()
 requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
 
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
  */
-
 const walletPrivateKey = process.env.DEVNET_PRIVKEY
 
 const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
@@ -25,17 +23,14 @@ const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 */
 const premine = ethers.utils.parseEther("3")
 
-
 const main = async () => {
-
-  //await arbLog('Setting Up Your Token With The Generic Custom Gateway')
+  await arbLog('Setting Up Your Token With The Generic Custom Gateway Using arb-ts Library')
 
   /**
-   * Use l2Network to create an arb-ts TokenBridger instance
-   * We'll use TokenBridger for its convenience methods around registering tokens to the custom gateway
+   * Use l2Network to create an arb-ts AdminErc20Bridger instance
+   * We'll use AdminErc20Bridger for its convenience methods around registering tokens to the custom gateway
    */
   const l2Network = await getL2Network(l2Provider)
-   
   const adminTokenBridge = new AdminErc20Bridger(l2Network)
 
   const l1Gateway = l2Network.tokenBridge.l1CustomGateway
@@ -64,8 +59,10 @@ const main = async () => {
 
   
   console.log("Registering custom token on L2:")
-  
-  
+
+  /**
+  * ٍRegister custom token on our custom gateway
+  */
   const registerTokenTx = await adminTokenBridge.registerCustomToken(
     l1CustomToken.address,
     l2CustomToken.address,
@@ -73,15 +70,13 @@ const main = async () => {
     l2Provider
   )
   
-  
-
   const registerTokenRec = await registerTokenTx.wait()
   console.log(
     `Registering token txn confirmed on L1! 🙌 ${registerTokenRec.transactionHash}`
   )
 
-  const l1ToL2Messages = await registerTokenRec.getL1ToL2Messages(l2Provider)
-    expect(l1ToL2Messages.length, 'Should be 2 messages.').to.eq(2)
+  const l1ToL2Msgs = await registerTokenRec.getL1ToL2Messages(l2Provider)
+    expect(l1ToL2Msgs.length, 'Should be 2 messages.').to.eq(2)
  }
 
 main()
