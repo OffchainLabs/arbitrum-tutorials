@@ -1,7 +1,9 @@
 const { providers, Wallet } = require('ethers')
 const { getL2Network } = require("arb-ts")
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-const { AdminTokenBridger } = require('arb-ts/dist/lib/assetBridger/tokenBridger')
+const { AdminErc20Bridger } = require('arb-ts/dist/lib/assetBridger/erc20Bridger')
+const { expect } = require ('chai')
+
 require('dotenv').config()
 requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
 
@@ -26,7 +28,7 @@ const premine = ethers.utils.parseEther("3")
 
 const main = async () => {
 
-  await arbLog('Setting Up Your Token With The Generic Custom Gateway')
+  //await arbLog('Setting Up Your Token With The Generic Custom Gateway')
 
   /**
    * Use l2Network to create an arb-ts TokenBridger instance
@@ -34,7 +36,7 @@ const main = async () => {
    */
   const l2Network = await getL2Network(l2Provider)
    
-  const adminTokenBridge = new AdminTokenBridger(l2Network)
+  const adminTokenBridge = new AdminErc20Bridger(l2Network)
 
   const l1Gateway = l2Network.tokenBridge.l1CustomGateway
   const l1Router = l2Network.tokenBridge.l1GatewayRouter
@@ -78,7 +80,8 @@ const main = async () => {
     `Registering token txn confirmed on L1! 🙌 ${registerTokenRec.transactionHash}`
   )
 
-  
+  const l1ToL2Messages = await registerTokenRec.getL1ToL2Messages(l2Provider)
+    expect(l1ToL2Messages.length, 'Should be 2 messages.').to.eq(2)
  }
 
 main()

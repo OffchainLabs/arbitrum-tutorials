@@ -4,7 +4,7 @@
   "scripts": {
     "build": "hardhat compile",
     "deposit:arb-ts": "hardhat run scripts/exec-viaLib.js",
-    "deposit:dapp": "hardhat run scripts/exec-viaDApp.js"
+    "deposit:dapp": "hardhat run scripts/exec-viaDapp.js"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
@@ -14,7 +14,7 @@
     "hardhat": "^2.6.6"
   },
   "dependencies": {
-    "arb-ts": "https://gitpkg.now.sh/OffchainLabs/arbitrum/packages/arb-ts?arb-ts-next",
+    "arb-ts": "2.0.0-beta.13",
     "dotenv": "^8.2.0"
   }
 }

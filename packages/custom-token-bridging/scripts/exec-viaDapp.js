@@ -1,7 +1,8 @@
 const { providers, Wallet } = require('ethers') 
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-const { getL2Network, Erc20Bridger } = require('arb-ts/src')
-const { L1ToL2MessageGasEstimator } = require('arb-ts/src/lib/message/L1ToL2MessageGasEstimator')
+const { getL2Network } = require('arb-ts')
+const { L1ToL2MessageGasEstimator } = require('arb-ts/dist/lib/message/L1ToL2MessageGasEstimator')
+
 
 require('dotenv').config()
 requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
@@ -28,21 +29,15 @@ const premine = ethers.utils.parseEther("3")
 const main = async () => {
 
   //await arbLog('Setting Up Your Token With The Generic Custom Gateway')
-  
 
-  const erc20bridger = new Erc20Bridger(getL2Network)
-
+  const l2Network = await getL2Network(l2Provider)
 
   const l1ToL2MessageGasEstimate = new L1ToL2MessageGasEstimator(l2Provider)
-
   
-
 
   const l1Gateway = l2Network.tokenBridge.l1CustomGateway
   const l1Router = l2Network.tokenBridge.l1GatewayRouter
   const l2Gateway= l2Network.tokenBridge.l2CustomGateway
-
-
 
   /**
   * Deploy our custom token smart contract to L1
@@ -120,7 +115,7 @@ const main = async () => {
     * valueForGateway: the callvalue we need for our custom gateway
     * valueForRouter: the callvalue we need for the router
     */ 
-  const registerTokenTx = await l1CustomToken.registerTokenOnL2(
+   const registerTokenTx = await l1CustomToken.registerTokenOnL2(
     l2CustomToken.address,
     _submissionPriceWeiForCustomBridge,
     _submissionPriceWeiForRouter,
@@ -137,99 +132,10 @@ const main = async () => {
 
   const registerTokenRec = await registerTokenTx.wait()
   console.log(
-    `Registering token txn confirmed on L1! 🙌 ${registerTokenRec.transactionHash}`
+    `Registering token txn confirmed on L1! 🙌 ${registerTokenRec.transactionHash}`,
+    'You can now go ahead and transfer(deposit) your custom token to L2'
   )
-
-  /**
-   * The L1 side is confirmed; now we listen and wait for the for the Sequencer to include the L2 side; we can do this by computing the expected txn hash of the L2 transaction.
-   * To compute this txn hash, we need our message's "sequence numbers", unique identifiers of each L1 to L2 message. We'll fetch them from the event logs with a helper method
-   */
-  
-  const l1ToL2Messages = await registerTokenRec.getL1ToL2Messages(l2Wallet)
-  console.log(l1ToL2Messages)
-   
-   
-   
-
-  
-
-
-  // /**
-  //  * ... and now we wait. Here we're waiting for the Sequencer to include the L2 message in its off-chain queue. The Sequencer should include it in under 10 minutes.
-  //  */
-  
-  //  console.warn('Now we wait for L2 side of the transaction to be executed ⏳')
-
-  //  const l1ToL2MsgState = await l1ToL2Msg.wait()
- 
-  //  /**
-  //   * Here we get the status of our L2 transaction.
-  //   * If it is REDEEMED (i.e., succesfully executed), our L2 token balance should be updated
-  //   */
-   
-  //  if (l1ToL2MsgState.status == L1ToL2MessageStatus.REDEEMED) {
- 
-  //    console.log(`L2 transaction is now executed 🥳 and here is its hash: ${l1ToL2Msg.l2TxHash}`)
-  //  }  
-  //  else { 
-  //    console.log(`L2 transaction failed!`)
-  //  }
-
-
-
-
-
-
-
-
-
-
-  // /**
-  //  * In principle, a single L1 txn can trigger any number of L1-to-L2 messages (each with its own sequencer number). 
-  //  * In this case, the registerTokenOnL2 method created 2 L1-to-L2 messages; (1) one to set the L1 token to the Custom Gateway via the Router, and (2) another to set the L1 token to its L2 token address via the Generic-Custom Gateway
-  // */
-
-  // if(inboxSeqNums.length !== 2) {
-  //   throw new Error("Inbox triggered incorrectly")
-  // }
-
-  // const [ customBridgeSeqNum, routerSeqNum ] = inboxSeqNums
-
-  // const customBridgeL2Tx = await tokenBridge.calculateL2RetryableTransactionHash(customBridgeSeqNum)
-  // const routerL2Tx = await tokenBridge.calculateL2RetryableTransactionHash(routerSeqNum)
-
-  // /**
-  //  * Now we wait for the Sequencer to include both messages in its off chain inbox.
-  //  */
-  //  console.log(
-  //   `waiting for L2 tx 🕐... (should take < 10 minutes, current time: ${new Date().toTimeString()}`
-  // )
-
-  // const customBridgeL2Rec = await l2Provider.waitForTransaction(customBridgeL2Tx)
-  // const routerL2Rec = await l2Provider.waitForTransaction(routerL2Tx)
-
-  // console.log(`L2 retryable txn executed 🥳 ${customBridgeL2Rec.transactionHash}, ${routerL2Rec.transactionHash}`)
-
-
-
-
-
-
-
-
-
-
-  // const l1ToL2Msg = await depositRec.getL1ToL2Message(l2Wallet)
-
-
-
-
-
-
-
-
-
- }
+}
 
 main()
   .then(() => process.exit(0))
