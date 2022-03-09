@@ -1,6 +1,5 @@
 const { utils, providers, Wallet } = require('ethers')
 const { ethers } = require('hardhat')
-const { BridgeHelper } = require('arb-ts')
 const { parseEther } = utils
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
@@ -25,11 +24,7 @@ const ethFromL2WithdrawAmount = parseEther('0.000001')
 
 const main = async () => {
   await arbLog('Withdraw Eth through DApp')
-  /**
-   * Use wallets to create an arb-ts bridge instance
-   * We'll use bridge for convenience methods
-   */
-
+ 
   /**
    * First, let's check our L2 wallet's initial ETH balance and ensure there's some ETH to withdraw
    */
@@ -68,16 +63,8 @@ const main = async () => {
   /**
    * And with that, our withdrawal is initiated! No additional time-sensitive actions are required.
    * Any time after the transaction's assertion is confirmed, funds can be transferred out of the bridge via the outbox contract
-   * We'll display the withdrawals event data here:
    */
-
-  const withdrawEventData = (
-    await BridgeHelper.getWithdrawalsInL2Transaction(withdrawRec, l2Provider)
-  )[0]
-
   console.log(`Ether withdrawal initiated! 🥳 ${withdrawRec.transactionHash}`)
-  console.log('Withdrawal data:', withdrawEventData)
-
   console.log(
     `To to claim funds (after dispute period), see outbox-execute repo ✌️`
   )
