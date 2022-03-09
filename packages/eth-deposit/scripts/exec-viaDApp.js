@@ -1,7 +1,8 @@
 const { utils, providers, Wallet, BigNumber } = require('ethers')
 const { ethers } = require('hardhat')
-const { EthBridger, getL2Network }  = require ('arb-ts')
+const { EthBridger, getL2Network, L1ToL2MessageStatus }  = require ('arb-ts')
 const { parseEther } = utils
+const { expect } = require('chai')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
 
@@ -26,7 +27,10 @@ const ethToL2DepositAmount = parseEther('0.0001')
 
 const main = async () => {
   const wait = (ms = 0) => {
-    return new Promise(res => setTimeout(res, ms || 1000))}
+    return new Promise(res => setTimeout(res, ms))}
+
+
+
   //await arbLog('Deposit Eth via arb-ts')
 
   /**
@@ -36,8 +40,6 @@ const main = async () => {
   const l2Network = await getL2Network(l2Provider)
   const ethBridger = new EthBridger(l2Network)
   const inboxAddress = ethBridger.l2Network.ethBridge.inbox
-
-
 
   /**
    * First, let's check the l2Wallet's initial ETH balance (before deposit txn)
@@ -66,22 +68,31 @@ const main = async () => {
     BigNumber.from(10000000000000),
     { value: ethToL2DepositAmount }
   )
-  const rec = await depositTx.wait()
-  console.warn('deposit L1 receipt is:', rec.transactionHash)
 
+  const depositRec = await depositTx.wait()
+  console.warn('deposit L1 receipt is:', depositRec.transactionHash)
+  
+  /**
+   * Now we wait for L1 and L2 side of transactions to be confirmed
+   */
+  console.log(
+    `Deposit initiated: waiting for L2 retryable (takes < 10 minutes; current time: ${new Date().toTimeString()}) `
+  )
+
+  /**
+   * We check if l2Wallet ETH balance is properly updated after the deposit
+   */
   for (let i = 0; i < 60; i++) {
     console.log('balance check attempt ' + (i + 1))
-    await wait(5000)
-    const testWalletL2EthBalance = await l2Wallet.getBalance()
-    if (l2WalletInitialEthBalance.add(ethToL2DepositAmount).eq(testWalletL2EthBalance)) {
-      console.log(`balance updated!  ${testWalletL2EthBalance.toString()}`)
-      //expect(true).to.be.true
+    await wait(50000)
+    const l2WalletUpdatedEthBalance = await l2Wallet.getBalance()
+    if (l2WalletUpdatedEthBalance.gt(l2WalletInitialEthBalance)) {
+      console.log(`balance updated!  ${l2WalletUpdatedEthBalance.toString()}`)
+      expect(true).to.be.true
       return
       break
     }
   }
-
-  
 }
 
 main()

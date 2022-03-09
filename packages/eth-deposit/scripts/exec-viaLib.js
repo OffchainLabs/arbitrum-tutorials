@@ -1,5 +1,5 @@
 const { utils, providers, Wallet } = require('ethers')
-const { EthBridger, getL2Network, L1ToL2MessageStatus} = require("arb-ts")
+const { EthBridger, getL2Network }  = require ('arb-ts')
 const { parseEther } = utils
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
@@ -9,7 +9,6 @@ requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
  */
-
 const walletPrivateKey = process.env.DEVNET_PRIVKEY
 
 const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
@@ -24,6 +23,7 @@ const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 const ethToL2DepositAmount = parseEther('0.0001')
 
 const main = async () => {
+  await arbLog('Deposit Eth via arb-ts')
 
   /**
    * Use l2Network to create an arb-ts EthBridger instance
@@ -31,7 +31,7 @@ const main = async () => {
    */
 
   const l2Network = await getL2Network(l2Provider)
-  const ethBridge = new EthBridger(l2Network)
+  const ethBridger = new EthBridger(l2Network)
 
   /**
    * First, let's check the l2Wallet initial ETH balance
@@ -47,7 +47,7 @@ const main = async () => {
    * (3) l2Provider: An l2 provider
    */
 
-  const depositTx = await ethBridge.deposit({
+  const depositTx = await ethBridger.deposit({
     amount: ethToL2DepositAmount,
     l1Signer: l1Wallet,
     l2Provider: l2Provider
@@ -61,7 +61,7 @@ const main = async () => {
    * First, we get our our L1-to-L2 message
    */
 
-  const l1ToL2Msg = await depositRec.getL1ToL2Message(l2Wallet)
+  const l1ToL2Msg = await depositRec.getL1ToL2Message(l2Provider)
 
   /**
    * ... and now we wait. Here we're waiting for the Sequencer to include the L2 message in its off-chain queue. The Sequencer should include it in under 10 minutes.
@@ -69,26 +69,16 @@ const main = async () => {
   
   console.warn('Now we wait for L2 side of the transaction to be executed ⏳')
 
-  const l1ToL2MsgState = await l1ToL2Msg.wait()
+  const l1ToL2MsgState = await l1ToL2Msg.waitForStatus()
+
   /**
-   * Here we get the status of our L2 transaction.
-   * If it is REDEEMED (i.e., succesfully executed), our L2 balance should be updated
+   * Our l2Wallet ETH balance should be updated now
    */
+  const l2WalletUpdatedEthBalance = await l2Wallet.getBalance()
+  console.log(
+    `your L2 ETH balance is updated from ${l2WalletInitialEthBalance.toString()} to ${l2WalletUpdatedEthBalance.toString()}`
+  )
 
-  console.log(l1ToL2MsgState.status.toString())
-  // if (l1ToL2MsgState.status == L1ToL2MessageStatus.REDEEMED) {
-
-  //   console.log(`L2 transaction is now executed! ${l1ToL2MsgState.l2TxReceipt}`)
-  //   const l2WalletUpdatedEthBalance = await l2Wallet.getBalance()
-
-  //   console.log(
-  //     `your L2 balance is updated from ${l2WalletInitialEthBalance.toString()} to ${l2WalletUpdatedEthBalance.toString()}`
-  //   )
-  // } 
-  
-  // else { 
-  //   console.log(`L2 transaction failed!`)
-  // }
 
 }
 
