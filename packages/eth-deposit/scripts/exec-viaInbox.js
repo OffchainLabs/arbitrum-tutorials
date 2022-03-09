@@ -28,6 +28,9 @@ const ethToL2DepositAmount = parseEther('0.0001')
 const main = async () => {
   await arbLog('Deposit Eth via the Inbox')
 
+  const wait = (ms = 0) => {
+    return new Promise(res => setTimeout(res, ms))}
+
   /**
    * Use l2Network to create an arb-ts EthBridger instance
    * We'll use EthBridger for its convenience methods around transferring ETH to L2
@@ -56,12 +59,39 @@ const main = async () => {
     value: ethToL2DepositAmount,
   })
   const depositRec = await depositTx.wait()
-  const finalInboxBalance = await l1Provider.getBalance(inboxAddress)
-    expect(
-      initialInboxBalance.add(ethToL2DepositAmount).eq(finalInboxBalance),
-      'balance failed to update after eth deposit'
-    )
+  console.warn('deposit L1 receipt is:', depositRec.transactionHash)
   
+  /**
+   * We check if inbox ETH balance is properly updated
+   */
+  const finalInboxBalance = await l1Provider.getBalance(inboxAddress)
+  expect(
+    initialInboxBalance.add(ethToL2DepositAmount).eq(finalInboxBalance),
+    'balance failed to update after eth deposit'
+  )
+
+  /**
+   * Now we wait for L1 and L2 side of transactions to be confirmed
+   */
+   console.log(
+    `Deposit initiated: waiting for L2 retryable (takes < 10 minutes; current time: ${new Date().toTimeString()}) `
+  )
+
+  /**
+   * We check if l2Wallet ETH balance is properly updated after the deposit
+   */
+  for (let i = 0; i < 60; i++) {
+    console.log('balance check attempt ' + (i + 1))
+    await wait(50000)
+    const l2WalletUpdatedEthBalance = await l2Wallet.getBalance()
+    if (l2WalletUpdatedEthBalance.gt(l2WalletInitialEthBalance)) {
+      console.log(`balance updated! ${l2WalletUpdatedEthBalance.toString()}`)
+      expect(true).to.be.true
+      return
+      break
+    }
+  }
+ 
 }
 
 main()

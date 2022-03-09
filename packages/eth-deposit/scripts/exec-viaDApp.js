@@ -1,6 +1,6 @@
 const { utils, providers, Wallet, BigNumber } = require('ethers')
 const { ethers } = require('hardhat')
-const { EthBridger, getL2Network, L1ToL2MessageStatus }  = require ('arb-ts')
+const { EthBridger, getL2Network}  = require ('arb-ts')
 const { parseEther } = utils
 const { expect } = require('chai')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
@@ -26,12 +26,10 @@ const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 const ethToL2DepositAmount = parseEther('0.0001')
 
 const main = async () => {
+  await arbLog('Deposit Eth via arb-ts')
+
   const wait = (ms = 0) => {
     return new Promise(res => setTimeout(res, ms))}
-
-
-
-  //await arbLog('Deposit Eth via arb-ts')
 
   /**
    * Use l2Network to create an arb-ts EthBridger instance
