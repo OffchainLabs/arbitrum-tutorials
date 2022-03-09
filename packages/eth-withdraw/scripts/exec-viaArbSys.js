@@ -1,18 +1,17 @@
 const { utils, providers, Wallet } = require('ethers')
-const { ArbSys__factory, BridgeHelper } = require('arb-ts')
 const { parseEther } = utils
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
+const { ArbSys__factory } = require('arb-ts/dist/lib/abi/factories/ArbSys__factory')
+const {expect} = require ('chai')
 require('dotenv').config()
-
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC'])
+
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
  */
-
 const walletPrivateKey = process.env.DEVNET_PRIVKEY
 
 const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
-
 const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
 /**
@@ -22,13 +21,11 @@ const ethFromL2WithdrawAmount = parseEther('0.000001')
 
 const main = async () => {
   await arbLog('Withdraw Eth via ArbSys')
-  /**
-    *  First, let's check our L2 wallet's initial ETH balance and ensure there's some ETH to withdraw
 
-    */
-  const l2WalletInitialEthBalance = await l2Provider.getBalance(
-    l2Wallet.address
-  )
+  /**
+  * First, let's check our L2 wallet's initial ETH balance and ensure there's some ETH to withdraw
+  */
+  const l2WalletInitialEthBalance = await l2Wallet.getBalance()
 
   if (l2WalletInitialEthBalance.lt(ethFromL2WithdrawAmount)) {
     console.log(
@@ -60,18 +57,12 @@ const main = async () => {
    */
   const withdrawRec = await withdrawTx.wait()
 
-  /**
-   * And with that, our withdrawal is initiated! No additional time-sensitive actions are required.
-   * Any time after the transaction's assertion is confirmed, funds can be transferred out of the bridge via the outbox contract
-   * We'll display the withdrawals event data here:
-   */
-
-  const withdrawEventData = (
-    await BridgeHelper.getWithdrawalsInL2Transaction(withdrawRec, l2Provider)
-  )[0]
+  expect(withdrawRec.status).to.equal(
+    1,
+    'initiate eth withdraw txn failed'
+  )
 
   console.log(`Ether withdrawal initiated! 🥳 ${withdrawRec.transactionHash}`)
-  console.log('Withdrawal data:', withdrawEventData)
 
   console.log(
     `To to claim funds (after dispute period), see outbox-execute repo ✌️`
