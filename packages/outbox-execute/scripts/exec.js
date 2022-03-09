@@ -1,5 +1,5 @@
 const { providers, Wallet } = require('ethers')
-const { L2TransactionReceipt, getRawArbTransactionReceipt, L2ToL1Message, L2ToL1MessageReader, getL2Network, L2ToL1MessageStatus, L1ToL2MessageStatus } = require('arb-ts')
+const { L2TransactionReceipt, getL2Network, L2ToL1MessageStatus } = require('arb-ts')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 
 require('dotenv').config()
@@ -19,13 +19,12 @@ const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
 const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
 
 const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
-const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
 module.exports = async txnHash => {
-  //await arbLog('Outbox Execution')
+  await arbLog('Outbox Execution')
   /**
    / * We start with a txn hash; we assume this is transaction that triggered an L2 to L1 Message on L2 (i.e., ArbSys.sendTxToL1)
-   */
+  */
 
   if (!txnHash)
     throw new Error(
@@ -33,90 +32,28 @@ module.exports = async txnHash => {
     )
   if (!txnHash.startsWith('0x') || txnHash.trim().length != 66)
     throw new Error(`Hmm, ${txnHash} doesn't look like a txn hash...`)
-  /**
-   * Use wallets to create an arb-ts bridge instance
-   * We'll use bridge for its convenience methods around outbox-execution
-   */
-  //const bridge = await Bridge.init(l1Wallet, l2Wallet)
-
+  
   /**
    * First, let's find the Arbitrum txn from the txn hash provided
    */
-  const initiatingTxnReceipt = await getRawArbTransactionReceipt(l2Provider, txnHash, l1Provider)
-
-
-  const l2Network = await getL2Network(l2Provider)
-  const myAddress = await l1Wallet.getAddress()
-  const withdrawEventsData = await L2ToL1Message.getL2ToL1MessageLogs
-  (
-    l2Provider,
-    { fromBlock: initiatingTxnReceipt.blockNumber, toBlock: 'latest' },
-    undefined,
-    myAddress
-  )
-
-  //console.log('Withdrawal data:', withdrawEventsData)
-
-  
-  
-
-  // await initiatingTxnReceipt.getL2ToL1Messages(l1Wallet, l2Network) 
-  
-  // if (!initiatingTxnReceipt)
-  //   throw new Error(
-  //     `No Arbitrum transaction found with provided txn hash: ${txnHash}`
-  //   )
-
-    //console.log(initiatingTxnReceipt)
-
-  // /**
-  //  * In order to trigger the outbox message, we'll first need the outgoing messages batch number and index; together these two things uniquely identify an outgoing message.
-  //  * To get this data, we'll use getWithdrawalsInL2Transaction, which retrieves this data from the L2 events logs
-  //  */
-
-  // const outGoingMessagesFromTxn = await bridge.getWithdrawalsInL2Transaction(
-  //   initiatingTxnReceipt
-  // )
-
-  // if (outGoingMessagesFromTxn.length === 0)
-  //   throw new Error(`Txn ${txnHash} did not initiate an outgoing messages`)
+  const receipt = await l2Provider.getTransactionReceipt(txnHash)
+  const l2Receipt = new L2TransactionReceipt(receipt)
 
   /**
    * Note that in principle, a single transaction could trigger any number of outgoing messages; the common case will be there's only one.
    * For the sake of this script, we assume there's only one / just grad the first one.
    */
+  const l2Network = await getL2Network(l2Provider)
+  const messages = await l2Receipt.getL2ToL1Messages(l1Wallet, l2Network)
+  const l2ToL1Msg = messages[0]
 
 
-  // /**
-  //  * Note that in principle, a single transaction could trigger any number of outgoing messages; the common case will be there's only one.
-  //  * For the sake of this script, we assume there's only one / just grad the first one.
-  //  */
-  const { batchNumber, indexInBatch } = withdrawEventsData[0]
+  /**
+   * before we try to execute out message, we need to make sure it's confirmed! (It can only be confirmed after the dispute period; Arbitrum is an optimistic rollup after-all)
+   * Here we'll do a period check; once L2ToL1MessageStatus tells us our txn is confirm, we'll move on to execution
+   */
 
-  // /**
-  //  * We've got batchNumber and IndexInBatch in hand; but before we try to execute out message, we need to make sure it's confirmed! (It can only be confirmed after the dispute period; Arbitrum is an optimistic rollup after-all)
-  //  * Here we'll do a period check; once getOutGoingMessageState tells us our txn is confirm, we'll move on to execution
-  //  */
-  const outgoingMessageState = await initiatingTxnReceipt.status
-    
- // const ethBridger = new EthBridger(l2Network)
-    //console.log(withdrawMessage.toString())
-  
-  const receipt = await l2Provider.getTransactionReceipt(txnHash)
-    
-    
-   
-
-const l2Receipt = new L2TransactionReceipt(receipt)
-
-const messages = await l2Receipt.getL2ToL1Messages(l1Wallet, l2Network)
-
-
-//console.log(messages)
-
-if (l2Receipt.status == L2ToL1MessageStatus.UNCONFIRMED){console.log('yay')}
-
-
+  const outgoingMessageState = await l2Receipt.status
   const timeToWaitMs = 1000 * 60
   while (outgoingMessageState !== L2ToL1MessageStatus.CONFIRMED) {
     console.log(`Message not yet confirmed; we'll wait ${timeToWaitMs / 1000} seconds and try again`)
@@ -144,14 +81,12 @@ if (l2Receipt.status == L2ToL1MessageStatus.UNCONFIRMED){console.log('yay')}
   }
 
   console.log('Transaction confirmed! Trying to execute now')
+  
   /**
    * Now that its confirmed, we can retrieve the Merkle proof data from the chain, and execute our message in its outbox entry.
-   * triggerL2ToL1Transaction handles these steps
    */
-//const res = await messages.
-  
-//   bridge.triggerL2ToL1Transaction(batchNumber, indexInBatch)
-//  const rec = await res.wait()
-
-//   console.log('Done! Your transaction is executed', rec)
+  const proofInfo = await l2ToL1Msg.tryGetProof(l2Provider)
+  const res = await l2ToL1Msg.execute(proofInfo)
+  const rec = await res.wait()
+  console.log('Done! Your transaction is executed', rec)
 }
