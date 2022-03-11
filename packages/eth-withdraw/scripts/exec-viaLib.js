@@ -2,7 +2,6 @@ const { utils, providers, Wallet } = require('ethers')
 const { EthBridger, getL2Network, L2ToL1Message }  = require ('arb-ts')
 const { parseEther } = utils
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-const { expect } = require('chai')
 require('dotenv').config()
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
 

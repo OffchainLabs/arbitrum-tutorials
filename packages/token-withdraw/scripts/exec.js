@@ -29,8 +29,8 @@ const main = async () => {
    * Use l2Network to create an arb-ts Erc20Bridger instance
    * We'll use Erc20Bridger for its convenience methods around transferring token to L2 and back to L1
    */
-   const l2Network = await getL2Network(l2Provider)
-   const erc20Bridge = new Erc20Bridger(l2Network)
+  const l2Network = await getL2Network(l2Provider)
+  const erc20Bridge = new Erc20Bridger(l2Network)
 
   /**
    * Setup: we'll deploy a token contract, then approve and transfer onto L2 so we have some tokens to withdraw to L1
@@ -54,7 +54,7 @@ const main = async () => {
    * (1) l1Signer: The L1 address transferring token to L2
    * (2) erc20L1Address: L1 address of the ERC20 token to be deposited to L2
    */
-   const approveTx = await erc20Bridge.approveToken({
+  const approveTx = await erc20Bridge.approveToken({
     l1Signer: l1Wallet,
     erc20L1Address: erc20Address
   })  

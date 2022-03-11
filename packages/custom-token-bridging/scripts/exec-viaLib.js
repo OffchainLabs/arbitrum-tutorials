@@ -31,7 +31,7 @@ const main = async () => {
    * We'll use AdminErc20Bridger for its convenience methods around registering tokens to the custom gateway
    */
   const l2Network = await getL2Network(l2Provider)
-  const adminTokenBridge = new AdminErc20Bridger(l2Network)
+  const adminTokenBridger = new AdminErc20Bridger(l2Network)
 
   const l1Gateway = l2Network.tokenBridge.l1CustomGateway
   const l1Router = l2Network.tokenBridge.l1GatewayRouter
@@ -62,7 +62,7 @@ const main = async () => {
   /**
   * ٍRegister custom token on our custom gateway
   */
-  const registerTokenTx = await adminTokenBridge.registerCustomToken(
+  const registerTokenTx = await adminTokenBridger.registerCustomToken(
     l1CustomToken.address,
     l2CustomToken.address,
     l1Wallet,

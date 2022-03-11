@@ -89,7 +89,9 @@ const main = async () => {
   /**
    * Now we wait for L1 and L2 side of transactions to be confirmed
    */
-
+  console.log(
+    `Deposit initiated: waiting for L2 retryable (takes < 10 minutes; current time: ${new Date().toTimeString()}) `
+  )
   const depositRec = await depositTx.wait()
   const message = await depositRec.getL1ToL2Message(l2Provider)
   const waitRes = await message.waitForStatus()  
@@ -110,7 +112,7 @@ const main = async () => {
   ).to.be.true
   
   /**
-   * Check if our l2 wallet DappToken balance has been updated correctly
+   * Check if our l2Wallet DappToken balance has been updated correctly
    * To do so, we use erc20Bridge to get the l2Token address and contract
    */
   const l2TokenAddress = await erc20Bridge.getL2ERC20Address(erc20Address, l1Provider)
