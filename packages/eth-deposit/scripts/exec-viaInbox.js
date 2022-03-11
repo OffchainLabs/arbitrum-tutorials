@@ -1,8 +1,8 @@
 const { utils, providers, Wallet } = require('ethers')
-const { EthBridger, getL2Network } = require ('arb-ts')
+const { getL2Network } = require ('arb-ts')
 const { parseEther } = utils
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-const { IInbox__factory } = require('arb-ts/dist/lib/abi')
+const { IInbox__factory } = require('arb-ts/dist/lib/abi/factories/IInbox__factory')
 const {expect} = require ('chai')
 require('dotenv').config()
 
@@ -35,10 +35,8 @@ const main = async () => {
    * Use l2Network to create an arb-ts EthBridger instance
    * We'll use EthBridger for its convenience methods around transferring ETH to L2
    */
-   const l2Network = await getL2Network(l2Provider)
-   const ethBridger = new EthBridger(l2Network)
-   const inboxAddress = ethBridger.l2Network.ethBridge.inbox
-   
+  const l2Network = await getL2Network(l2Provider)
+  const inboxAddress = l2Network.ethBridge.inbox
 
   /**
    * First, let's check the l2Wallet initial ETH balance (before our deposit)

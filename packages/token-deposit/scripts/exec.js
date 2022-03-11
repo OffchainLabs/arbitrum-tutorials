@@ -78,7 +78,6 @@ const main = async () => {
    * (2) l1Signer: The L1 address transferring token to L2
    * (3) l2Provider: An l2 provider
    */
-
   const depositTx = await erc20Bridge.deposit({
     amount: tokenDepositAmount,
     erc20L1Address: erc20Address,
@@ -89,12 +88,15 @@ const main = async () => {
   /**
    * Now we wait for L1 and L2 side of transactions to be confirmed
    */
-  console.log(
-    `Deposit initiated: waiting for L2 retryable (takes < 10 minutes; current time: ${new Date().toTimeString()}) `
-  )
   const depositRec = await depositTx.wait()
-  const message = await depositRec.getL1ToL2Message(l2Provider)
-  const waitRes = await message.waitForStatus()  
+  const l2Result = await depositRec.waitForL2(l2Provider)
+
+  /**
+   * The `complete` boolean tells us if the l1 to l2 message was successul
+   */
+  l2Result.complete ? 
+    console.log(`L2 message successful: status: ${L1ToL2MessageStatus[l2Result.status]}`) : 
+    console.log(`L2 message failed: status ${L1ToL2MessageStatus[l2Result.status]}`)
   
   /**
    * Get the Bridge token balance

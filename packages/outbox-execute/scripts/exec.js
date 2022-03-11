@@ -47,45 +47,31 @@ module.exports = async txnHash => {
   const messages = await l2Receipt.getL2ToL1Messages(l1Wallet, l2Network)
   const l2ToL1Msg = messages[0]
 
-
   /**
-   * before we try to execute out message, we need to make sure it's confirmed! (It can only be confirmed after the dispute period; Arbitrum is an optimistic rollup after-all)
-   * Here we'll do a period check; once L2ToL1MessageStatus tells us our txn is confirm, we'll move on to execution
+   * before we try to execute out message, we need to make sure the l2 block it's included in is confirmed! (It can only be confirmed after the dispute period; Arbitrum is an optimistic rollup after-all)
+   * waitUntilOutboxEntryCreated() waits until the item outbox entry exists
    */
-
-  const outgoingMessageState = await l2Receipt.status
   const timeToWaitMs = 1000 * 60
-  while (outgoingMessageState !== L2ToL1MessageStatus.CONFIRMED) {
-    console.log(`Message not yet confirmed; we'll wait ${timeToWaitMs / 1000} seconds and try again`)
-    await wait(timeToWaitMs)
-    const outgoingMessageState = await l2Receipt.status
+  console.log("Waiting for the outbox entry to be created. This only happens when the L2 block is confirmed on L1, ~1 week after it's creation.")
+  await l2ToL1Msg.waitUntilOutboxEntryCreated(timeToWaitMs)
+  console.log('Outbox entry exists! Trying to execute now')
 
-    switch (outgoingMessageState) {
-      case 0: { //NOT_FOUND
-        console.log('Message not found; something strange and bad happened')
-        process.exit(1)
-        break
-      }
-      case 3: { //EXECUTED
-        console.log(`Message already executed! Nothing else to do here`)
-        process.exit(1)
-        break
-      }
-      case 1: { //UNCONFIRMED
-        break
-      }
-
-      default:
-        break
-    }
-  }
-
-  console.log('Transaction confirmed! Trying to execute now')
-  
   /**
-   * Now that its confirmed, we can retrieve the Merkle proof data from the chain, and execute our message in its outbox entry.
+   * Now fetch the proof info we'll need in order to execute, or check execution
    */
   const proofInfo = await l2ToL1Msg.tryGetProof(l2Provider)
+
+  /**
+   * Execute if not alredy executed
+   */
+  if(await l2ToL1Msg.hasExecuted()) {
+    console.log(`Message already executed! Nothing else to do here`)
+    process.exit(1)
+  }
+
+  /**
+   * Now that its confirmed and not executed, we can use the Merkle proof data to execute our message in its outbox entry.
+   */
   const res = await l2ToL1Msg.execute(proofInfo)
   const rec = await res.wait()
   console.log('Done! Your transaction is executed', rec)
