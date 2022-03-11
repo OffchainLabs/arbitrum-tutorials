@@ -6,8 +6,6 @@ Note that this repo covers initiating and Ether withdrawal; for a demo on (later
 
 ## How it works (Under the hood)
 
----
-
 To withdraw Ether from Arbitrum, a client creates an outgoing / L2 to L1 message using the `ArbSys` interface that later lets them release Ether from its escrow in the L1 Bridge.sol contract. For more info, see [Outgoing messages documentation](https://developer.offchainlabs.com/docs/l1_l2_messages#l2-to-l1-messages-lifecycle).
 
 ---
@@ -39,7 +37,6 @@ cp .env-sample .env
 ---
 
 ## Curious to see the output on the Arbitrum chain?
-
 Once the script is successfully executed, you can go to the [Arbitrum block explorer](https://rinkeby-explorer.arbitrum.io/#), enter your address and see the amount of ETH has been deducted from your Layer 2 balance. Note that your Layer 1 balance will only be updated after rollup's confirmation period is over.
 
 <p align="center"><img src="../../assets/offchain_labs_logo.png" width="600"></p>
