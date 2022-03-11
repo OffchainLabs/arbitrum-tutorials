@@ -4,8 +4,6 @@
 
 ## How it works (Under the hood)
 
----
-
 A user deposits Ether onto Arbitrum using Arbitrum's general L1-to-L2 message passing system, and simply passing the desired Ether as callvalue and no additional data. For more info, see [Retryable Tickets documentation](https://developer.offchainlabs.com/docs/l1_l2_messages#depositing-eth-via-retryables).
 
 ###  **Using arb-ts tooling**
