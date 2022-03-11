@@ -89,9 +89,14 @@ const main = async () => {
     `Deposit initiated: waiting for L2 retryable (takes < 10 minutes; current time: ${new Date().toTimeString()}) `
   )
   const depositRec = await depositTx.wait()
-  const message = await depositRec.getL1ToL2Message(l2Provider)
-  const waitRes = await message.waitForStatus()  
+  const l2Result = await depositRec.waitForL2(l2Provider)
   console.log(`Setup complete`)
+  /**
+   * The `complete` boolean tells us if the l1 to l2 message was successul
+   */
+  l2Result.complete ? 
+    console.log(`L2 message successful: status: ${L1ToL2MessageStatus[l2Result.status]}`) : 
+    console.log(`L2 message failed: status ${L1ToL2MessageStatus[l2Result.status]}`)
 
   console.log('Withdrawing:')
 

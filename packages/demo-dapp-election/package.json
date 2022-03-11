@@ -8,7 +8,6 @@
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
-    "arb-ts": "^1.0.0-beta.4",
     "chai": "^4.3.4",
     "ethers": "^5.1.2",
     "hardhat": "^2.2.0"

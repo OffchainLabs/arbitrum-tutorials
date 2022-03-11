@@ -1,5 +1,5 @@
 const { utils, providers, Wallet } = require('ethers')
-const { EthBridger, getL2Network }  = require ('arb-ts')
+const { EthBridger, getL2Network, L1ToL2MessageStatus }  = require ('arb-ts')
 const { parseEther } = utils
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
@@ -46,7 +46,6 @@ const main = async () => {
    * (2) l1Signer: The L1 address transferring ETH to L2
    * (3) l2Provider: An l2 provider
    */
-
   const depositTx = await ethBridger.deposit({
     amount: ethToL2DepositAmount,
     l1Signer: l1Wallet,
@@ -57,20 +56,19 @@ const main = async () => {
   console.warn('deposit L1 receipt is:', depositRec.transactionHash)
   
   /**
-   * With the transaction confirmed on L1, we now wait and check for the L2 side (i.e., balance credited to L2) to be confirmed as well.
-   * First, we get our our L1-to-L2 message
+   * With the transaction confirmed on L1, we now wait for the L2 side (i.e., balance credited to L2) to be confirmed as well.
+   * Here we're waiting for the Sequencer to include the L2 message in its off-chain queue. The Sequencer should include it in under 10 minutes.
    */
-
-  const l1ToL2Msg = await depositRec.getL1ToL2Message(l2Provider)
+  console.warn('Now we wait for L2 side of the transaction to be executed ⏳')
+  const l2Result = await depositRec.waitForL2(l2Provider)
 
   /**
-   * ... and now we wait. Here we're waiting for the Sequencer to include the L2 message in its off-chain queue. The Sequencer should include it in under 10 minutes.
+   * The `complete` boolean tells us if the l1 to l2 message was successul
    */
+  l2Result.complete ? 
+    console.log(`L2 message successful: status: ${L1ToL2MessageStatus[l2Result.status]}`) : 
+    console.log(`L2 message failed: status ${L1ToL2MessageStatus[l2Result.status]}`)
   
-  console.warn('Now we wait for L2 side of the transaction to be executed ⏳')
-
-  const l1ToL2MsgState = await l1ToL2Msg.waitForStatus()
-
   /**
    * Our l2Wallet ETH balance should be updated now
    */

@@ -42,7 +42,7 @@ const main = async () => {
   * We give the custom token contract the address of l1CustomGateway and l1GatewayRouter as well as the initial supply (premine) 
   */
   const L1CustomToken = await ( await ethers.getContractFactory('L1Token') ).connect(l1Wallet)
-  console.log('Deploying cutsom token to L1')
+  console.log('Deploying custom token to L1')
   const l1CustomToken = await L1CustomToken.deploy(l1Gateway, l1Router, premine)
   await l1CustomToken.deployed()
   console.log(`custom token is deployed to L1 at ${l1CustomToken.address}`)
@@ -52,7 +52,7 @@ const main = async () => {
   * We give the custom token contract the address of l2CustomGateway and our l1CustomToken 
   */
   const L2CustomToken = await ( await ethers.getContractFactory('L2Token') ).connect(l2Wallet)
-  console.log('Deploying cutsom token to L2')
+  console.log('Deploying custom token to L2')
   const l2CustomToken = await L2CustomToken.deploy(l2Gateway,l1CustomToken.address)
   await l2CustomToken.deployed()
   console.log(`custom token is deployed to L2 at ${l2CustomToken.address}`)

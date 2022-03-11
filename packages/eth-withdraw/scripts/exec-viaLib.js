@@ -64,15 +64,7 @@ const main = async () => {
    */
   console.log(`Ether withdrawal initiated! 🥳 ${withdrawRec.transactionHash}`)
 
-  const myAddress = await l1Wallet.getAddress()
-  
-  const withdrawEventsData = await L2ToL1Message.getL2ToL1MessageLogs(
-    l2Provider,
-    { fromBlock: withdrawRec.blockNumber, toBlock: 'latest' },
-    undefined,
-    myAddress
-  )
-
+  const withdrawEventsData = await withdrawRec.getL2ToL1Events()
   console.log('Withdrawal data:', withdrawEventsData)
   console.log(
     `To to claim funds (after dispute period), see outbox-execute repo ✌️`
