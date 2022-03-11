@@ -8,9 +8,9 @@
 
 A user deposits Ether onto Arbitrum using Arbitrum's general L1-to-L2 message passing system, and simply passing the desired Ether as callvalue and no additional data. For more info, see [Retryable Tickets documentation](https://developer.offchainlabs.com/docs/l1_l2_messages#depositing-eth-via-retryables).
 
-#### ** Using arb-ts tooling**
+###  **Using arb-ts tooling**
 
-Finally, our [arb-ts](https://github.com/OffchainLabs/arbitrum/tree/master/packages/arb-ts) provides a simply convenience method for depositing Ether, abstracting away the need for the client to connect to any contracts manually.
+Our [arb-ts](https://github.com/OffchainLabs/arbitrum/tree/master/packages/arb-ts) provides a simply convenience method for depositing Ether, abstracting away the need for the client to connect to any contracts manually.
 
 See [./exec.js](./scripts/exec.js) for inline explanation.
 
@@ -19,8 +19,6 @@ To run:
 ```
 yarn run depositETH
 ```
-
----
 
 ## Config Environment Variables
 

@@ -14,9 +14,9 @@ To withdraw Ether from Arbitrum, a client creates an outgoing / L2 to L1 message
 
 _Note: Executing scripts will require your L2 account be funded with .000001 Eth._
 
-#### **Using arb-ts tooling**
+### **Using arb-ts tooling**
 
-Finally, our [arb-ts](https://github.com/OffchainLabs/arbitrum/tree/master/packages/arb-ts) provides a simply convenience method for withdrawing Ether, abstracting away the need for the client to connect to any contracts manually.
+Our [arb-ts](https://github.com/OffchainLabs/arbitrum/tree/master/packages/arb-ts) provides a simply convenience method for withdrawing Ether, abstracting away the need for the client to connect to any contracts manually.
 
 See [./exec.js](./scripts/exec.js) for inline explanation.
 
@@ -25,8 +25,6 @@ To run:
 ```
 yarn run withdrawETH
 ```
-
----
 
 ## Config Environment Variables
 
