@@ -4,9 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "hardhat compile",
-    "withdraw:arbsys": "hardhat run scripts/exec-viaArbSys.js",
-    "withdraw:dapp": "hardhat run scripts/exec-viaDApp.js",
-    "withdraw:arb-ts": "hardhat run scripts/exec-viaLib.js"
+    "withdrawETH": "hardhat run scripts/exec.js"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",

@@ -12,50 +12,18 @@ To withdraw Ether from Arbitrum, a client creates an outgoing / L2 to L1 message
 
 ---
 
-## Demos
-
-In this repo we show 3 different examples of how a client may trigger an Ether withdrawal.
-
 _Note: Executing scripts will require your L2 account be funded with .000001 Eth._
 
-#### **1. Directly Through the ArbSys Contract**
-
-[ArbSys](https://developer.offchainlabs.com/docs/arbsys) is a pre-compiled contract that exists in every Arbitrum Chain at address [0x0000000000000000000000000000000000000064](https://explorer.arbitrum.io/address/0x0000000000000000000000000000000000000064). Its interface includes a `withdrawEth` method that can be called on L2 to initiate an Ether-withdrawal outgoing message (`sendTxToL1` can also be used to withdraw Ether).
-
-See [./exec-viaArbSys.js](./scripts/exec-viaArbSys.js) for inline explanation.
-
-To run:
-
-```
-yarn run withdraw:arbsys
-```
-
----
-
-#### **2. Through an L2 DApp:**
-
-[Withdraw.sol](./contracts/Deposit.sol) is an L2 contract that itself can make an external call to trigger a withdrawal. Our script connects to it and uses it to trigger an Ether withdrawal.
-
-See [./exec-viaDApp.js](./scripts/exec-viaDApp.js) for inline explanation.
-
-To run:
-
-```
-yarn run withdraw:dapp
-```
-
----
-
-#### 3. **Using arb-ts tooling**
+#### **Using arb-ts tooling**
 
 Finally, our [arb-ts](https://github.com/OffchainLabs/arbitrum/tree/master/packages/arb-ts) provides a simply convenience method for withdrawing Ether, abstracting away the need for the client to connect to any contracts manually.
 
-See [./exec-viaLib.js](./scripts/exec-viaLib.js) for inline explanation.
+See [./exec.js](./scripts/exec.js) for inline explanation.
 
 To run:
 
 ```
-yarn run withdraw:arb-ts
+yarn run withdrawETH
 ```
 
 ---
