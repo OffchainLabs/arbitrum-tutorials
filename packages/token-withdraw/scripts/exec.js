@@ -138,11 +138,9 @@ const main = async () => {
     'token withdraw balance not deducted'
   ).to.be.true
 
-
   console.log(
      `To to claim funds (after dispute period), see outbox-execute repo ✌️`
   )
-
 }
 
 main()
@@ -150,4 +148,4 @@ main()
   .catch(error => {
     console.error(error)
     process.exit(1)
-  })
+})

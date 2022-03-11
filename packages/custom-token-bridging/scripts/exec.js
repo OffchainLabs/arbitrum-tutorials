@@ -97,7 +97,6 @@ const main = async () => {
   )
 
   console.log('Your custom token is now registered on our custom gateway 🥳  Go ahead and make the deposit!')
-
 }
 
 main()
@@ -105,4 +104,4 @@ main()
   .catch(error => {
     console.error(error)
     process.exit(1)
-  })
+})

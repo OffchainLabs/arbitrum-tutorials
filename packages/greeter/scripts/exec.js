@@ -4,8 +4,8 @@ const ethers = require('ethers')
 const { hexDataLength } = require('@ethersproject/bytes')
 const { L1ToL2MessageGasEstimator } = require('arb-ts/dist/lib/message/L1ToL2MessageGasEstimator')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-const { L1ToL2Message, getL2Network } = require('arb-ts')
-requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC', "INBOX_ADDR"])
+const { L1TransactionReceipt } = require('arb-ts')
+requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC', 'INBOX_ADDR'])
 
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
@@ -153,33 +153,39 @@ const main = async () => {
     `Greeting txn confirmed on L1! 🙌 ${setGreetingRec.transactionHash}`
   )
 
-  await L1ToL2Message.calculateRetryableCreationId()
-  
-  // console.log(
-  //   `waiting for L2 tx 🕐... (should take < 10 minutes, current time: ${new Date().toTimeString()}`
-  // )
+  const l1TxReceipt = new L1TransactionReceipt(setGreetingRec)
 
-await getL
+  /**
+   * In principle, a single L1 txn can trigger any number of L1-to-L2 messages (each with its own sequencer number). 
+   * In this case, we know our txn triggered only one
+   * Here, We check if our L1 to L2 message is redeemed on L2
+  */
+  const message = await l1TxReceipt.getL1ToL2Message(l2Wallet)
+  const status = message.waitForStatus()
+  const isJustEthDeposit = false   // only the user creating the transaction can know whether it was just an eth deposit
+  if(isJustEthDeposit && ( status === L1ToL2MessageStatus.FUNDS_DEPOSITED_ON_L2 ||
+    status === L1ToL2MessageStatus.EXPIRED ||
+    status === L1ToL2MessageStatus.REDEEMED)) {
+  }
+  // if it wasnt an eth deposit we should check the redeem
+  if(!isJustEthDeposit && status === L1ToL2TransactionStatus.REDEEMED) {
+  // yay redeemed - general l1 to l2 contract call succeeded
+  }
 
+  console.log(`L2 retryable txn executed 🥳 ${message.l2TxHash}`)
 
-  // const retryRec = await retryableTxnHash.wait()
-  
+  /**
+   * Note that during L2 execution, a retryable's sender address is transformed to its L2 alias.
+   * Thus, when GreeterL2 checks that the message came from the L1, we check that the sender is this L2 Alias.
+   * See setGreeting in GreeterL2.sol for this check.
+   */
 
-
-  // console.log(`L2 retryable txn executed 🥳 ${retryRec.transactionHash}`)
-
-  // /**
-  //  * Note that during L2 execution, a retryable's sender address is transformed to its L2 alias.
-  //  * Thus, when GreeterL2 checks that the message came from the L1, we check that the sender is this L2 Alias.
-  //  * See setGreeting in GreeterL2.sol for this check.
-  //  */
-
-  // /**
-  //  * Now when we call greet again, we should see our new string on L2!
-  //  */
-  // const newGreetingL2 = await l2Greeter.greet()
-  // console.log(`Updated L2 greeting: "${newGreetingL2}"`)
-  // console.log('✌️')
+  /**
+   * Now when we call greet again, we should see our new string on L2!
+   */
+  const newGreetingL2 = await l2Greeter.greet()
+  console.log(`Updated L2 greeting: "${newGreetingL2}"`)
+  console.log('✌️')
 }
 
 main()
@@ -187,4 +193,4 @@ main()
   .catch(error => {
     console.error(error)
     process.exit(1)
-  })
+})
