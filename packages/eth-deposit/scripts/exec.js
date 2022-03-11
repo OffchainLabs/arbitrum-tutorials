@@ -76,10 +76,7 @@ const main = async () => {
   console.log(
     `your L2 ETH balance is updated from ${l2WalletInitialEthBalance.toString()} to ${l2WalletUpdatedEthBalance.toString()}`
   )
-
-
 }
-
 main()
   .then(() => process.exit(0))
   .catch(error => {

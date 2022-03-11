@@ -153,15 +153,13 @@ const main = async () => {
     `Greeting txn confirmed on L1! 🙌 ${setGreetingRec.transactionHash}`
   )
 
-  console.log(
-    setGreetingRec
-  )
+  await L1ToL2Message.calculateRetryableCreationId()
   
   // console.log(
   //   `waiting for L2 tx 🕐... (should take < 10 minutes, current time: ${new Date().toTimeString()}`
   // )
 
-
+await getL
 
 
   // const retryRec = await retryableTxnHash.wait()

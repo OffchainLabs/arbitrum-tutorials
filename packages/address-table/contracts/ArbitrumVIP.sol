@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: Unlicense
-pragma solidity  >=0.6.11;
+pragma solidity  ^0.7.2;
 
 import "arbos-precompiles/arbos/builtin/ArbAddressTable.sol";
 import "hardhat/console.sol";
