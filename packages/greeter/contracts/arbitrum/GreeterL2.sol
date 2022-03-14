@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.7.0;
+pragma solidity  >=0.6.11;
 
-import "arb-shared-dependencies/contracts/ArbSys.sol";
-import "arb-shared-dependencies/contracts/AddressAliasHelper.sol";
+import "arbos-precompiles/arbos/builtin/ArbSys.sol";
+import "arb-bridge-eth/contracts/libraries/AddressAliasHelper.sol";
 import "../Greeter.sol";
 
 contract GreeterL2 is Greeter {

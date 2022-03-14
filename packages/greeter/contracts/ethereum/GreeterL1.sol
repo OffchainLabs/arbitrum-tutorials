@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.7.0;
+pragma solidity  >=0.6.11;
 
-import "arb-shared-dependencies/contracts/Outbox.sol";
-import "arb-shared-dependencies/contracts/Inbox.sol";
+import "arb-bridge-eth/contracts/bridge/Inbox.sol";
+import "arb-bridge-eth/contracts/bridge/Outbox.sol";
 import "../Greeter.sol";
 
 contract GreeterL1 is Greeter {

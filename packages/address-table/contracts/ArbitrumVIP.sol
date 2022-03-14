@@ -1,8 +1,8 @@
 //SPDX-License-Identifier: Unlicense
-pragma solidity ^0.7.0;
+pragma solidity  ^0.7.2;
 
+import "arbos-precompiles/arbos/builtin/ArbAddressTable.sol";
 import "hardhat/console.sol";
-import "arb-shared-dependencies/contracts/ArbAddressTable.sol";
 
 
 contract ArbitrumVIP {
@@ -11,7 +11,7 @@ contract ArbitrumVIP {
   
   ArbAddressTable arbAddressTable; 
   
-  constructor(){
+  constructor () public{
     // connect to precomiled address table contract
     arbAddressTable = ArbAddressTable(102);
   }

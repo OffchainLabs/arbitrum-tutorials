@@ -1,14 +1,13 @@
 const { BigNumber, providers, Wallet } = require('ethers')
-const { ethers } = require('hardhat')
-const { Bridge } = require('arb-ts')
+const { getL2Network, Erc20Bridger} = require("arb-ts")
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
+const { expect } = require('chai')
 require('dotenv').config()
-requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
+requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
 
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
  */
-
  const walletPrivateKey = process.env.DEVNET_PRIVKEY
 
  const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
@@ -18,110 +17,115 @@ requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
  const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
 /**
- * Set the amount of token to be deposited in L2
+ * Set the amount of token to be transferred to L2
  */
 const tokenDepositAmount = BigNumber.from(50)
 
 const main = async () => {
   await arbLog('Deposit token using arb-ts')
+
   /**
-   * Use wallets to create an arb-ts bridge instance
-   * We'll use bridge for its convenience methods around depositing tokens to L2
+   * Use l2Network to create an arb-ts Erc20Bridger instance
+   * We'll use Erc20Bridger for its convenience methods around transferring token to L2
    */
-  const bridge = await Bridge.init(l1Wallet, l2Wallet)
+  const l2Network = await getL2Network(l2Provider)
+  const erc20Bridge = new Erc20Bridger(l2Network)
 
   /**
    * For the purpose of our tests, here we deploy an standard ERC20 token (DappToken) to L1
-   * It sends it's deployer (us) the initial supply of 1000000000000000
+   * It sends its deployer (us) the initial supply of 1000000000000000
    */
-
+  console.log('Deploying the test DappToken to L1:')
   const L1DappToken = await (
     await ethers.getContractFactory('DappToken')
   ).connect(l1Wallet)
-  console.log('Deploying the test DappToken to L1')
   const l1DappToken = await L1DappToken.deploy(1000000000000000)
   await l1DappToken.deployed()
   console.log(`DappToken is deployed to L1 at ${l1DappToken.address}`)
+  console.log('Approving:')
   const erc20Address = l1DappToken.address
-  console.log(erc20Address)
+  
+  /**
+   * We get the address of L1 Gateway for our DappToken, which later helps us to get the initial token balance of Bridge (before deposit)
+   */
+  const expectedL1GatewayAddress = await erc20Bridge.getL1GatewayAddress(erc20Address, l1Provider)
+  const initialBridgeTokenBalance = await l1DappToken.balanceOf(expectedL1GatewayAddress)
 
   /**
    * The Standard Gateway contract will ultimately be making the token transfer call; thus, that's the contract we need to approve.
-   * bridge.approveToken handles this approval
+   * erc20Bridge.approveToken handles this approval
+   * Arguments required are: 
+   * (1) l1Signer: The L1 address transferring token to L2
+   * (2) erc20L1Address: L1 address of the ERC20 token to be depositted to L2
    */
-  const approveTx = await bridge.approveToken(erc20Address)
+  const approveTx = await erc20Bridge.approveToken({
+    l1Signer: l1Wallet,
+    erc20L1Address: erc20Address
+  })
+  
   const approveRec = await approveTx.wait()
   console.log(
     `You successfully allowed the Arbitrum Bridge to spend DappToken ${approveRec.transactionHash}`
   )
 
   /**
-   * Deposit DappToken to L2 using Bridge. This will escrows funds in the Gateway contract on L1, and send a message to mint tokens on L2.
-   * The bridge.deposit method handles computing the necessary fees for automatic-execution of retryable tickets — maxSubmission cost & l2 gas price * gas — and will automatically forward the fees to L2 as callvalue
+   * Deposit DappToken to L2 using erc20Bridge. This will escrow funds in the Gateway contract on L1, and send a message to mint tokens on L2.
+   * The erc20Bridge.deposit method handles computing the necessary fees for automatic-execution of retryable tickets — maxSubmission cost & l2 gas price * gas — and will automatically forward the fees to L2 as callvalue
    * Also note that since this is the first DappToken deposit onto L2, a standard Arb ERC20 contract will automatically be deployed.
+   * Arguments required are: 
+   * (1) amount: The amount of tokens to be transferred to L2
+   * (2) erc20L1Address: L1 address of the ERC20 token to be depositted to L2
+   * (2) l1Signer: The L1 address transferring token to L2
+   * (3) l2Provider: An l2 provider
    */
-  const param = {
-        erc20L1Address: erc20Address,
-        amount: tokenDepositAmount,
-        destinationAddress: l1Wallet.address
-  }
-  const depositTx =await bridge.deposit(param)
+  const depositTx = await erc20Bridge.deposit({
+    amount: tokenDepositAmount,
+    erc20L1Address: erc20Address,
+    l1Signer: l1Wallet,
+    l2Provider: l2Provider
+  })
+  
+  /**
+   * Now we wait for L1 and L2 side of transactions to be confirmed
+   */
   const depositRec = await depositTx.wait()
+  const l2Result = await depositRec.waitForL2(l2Provider)
 
   /**
-   * Now we track the status of our retryable ticket
+   * The `complete` boolean tells us if the l1 to l2 message was successul
    */
-
-  //  First, we get our txn's sequence number from the event logs (using a handy utility method). This number uniquely identifies our L1 to L2 message (i.e., our token deposit)
-  const seqNumArr = await bridge.getInboxSeqNumFromContractTransaction(
-    depositRec
-  )
+  l2Result.complete ? 
+    console.log(`L2 message successful: status: ${L1ToL2MessageStatus[l2Result.status]}`) : 
+    console.log(`L2 message failed: status ${L1ToL2MessageStatus[l2Result.status]}`)
+  
+  /**
+   * Get the Bridge token balance
+   */
+  const finalBridgeTokenBalance = await l1DappToken.balanceOf(expectedL1GatewayAddress)
 
   /**
-   * Note that a single txn could (in theory) trigger many l1-to-l2 messages; we know ours only triggered 1 tho.
+   * Check if Bridge balance has been updated correctly
    */
-  const seqNum = seqNumArr[0]
-  console.log(
-    `Sequence number for your transaction found: ${seqNum.toNumber()}`
-  )
-
+  expect(
+    initialBridgeTokenBalance
+      .add(tokenDepositAmount)
+      .eq(finalBridgeTokenBalance),
+    'bridge balance not updated after L1 token deposit txn'
+  ).to.be.true
+  
   /**
-   *  Now we can get compute the txn hashes of the transactions associated with our retryable ticket:
-   * (Note that we don't necessarily need all of these (and will only use one of them ), but we include them all for completeness)
+   * Check if our l2Wallet DappToken balance has been updated correctly
+   * To do so, we use erc20Bridge to get the l2Token address and contract
    */
-  // retryableTicket: quasi-transaction that can be redeemed, triggering some L2 message
-  const retryableTicket = await bridge.calculateL2TransactionHash(seqNum)
-  //  autoRedeem: record that "automatic" redemption successfully occurred
-  const autoRedeem = await bridge.calculateRetryableAutoRedeemTxnHash(seqNum)
-  // L2 message (in our case, mint new token)
-  const redeemTransaction = await bridge.calculateL2RetryableTransactionHash(
-    seqNum
-  )
+  const l2TokenAddress = await erc20Bridge.getL2ERC20Address(erc20Address, l1Provider)
+  const l2Token = erc20Bridge.getL2TokenContract(l2Provider,l2TokenAddress )
 
-  /** Now, we have to wait for the L2 tx to go through; i.e., for the Sequencer to include it in its off-chain queue. This should take ~10 minutes at most
-   * If the redeem succeeds, that implies that the retryableTicket has been included, and autoRedeem succeeded as well
-   */
-  console.log('waiting for L2 transaction:')
-  const l2TxnRec = await l2Provider.waitForTransaction(
-    redeemTransaction,
-    undefined,
-    1000 * 60 * 12
-  )
+  const testWalletL2Balance = (await l2Token.functions.balanceOf(l2Wallet.address))[0]
+  expect(
+    testWalletL2Balance.eq(tokenDepositAmount),
+    'l2 wallet not updated after deposit'
+  ).to.be.true
 
-  console.log(
-    `L2 transaction found! Your DappToken balance is updated! ${l2TxnRec.transactionHash}`
-  )
-
-  /**
-   * Not that our txn has succeeded, we know that a token contract has been deployed on L2, and our tokens have been deposited onto it.
-   * Let's confirm our new token balance on L2!
-   */
-  const l2ERC20Address = await bridge.getERC20L2Address(erc20Address)
-  const l2Data = await bridge.l2Bridge.getL2TokenData(l2ERC20Address)
-  const l2WalletTokenBalance = l2Data.balance
-  console.log(
-    `your l2Wallet has ${l2WalletTokenBalance.toString()} DappToken now!`
-  )
 }
 
 main()
@@ -129,4 +133,4 @@ main()
   .catch(error => {
     console.error(error)
     process.exit(1)
-  })
+})

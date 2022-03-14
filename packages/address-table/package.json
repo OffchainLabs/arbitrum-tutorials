@@ -1,5 +1,10 @@
 {
   "name": "address-table",
+  "license": "Apache-2.0",
+  "version": "1.0.0",
+  "scripts": {
+    "exec": "hardhat run scripts/exec.js --network l2"
+  },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
@@ -9,10 +14,7 @@
     "hardhat": "^2.5.0"
   },
   "dependencies": {
-    "arb-ts": "^1.0.0-beta.4"
-  },
-  "scripts": {
-    "exec": "hardhat run scripts/exec.js --network l2"
+    "arb-ts": "^2.0.0-beta.13",
+    "arbos-precompiles": "^1.0.2"
   }
 }
-

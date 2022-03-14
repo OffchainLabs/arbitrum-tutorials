@@ -4,57 +4,19 @@
 
 ## How it works (Under the hood)
 
----
-
 A user deposits Ether onto Arbitrum using Arbitrum's general L1-to-L2 message passing system, and simply passing the desired Ether as callvalue and no additional data. For more info, see [Retryable Tickets documentation](https://developer.offchainlabs.com/docs/l1_l2_messages#depositing-eth-via-retryables).
 
-## Demos
+###  **Using arb-ts tooling**
 
-In this repo we show 3 different examples of how a client may trigger an Ether deposit.
+Our [arb-ts](https://github.com/OffchainLabs/arbitrum/tree/master/packages/arb-ts) provides a simply convenience method for depositing Ether, abstracting away the need for the client to connect to any contracts manually.
 
----
-
-#### **1. Directly Through the Inbox Contract**
-
-`Inbox.sol` is an Arbitrum core protocol contract; it includes a `depositEth` method which triggers an L1-to-L2 message that will deposit Ether to the destination address. In this demo, a client connects to this contract directly to trigger their Ether deposit.
-
-See [./exec-viaInbox.js](./scripts/exec-viaInbox.js) for inline explanation.
+See [./exec.js](./scripts/exec.js) for inline explanation.
 
 To run:
 
 ```
-yarn deposit:inbox
+yarn run depositETH
 ```
-
----
-
-#### **2. Through an L1 DApp**
-
-[Deposit.sol](./contracts/Deposit.sol) is a contract which itself triggers an Eth deposit. Here we show a client connecting to Deposit.sol and triggering and Eth deposit that way.
-
-See [./exec-viaDapp.js](./scripts/exec-viaDapp.js) for inline explanation.
-
-To run:
-
-```
-yarn deposit:dapp
-```
-
----
-
-#### **3. Using arb-ts tooling**
-
-Finally, our [arb-ts](https://github.com/OffchainLabs/arbitrum/tree/master/packages/arb-ts) provides a simply convenience method for depositing Ether, abstracting away the need for the client to connect to any contracts manually.
-
-See [./exec-viaLib.js](./scripts/exec-viaLib.js) for inline explanation.
-
-To run:
-
-```
-yarn deposit:arb-ts
-```
-
----
 
 ## Config Environment Variables
 
