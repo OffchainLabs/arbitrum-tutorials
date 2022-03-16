@@ -1,6 +1,6 @@
 const { BigNumber, providers, Wallet } = require('ethers')
 const { expect } = require('chai')
-const { getL2Network, Erc20Bridger} = require("arb-ts")
+const { getL2Network, Erc20Bridger, L1ToL2MessageStatus } = require("arb-ts")
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
 requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
