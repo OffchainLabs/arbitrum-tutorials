@@ -1,5 +1,5 @@
 const { BigNumber, providers, Wallet } = require('ethers')
-const { getL2Network, Erc20Bridger} = require("arb-ts")
+const { getL2Network, Erc20Bridger, L1ToL2MessageStatus } = require("arb-ts")
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 const { expect } = require('chai')
 require('dotenv').config()
