@@ -2,9 +2,9 @@ const { providers, Wallet } = require('ethers')
 const hre = require('hardhat')
 const ethers = require('ethers')
 const { hexDataLength } = require('@ethersproject/bytes')
-const { L1ToL2MessageGasEstimator } = require('arb-ts/dist/lib/message/L1ToL2MessageGasEstimator')
+const { L1ToL2MessageGasEstimator } = require('@arbitrum/sdk/dist/lib/message/L1ToL2MessageGasEstimator')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-const { L1TransactionReceipt, L1ToL2MessageStatus } = require('arb-ts')
+const { L1TransactionReceipt, L1ToL2MessageStatus } = require('@arbitrum/sdk')
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC', 'INBOX_ADDR'])
 
 /**

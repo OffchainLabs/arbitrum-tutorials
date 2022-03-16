@@ -1,5 +1,5 @@
 const { providers, Wallet } = require('ethers')
-const { L2TransactionReceipt, getL2Network } = require('arb-ts')
+const { L2TransactionReceipt, getL2Network } = require('@arbitrum/sdk')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 
 require('dotenv').config()
