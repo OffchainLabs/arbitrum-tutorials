@@ -1,7 +1,7 @@
 const { providers, Wallet } = require('ethers')
-const { getL2Network, L1ToL2MessageStatus } = require("arb-ts")
+const { getL2Network, L1ToL2MessageStatus } = require("@arbitrum/sdk")
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-const { AdminErc20Bridger } = require('arb-ts/dist/lib/assetBridger/erc20Bridger')
+const { AdminErc20Bridger } = require('@arbitrum/sdk/dist/lib/assetBridger/erc20Bridger')
 const { expect } = require ('chai')
 require('dotenv').config()
 requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
@@ -24,10 +24,10 @@ const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 const premine = ethers.utils.parseEther("3")
 
 const main = async () => {
-  await arbLog('Setting Up Your Token With The Generic Custom Gateway Using arb-ts Library')
+  await arbLog('Setting Up Your Token With The Generic Custom Gateway Using Arbitrum SDK Library')
 
   /**
-   * Use l2Network to create an arb-ts AdminErc20Bridger instance
+   * Use l2Network to create an Arbitrum SDK AdminErc20Bridger instance
    * We'll use AdminErc20Bridger for its convenience methods around registering tokens to the custom gateway
    */
   const l2Network = await getL2Network(l2Provider)

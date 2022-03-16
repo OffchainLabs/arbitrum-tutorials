@@ -10,7 +10,7 @@ Depositing an ERC20 token into the Arbitrum chain is done via our the Arbitrum t
 
 Here, we deploy a [demo token](./contracts/DappToken.sol) and trigger a deposit; by default, the deposit will be routed through the standard ERC20 gateway, where on initial deposit, a standard arb erc20 contract will automatically be deployed to L2.
 
-We use our [arb-ts](https://github.com/OffchainLabs/arbitrum/tree/master/packages/arb-ts) library to initiate and verify the deposit.
+We use our [Arbitrum SDK](https://github.com/OffchainLabs/arbitrum-sdk) library to initiate and verify the deposit.
 
 See [./exec.js](./scripts/exec.js) for inline explanation.
 

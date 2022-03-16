@@ -14,7 +14,7 @@ To withdraw a token from Arbitrum, a message is send from a Gateway contract whi
 
 In this demo, we deploy a fresh token and then deposit some to L2. Then, we use these new tokens to trigger a withdrawal back to L1.
 
-We use our [arb-ts](https://github.com/OffchainLabs/arbitrum/tree/master/packages/arb-ts) library for the token bridge interactions.
+We use our [Arbitrum SDK](https://github.com/OffchainLabs/arbitrum-sdk) library for the token bridge interactions.
 
 See [./exec.js](./scripts/exec.js) for inline explanation.
 

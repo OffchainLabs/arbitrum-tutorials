@@ -2,6 +2,25 @@
 # yarn lockfile v1
 
 
+"@arbitrum/sdk@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-1.0.0.tgz#46f247bc8ab58c6ba43ea3c05edc8a76014dba5a"
+  integrity sha512-+KhHgYkDO2r3SgK8Lc+vc/7+g3XFphUOfaZTfpF44cSPEsxB7Fc2E8WQr54rLRLHO1HeqD0kTxIgoQsaTWOH2Q==
+  dependencies:
+    "@ethersproject/address" "^5.0.8"
+    "@ethersproject/bignumber" "^5.1.1"
+    "@ethersproject/bytes" "^5.0.8"
+    "@typechain/ethers-v5" "9.0.0"
+    "@types/prompts" "^2.0.14"
+    "@types/yargs" "^17.0.9"
+    arb-bridge-eth "0.7.5"
+    arb-bridge-peripherals "1.0.6"
+    arbos-precompiles "1.0.2"
+    dotenv "^10.0.0"
+    ethers "^5.1.0"
+    ts-node "^10.2.1"
+    typechain "7.0.0"
+
 "@babel/code-frame@7.12.11":
   version "7.12.11"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.12.11.tgz#f4ad435aa263db935b8f10f2c552d23fb716a63f"
@@ -1333,6 +1352,18 @@
     "@types/bn.js" "*"
     "@types/underscore" "*"
 
+"@types/yargs-parser@*":
+  version "21.0.0"
+  resolved "https://registry.yarnpkg.com/@types/yargs-parser/-/yargs-parser-21.0.0.tgz#0c60e537fa790f5f9472ed2776c2b71ec117351b"
+  integrity sha512-iO9ZQHkZxHn4mSakYV0vFHAVDyEOIJQrV2uZ06HxEPcx+mt8swXoZHIbaaJ2crJYFfErySgktuTZ3BeLz+XmFA==
+
+"@types/yargs@^17.0.9":
+  version "17.0.9"
+  resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-17.0.9.tgz#f1f931a4e5ae2c0134dea10f501088636a50b46a"
+  integrity sha512-Ci8+4/DOtkHRylcisKmVMtmVO5g7weUVCKcsu1sJvF1bn0wExTmbHmhFKj7AnEm0de800iovGhdSKzYnzbaHpg==
+  dependencies:
+    "@types/yargs-parser" "*"
+
 "@ungap/promise-all-settled@1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@ungap/promise-all-settled/-/promise-all-settled-1.1.2.tgz#aa58042711d6e3275dd37dc597e5d31e8c290a44"
@@ -1569,36 +1600,6 @@ arb-bridge-peripherals@1.0.6:
     hardhat "^2.6.1"
   optionalDependencies:
     "@openzeppelin/upgrades-core" "^1.7.6"
-
-arb-ts@1.0.0-beta.4:
-  version "1.0.0-beta.4"
-  resolved "https://registry.yarnpkg.com/arb-ts/-/arb-ts-1.0.0-beta.4.tgz#e9b8b10d4bf58686ba7d9b6458aa76c0893720b4"
-  integrity sha512-ErKnchU3TPaXhNVNkDISFg1+9JFLClTCN5zIFPJrngFnsuywcx38osWWFKVI5XiJ23A86j6fBb/9U81Q2XB2kg==
-  dependencies:
-    "@ethersproject/address" "^5.0.8"
-    "@ethersproject/bignumber" "^5.1.1"
-    "@ethersproject/bytes" "^5.0.8"
-    "@nomiclabs/hardhat-ethers" "^2.0.2"
-    dotenv "^10.0.0"
-    ethers "^5.1.0"
-
-arb-ts@2.0.0-beta.13, arb-ts@^2.0.0-beta.13:
-  version "2.0.0-beta.13"
-  resolved "https://registry.yarnpkg.com/arb-ts/-/arb-ts-2.0.0-beta.13.tgz#0d59f0fb83fe4d1c7f0d21a8c8798650275dfbf2"
-  integrity sha512-q+752aK4PWoz1CILe0K+ZE/FWYdEKzU6NtK/WB0ZIsJiNKt2NjziLYFe0RMxmlGRzT81CXgMjBj6NlUaUDzOBg==
-  dependencies:
-    "@ethersproject/address" "^5.0.8"
-    "@ethersproject/bignumber" "^5.1.1"
-    "@ethersproject/bytes" "^5.0.8"
-    "@typechain/ethers-v5" "9.0.0"
-    "@types/prompts" "^2.0.14"
-    arb-bridge-eth "0.7.5"
-    arb-bridge-peripherals "1.0.6"
-    arbos-precompiles "1.0.2"
-    dotenv "^10.0.0"
-    ethers "^5.1.0"
-    ts-node "^10.2.1"
-    typechain "7.0.0"
 
 arbos-precompiles@1.0.2, arbos-precompiles@^1.0.2:
   version "1.0.2"
