@@ -1,9 +1,11 @@
 const { providers, Wallet } = require('ethers') 
 
 const hre = require('hardhat')
+const { Interface } = require('@ethersproject/abi')
 const ethers = require('ethers')
 const { hexDataLength } = require('@ethersproject/bytes')
 const { L1ToL2MessageGasEstimator } = require('arb-ts/dist/lib/message/L1ToL2MessageGasEstimator')
+const {NodeInterface__factory} = require('arb-ts/dist/lib/abi/factories/NodeInterface__factory')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 const { L1TransactionReceipt, L1ToL2MessageStatus } = require('arb-ts')
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC', 'INBOX_ADDR'])
@@ -128,22 +130,33 @@ const main = async () => {
   /**
    * For the gas limit, we'll use the estimateRetryableTicketMaxGas method in arb-sdk
    */
-  const data =  await l1Greeter.data();
-  const maxGas = await l1ToL2MessageGasEstimate.estimateRetryableTicketMaxGas
+
+   const nodeInterface = NodeInterface__factory.connect(
+    "0x00000000000000000000000000000000000000C8",
+    l2Provider
+  )
+
+  let ABI = ["function setGreeting(string _greeting)"];
+  let iface = new ethers.utils.Interface(ABI);
+
+
+  const data = iface.encodeFunctionData("setGreeting", [ newGreeting ])
+  const maxGasTemp = 100000
+  const callValueTemp = submissionPriceWei.add(gasPriceBid.mul(maxGasTemp))
+
+  const maxGas = await nodeInterface.estimateRetryableTicket
   (
     l1Wallet.address,
     0,
     l2Wallet.address,
-    0,
+    callValueTemp,
     submissionPriceWei,
     l2Wallet.address,
     l2Wallet.address,
-    10000000,
+    maxGasTemp,
     gasPriceBid,
     data
   )
-
-
 
 
   // /**
