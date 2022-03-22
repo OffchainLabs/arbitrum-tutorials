@@ -1,4 +1,5 @@
 const { providers, Wallet } = require('ethers') 
+
 const hre = require('hardhat')
 const ethers = require('ethers')
 const { hexDataLength } = require('@ethersproject/bytes')
@@ -19,7 +20,7 @@ const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
 const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
 const main = async () => {
-  await arbLog('Cross-chain Greeter')
+  //await arbLog('Cross-chain Greeter')
 
   /**
    * We deploy L1 Greeter to L1, L2 greeter to L2, each with a different "greeting" message.
@@ -65,7 +66,7 @@ const main = async () => {
   console.log('Updating greeting from L1 to L2:')
 
   /**
-   * Here we have a new greeting message that we want to set as the L2 greeting; we'll be setting it by sending it as a message from layer 1!!!1
+   * Here we have a new greeting message that we want to set as the L2 greeting; we'll be setting it by sending it as a message from layer 1!!!
    */
   const newGreeting = 'Greeting from far, far away'
 
@@ -125,62 +126,78 @@ const main = async () => {
   console.log(`L2 gas price: ${gasPriceBid.toString()}`)
 
   /**
-   * For the gas limit, we'll simply use a hard-coded value (for more precise / dynamic estimates, see the estimateRetryableTicket method in the NodeInterface L2 "precompile")
+   * For the gas limit, we'll use the estimateRetryableTicketMaxGas method in arb-sdk
    */
-  const maxGas = 100000
-
-  /**
-   * With these three values, we can calculate the total callvalue we'll need our L1 transaction to send to L2
-   */
-  const callValue = submissionPriceWei.add(gasPriceBid.mul(maxGas))
-
-  console.log(
-    `Sending greeting to L2 with ${callValue.toString()} callValue for L2 fees:`
-  )
-
-  const setGreetingTx = await l1Greeter.setGreetingInL2(
-    newGreeting, // string memory _greeting,
+  const data =  await l1Greeter.data();
+  const maxGas = await l1ToL2MessageGasEstimate.estimateRetryableTicketMaxGas
+  (
+    l1Wallet.address,
+    0,
+    l2Wallet.address,
+    0,
     submissionPriceWei,
-    maxGas,
+    l2Wallet.address,
+    l2Wallet.address,
+    10000000,
     gasPriceBid,
-    {
-      value: callValue,
-    }
-  )
-  const setGreetingRec = await setGreetingTx.wait()
-
-  console.log(
-    `Greeting txn confirmed on L1! 🙌 ${setGreetingRec.transactionHash}`
+    data
   )
 
-  const l1TxReceipt = new L1TransactionReceipt(setGreetingRec)
 
-  /**
-   * In principle, a single L1 txn can trigger any number of L1-to-L2 messages (each with its own sequencer number). 
-   * In this case, we know our txn triggered only one
-   * Here, We check if our L1 to L2 message is redeemed on L2
-  */
-  const message = await l1TxReceipt.getL1ToL2Message(l2Wallet)
-  const status = await message.waitForStatus();
-  console.log(status)
-    if(status === L1ToL2MessageStatus.REDEEMED) {
-      console.log(`L2 retryable txn executed 🥳 ${message.l2TxHash}`)
-      } else {
-    console.log(`L2 retryable txn failed with status ${L1ToL2MessageStatus[status]}`)
-    }  
+
+
+  // /**
+  //  * With these three values, we can calculate the total callvalue we'll need our L1 transaction to send to L2
+  //  */
+  // const callValue = submissionPriceWei.add(gasPriceBid.mul(maxGas))
+
+  // console.log(
+  //   `Sending greeting to L2 with ${callValue.toString()} callValue for L2 fees:`
+  // )
+
+  // const setGreetingTx = await l1Greeter.setGreetingInL2(
+  //   newGreeting, // string memory _greeting,
+  //   submissionPriceWei,
+  //   maxGas,
+  //   gasPriceBid,
+  //   {
+  //     value: callValue,
+  //   }
+  // )
+  // const setGreetingRec = await setGreetingTx.wait()
+
+  // console.log(
+  //   `Greeting txn confirmed on L1! 🙌 ${setGreetingRec.transactionHash}`
+  // )
+
+  // const l1TxReceipt = new L1TransactionReceipt(setGreetingRec)
+
+  // /**
+  //  * In principle, a single L1 txn can trigger any number of L1-to-L2 messages (each with its own sequencer number). 
+  //  * In this case, we know our txn triggered only one
+  //  * Here, We check if our L1 to L2 message is redeemed on L2
+  // */
+  // const message = await l1TxReceipt.getL1ToL2Message(l2Wallet)
+  // const status = await message.waitForStatus();
+  // console.log(status)
+  //   if(status === L1ToL2MessageStatus.REDEEMED) {
+  //     console.log(`L2 retryable txn executed 🥳 ${message.l2TxHash}`)
+  //     } else {
+  //   console.log(`L2 retryable txn failed with status ${L1ToL2MessageStatus[status]}`)
+  //   }  
   
-  /**
-   * Note that during L2 execution, a retryable's sender address is transformed to its L2 alias.
-   * Thus, when GreeterL2 checks that the message came from the L1, we check that the sender is this L2 Alias.
-   * See setGreeting in GreeterL2.sol for this check.
-   */
+  // /**
+  //  * Note that during L2 execution, a retryable's sender address is transformed to its L2 alias.
+  //  * Thus, when GreeterL2 checks that the message came from the L1, we check that the sender is this L2 Alias.
+  //  * See setGreeting in GreeterL2.sol for this check.
+  //  */
 
-  /**
-   * Now when we call greet again, we should see our new string on L2!
-   */
-  const newGreetingL2 = await l2Greeter.greet()
-  console.log(`Updated L2 greeting: "${newGreetingL2}"`)
-  console.log('✌️')
+  // /**
+  //  * Now when we call greet again, we should see our new string on L2!
+  //  */
+  // const newGreetingL2 = await l2Greeter.greet()
+  // console.log(`Updated L2 greeting: "${newGreetingL2}"`)
+  // console.log('✌️')
 }
 
 main()
