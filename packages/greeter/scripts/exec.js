@@ -137,9 +137,9 @@ const main = async () => {
  
   const maxGas = await l1ToL2MessageGasEstimate.estimateRetryableTicketMaxGas
   (
-    l1Wallet.address,
-    0,
-    l2Wallet.address,
+    l1Greeter.address,
+    ethers.utils.parseEther('1'),
+    l2Greeter.address,
     0,
     submissionPriceWei,
     l2Wallet.address,
