@@ -1,6 +1,6 @@
 const { BigNumber, providers, Wallet } = require('ethers')
 const { expect } = require('chai')
-const { getL2Network, Erc20Bridger} = require("arb-ts")
+const { getL2Network, Erc20Bridger, L1ToL2MessageStatus } = require("@arbitrum/sdk")
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
 requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
@@ -23,10 +23,10 @@ const tokenDepositAmount = BigNumber.from(50)
 const tokenWithdrawAmount = BigNumber.from(20)
 
 const main = async () => {
-  await arbLog('Withdraw token using arb-ts')
+  await arbLog('Withdraw token using Arbitrum SDK')
 
   /**
-   * Use l2Network to create an arb-ts Erc20Bridger instance
+   * Use l2Network to create an Arbitrum SDK Erc20Bridger instance
    * We'll use Erc20Bridger for its convenience methods around transferring token to L2 and back to L1
    */
   const l2Network = await getL2Network(l2Provider)

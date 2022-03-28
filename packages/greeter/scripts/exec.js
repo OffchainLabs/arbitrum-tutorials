@@ -2,9 +2,9 @@ const { providers, Wallet } = require('ethers')
 const hre = require('hardhat')
 const ethers = require('ethers')
 const { hexDataLength } = require('@ethersproject/bytes')
-const { L1ToL2MessageGasEstimator } = require('arb-ts/dist/lib/message/L1ToL2MessageGasEstimator')
+const { L1ToL2MessageGasEstimator } = require('@arbitrum/sdk/dist/lib/message/L1ToL2MessageGasEstimator')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-const { L1TransactionReceipt, L1ToL2MessageStatus } = require('arb-ts')
+const { L1TransactionReceipt, L1ToL2MessageStatus } = require('@arbitrum/sdk')
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC', 'INBOX_ADDR'])
 
 /**
@@ -91,7 +91,6 @@ const main = async () => {
    */
    const l1ToL2MessageGasEstimate = new L1ToL2MessageGasEstimator(l2Provider)
 
-
    const estimatedPrices = await l1ToL2MessageGasEstimate.estimateSubmissionPrice(newGreetingBytesLength)
    const _submissionPriceWei = estimatedPrices.submissionPrice
    const _nextUpdateTimestamp = estimatedPrices.nextUpdateTimestamp
@@ -99,7 +98,6 @@ const main = async () => {
    console.log(
     `Current retryable base submission price: ${_submissionPriceWei.toString()}`
   )
- 
 
   const timeNow = Math.floor(new Date().getTime() / 1000)
   console.log(
@@ -125,8 +123,13 @@ const main = async () => {
   console.log(`L2 gas price: ${gasPriceBid.toString()}`)
 
   /**
-   * For the gas limit, we'll use the estimateRetryableTicketMaxGas method in arb-sdk
+   * For the gas limit, we'll use the estimateRetryableTicketMaxGas method in Arbitrum SDK
    */
+
+  /**
+   * First, we need to calculate the calldata for the function being called (setGreeting())
+   */
+
 
   let ABI = ["function setGreeting(string _greeting)"];
   let iface = new ethers.utils.Interface(ABI);
