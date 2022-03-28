@@ -9,6 +9,7 @@ contract GreeterL1 is Greeter {
     address public l2Target;
     IInbox public inbox;
 
+
     event RetryableTicketCreated(uint256 indexed ticketId);
 
     constructor(
@@ -24,6 +25,7 @@ contract GreeterL1 is Greeter {
         l2Target = _l2Target;
     }
 
+
     function setGreetingInL2(
         string memory _greeting,
         uint256 maxSubmissionCost,
@@ -32,7 +34,6 @@ contract GreeterL1 is Greeter {
     ) public payable returns (uint256) {
         bytes memory data =
             abi.encodeWithSelector(Greeter.setGreeting.selector, _greeting);
-        
         uint256 ticketID = inbox.createRetryableTicket{value: msg.value}(
             l2Target,
             0,

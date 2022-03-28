@@ -65,7 +65,7 @@ const main = async () => {
   console.log('Updating greeting from L1 to L2:')
 
   /**
-   * Here we have a new greeting message that we want to set as the L2 greeting; we'll be setting it by sending it as a message from layer 1!!!1
+   * Here we have a new greeting message that we want to set as the L2 greeting; we'll be setting it by sending it as a message from layer 1!!!
    */
   const newGreeting = 'Greeting from far, far away'
 
@@ -91,7 +91,6 @@ const main = async () => {
    */
    const l1ToL2MessageGasEstimate = new L1ToL2MessageGasEstimator(l2Provider)
 
-
    const estimatedPrices = await l1ToL2MessageGasEstimate.estimateSubmissionPrice(newGreetingBytesLength)
    const _submissionPriceWei = estimatedPrices.submissionPrice
    const _nextUpdateTimestamp = estimatedPrices.nextUpdateTimestamp
@@ -99,7 +98,6 @@ const main = async () => {
    console.log(
     `Current retryable base submission price: ${_submissionPriceWei.toString()}`
   )
- 
 
   const timeNow = Math.floor(new Date().getTime() / 1000)
   console.log(
@@ -107,7 +105,6 @@ const main = async () => {
       _nextUpdateTimestamp.toNumber() - timeNow
     }`
   )
-
   /**
    * ...Okay, but on the off chance we end up underpaying, our retryable ticket simply fails.
    * This is highly unlikely, but just to be safe, let's increase the amount we'll be paying (the difference between the actual cost and the amount we pay gets refunded to our address on L2 anyway)
@@ -125,10 +122,29 @@ const main = async () => {
   console.log(`L2 gas price: ${gasPriceBid.toString()}`)
 
   /**
-   * For the gas limit, we'll simply use a hard-coded value (for more precise / dynamic estimates, see the estimateRetryableTicket method in the NodeInterface L2 "precompile")
+   * For the gas limit, we'll use the estimateRetryableTicketMaxGas method in Arbitrum SDK
    */
-  const maxGas = 100000
 
+  /**
+   * First, we need to calculate the calldata for the function being called (setGreeting())
+   */
+  let ABI = ["function setGreeting(string _greeting)"];
+  let iface = new ethers.utils.Interface(ABI);
+  const calldata = iface.encodeFunctionData("setGreeting", [newGreeting])
+ 
+  const maxGas = await l1ToL2MessageGasEstimate.estimateRetryableTicketMaxGas
+  (
+    l1Greeter.address,
+    ethers.utils.parseEther('1'),
+    l2Greeter.address,
+    0,
+    submissionPriceWei,
+    l2Wallet.address,
+    l2Wallet.address,
+    100000,
+    gasPriceBid,
+    calldata
+  )
   /**
    * With these three values, we can calculate the total callvalue we'll need our L1 transaction to send to L2
    */
