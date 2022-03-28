@@ -105,7 +105,6 @@ const main = async () => {
       _nextUpdateTimestamp.toNumber() - timeNow
     }`
   )
-
   /**
    * ...Okay, but on the off chance we end up underpaying, our retryable ticket simply fails.
    * This is highly unlikely, but just to be safe, let's increase the amount we'll be paying (the difference between the actual cost and the amount we pay gets refunded to our address on L2 anyway)
@@ -129,11 +128,9 @@ const main = async () => {
   /**
    * First, we need to calculate the calldata for the function being called (setGreeting())
    */
-
-
   let ABI = ["function setGreeting(string _greeting)"];
   let iface = new ethers.utils.Interface(ABI);
-  const data = iface.encodeFunctionData("setGreeting", [newGreeting])
+  const calldata = iface.encodeFunctionData("setGreeting", [newGreeting])
  
   const maxGas = await l1ToL2MessageGasEstimate.estimateRetryableTicketMaxGas
   (
@@ -146,7 +143,7 @@ const main = async () => {
     l2Wallet.address,
     100000,
     gasPriceBid,
-    data
+    calldata
   )
   /**
    * With these three values, we can calculate the total callvalue we'll need our L1 transaction to send to L2
