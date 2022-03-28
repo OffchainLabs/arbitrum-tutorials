@@ -1,23 +1,17 @@
 const { providers, Wallet } = require('ethers')
 const { L2TransactionReceipt, getL2Network } = require('@arbitrum/sdk')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-
 require('dotenv').config()
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
 
-const wait = (ms = 0) => {
-  return new Promise(res => setTimeout(res, ms || 10000))
-}
-
 /**
- * Set up: instantiate L1 / L2 wallets connected to providers
+ * Set up: instantiate L1 wallet connected to provider
  */
 
 const walletPrivateKey = process.env.DEVNET_PRIVKEY
 
 const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
 const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
-
 const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
 
 module.exports = async txnHash => {
