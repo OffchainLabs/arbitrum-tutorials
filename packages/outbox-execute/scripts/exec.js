@@ -64,7 +64,7 @@ module.exports = async txnHash => {
   /**
    * Execute if not alredy executed
    */
-  if(await l2ToL1Msg.hasExecuted()) {
+  if(await l2ToL1Msg.hasExecuted(proofInfo)) {
     console.log(`Message already executed! Nothing else to do here`)
     process.exit(1)
   }
