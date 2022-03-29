@@ -82,7 +82,8 @@ const main = async () => {
     amount: tokenDepositAmount,
     erc20L1Address: erc20Address,
     l1Signer: l1Wallet,
-    l2Provider: l2Provider
+    l2Provider: l2Provider,
+    destinationAddress: "0x0000000000000000000000000000000000000000"
   })
   
   /**
