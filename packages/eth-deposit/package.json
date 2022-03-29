@@ -4,9 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "hardhat compile",
-    "deposit:inbox": "hardhat run scripts/exec-viaInbox.js",
-    "deposit:arb-ts": "hardhat run scripts/exec-viaLib.js",
-    "deposit:dapp": "hardhat run scripts/exec-viaDApp.js"
+    "depositETH": "hardhat run scripts/exec.js"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
@@ -14,8 +12,7 @@
     "hardhat": "^2.2.0"
   },
   "dependencies": {
-
-    "arb-ts": "^1.0.0-beta.4",
+    "@arbitrum/sdk": "^1.0.0",
     "dotenv": "^8.2.0"
   }
 }

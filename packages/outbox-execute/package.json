@@ -9,10 +9,10 @@
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "chai": "^4.3.4",
     "ethers": "^5.1.2",
-    "hardhat": "^2.2.0"
+    "hardhat": "^2.9.1"
   },
   "dependencies": {
-    "arb-ts": "^1.0.0-beta.4",
+    "@arbitrum/sdk": "^1.0.0",
     "dotenv": "^8.2.0"
   }
 }

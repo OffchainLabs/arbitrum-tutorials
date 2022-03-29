@@ -65,8 +65,6 @@ const main = async () => {
     voteCount = candidate[2];
     expect(voteCount.toNumber()).to.equal(0) 
     console.log('Candidate2 has zero vote!')  
-
-
 }
 
 main()
@@ -74,4 +72,4 @@ main()
   .catch(error => {
     console.error(error)
     process.exit(1)
-  })
+})

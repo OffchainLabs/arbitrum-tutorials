@@ -12,18 +12,7 @@
   },
   "workspaces": {
     "packages": [
-      "packages/greeter",
-      "packages/eth-deposit",
-      "packages/eth-withdraw",
-      "packages/arb-shared-dependencies",
-      "packages/token-deposit",
-      "packages/token-withdraw",
-      "packages/demo-dapp-pet-shop",
-      "packages/demo-dapp-election",
-      "packages/outbox-execute",
-      "packages/address-table",
-      "packages/custom-token",
-      "packages/redeem-failed-retryable"
+      "packages/*"
     ]
   }
 }

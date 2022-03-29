@@ -1,7 +1,10 @@
 const hre = require('hardhat')
-const { ArbAddressTable__factory } = require('arb-ts')
+const { ArbAddressTable__factory } = require('@arbitrum/sdk/dist/lib/abi/factories/ArbAddressTable__factory')
+const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
+requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC'])
+require('dotenv').config()
 
-const { arbLog } = require('arb-shared-dependencies')
+
 async function main() {
   await arbLog('Using the Address Table')
   /**
@@ -64,4 +67,4 @@ main()
   .catch(error => {
     console.error(error)
     process.exit(1)
-  })
+})

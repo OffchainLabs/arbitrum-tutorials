@@ -1,11 +1,4 @@
-require('@nomiclabs/hardhat-waffle')
-
-const {
-  hardhatConfig,
-  requireEnvVariables,
-} = require('arb-shared-dependencies')
-require('dotenv').config()
-
-requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC'])
+require('@nomiclabs/hardhat-ethers')
+const { hardhatConfig } = require('arb-shared-dependencies')
 
 module.exports = hardhatConfig
