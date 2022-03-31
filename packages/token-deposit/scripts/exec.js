@@ -78,26 +78,37 @@ const main = async () => {
    * (2) l1Signer: The L1 address transferring token to L2
    * (3) l2Provider: An l2 provider
    */
-  const depositTx = await erc20Bridge.deposit({
+  // 1st deposit will deploy the standard token in L2
+  // 2nd deposit will be a normal deposit
+  const depositTxParams = [{
     amount: tokenDepositAmount,
     erc20L1Address: erc20Address,
     l1Signer: l1Wallet,
-    l2Provider: l2Provider
-  })
-  
-  /**
-   * Now we wait for L1 and L2 side of transactions to be confirmed
-   */
-  const depositRec = await depositTx.wait()
-  const l2Result = await depositRec.waitForL2(l2Provider)
+    l2Provider: l2Provider,
+  },{
+    amount: tokenDepositAmount,
+    erc20L1Address: erc20Address,
+    l1Signer: l1Wallet,
+    l2Provider: l2Provider,
+  }]
 
-  /**
-   * The `complete` boolean tells us if the l1 to l2 message was successul
-   */
-  l2Result.complete ? 
-    console.log(`L2 message successful: status: ${L1ToL2MessageStatus[l2Result.status]}`) : 
-    console.log(`L2 message failed: status ${L1ToL2MessageStatus[l2Result.status]}`)
-  
+  for (const depositTxParam of depositTxParams){
+    const depositTx = await erc20Bridge.deposit(depositTxParam)
+    
+    /**
+     * Now we wait for L1 and L2 side of transactions to be confirmed
+     */
+    const depositRec = await depositTx.wait()
+    const l2Result = await depositRec.waitForL2(l2Provider)
+
+    /**
+     * The `complete` boolean tells us if the l1 to l2 message was successul
+     */
+    l2Result.complete ? 
+    console.log(`L2 message successful: status: ${L1ToL2MessageStatus[l2Result.status]} ${depositRec.transactionHash}`) : 
+    console.log(`L2 message failed: status ${L1ToL2MessageStatus[l2Result.status]} ${depositRec.transactionHash}`)
+  }
+
   /**
    * Get the Bridge token balance
    */
@@ -108,7 +119,7 @@ const main = async () => {
    */
   expect(
     initialBridgeTokenBalance
-      .add(tokenDepositAmount)
+      .add(tokenDepositAmount.mul(depositTxParams.length))
       .eq(finalBridgeTokenBalance),
     'bridge balance not updated after L1 token deposit txn'
   ).to.be.true
@@ -122,7 +133,7 @@ const main = async () => {
 
   const testWalletL2Balance = (await l2Token.functions.balanceOf(l2Wallet.address))[0]
   expect(
-    testWalletL2Balance.eq(tokenDepositAmount),
+    testWalletL2Balance.eq(tokenDepositAmount.mul(depositTxParams.length)),
     'l2 wallet not updated after deposit'
   ).to.be.true
 
