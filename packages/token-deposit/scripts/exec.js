@@ -80,6 +80,7 @@ const main = async () => {
    */
   // 1st deposit will deploy the standard token in L2
   // 2nd deposit will be a normal deposit
+  // 3rd deposit will be a normal deposit with 2x gas limit
   const depositTxParams = [{
     amount: tokenDepositAmount,
     erc20L1Address: erc20Address,
@@ -90,6 +91,12 @@ const main = async () => {
     erc20L1Address: erc20Address,
     l1Signer: l1Wallet,
     l2Provider: l2Provider,
+  },{
+    amount: tokenDepositAmount,
+    erc20L1Address: erc20Address,
+    l1Signer: l1Wallet,
+    l2Provider: l2Provider,
+    retryableGasOverrides:{maxGas: {percentIncrease: BigNumber.from(100)}} // 100%
   }]
 
   for (const depositTxParam of depositTxParams){
