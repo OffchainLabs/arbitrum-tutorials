@@ -1,5 +1,5 @@
 require('@nomiclabs/hardhat-ethers')
-const main = require('./scripts/exec.js')
+const main = require('./scripts/exec-redeem.js')
 const { hardhatConfig } = require('arb-shared-dependencies')
 
 const { task } = require('hardhat/config')

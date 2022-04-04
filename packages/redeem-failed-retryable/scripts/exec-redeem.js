@@ -1,5 +1,5 @@
 const { providers, Wallet } = require('ethers')
-const { L1TransactionReceipt, L1ToL2MessageStatus } = require('@arbitrum/sdk')
+const { L1TransactionReceipt, L1ToL2MessageStatus, L1ToL2Message, getL2Network } = require('@arbitrum/sdk')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
@@ -33,20 +33,33 @@ module.exports = async txnHash => {
   */
   const receipt = await l1Provider.getTransactionReceipt(txnHash)
   const l1Receipt = new L1TransactionReceipt(receipt)
+
+
+  
   
   const message = await l1Receipt.getL1ToL2Message(l2Wallet)
-  const status = await message.waitForStatus()
+  const autoRedeemHash = message.autoRedeemId
+  const autoRedeemRec = await l2Provider.getTransactionReceipt(autoRedeemHash)
 
-  if(status === L1ToL2MessageStatus.REDEEMED) {
-    console.log(`L2 retryable txn is already executed 🥳 ${message.l2TxHash}`)
-    } else {
-  console.log(`L2 retryable txn failed with status ${L1ToL2MessageStatus[status]}`)
-  }  
-  console.log(`Redeeming the ticket now 🥳 `)
 
-  /**
-   * We use the redeem() method from Arbitrum SDK to manually redeem our ticket
-  */
-  await message.redeem()
-  console.log('The L2 side of your transaction is now execeuted 🥳 :', message.l2TxHash)
+  console.log(
+    autoRedeemHash
+  )
+
+
+
+  // const status = await message.waitForStatus()
+
+  // if(status === L1ToL2MessageStatus.REDEEMED) {
+  //   console.log(`L2 retryable txn is already executed 🥳 ${message.l2TxHash}`)
+  //   } else {
+  // console.log(`L2 retryable txn failed with status ${L1ToL2MessageStatus[status]}`)
+  // }  
+  // console.log(`Redeeming the ticket now 🥳 `)
+
+  // /**
+  //  * We use the redeem() method from Arbitrum SDK to manually redeem our ticket
+  // */
+  // await message.redeem()
+  // console.log('The L2 side of your transaction is now execeuted 🥳 :', message.l2TxHash)
 }
