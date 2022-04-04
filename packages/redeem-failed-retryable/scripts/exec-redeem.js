@@ -61,7 +61,7 @@ module.exports = async txnHash => {
     case 12:
       console.log(`Auto redeem failed; no L2 gas is provided fot auto redeem; you can redeem it now:`)  
     default:
-      console.log(`auto redeem reverted; you can redeem it now:`)  
+      console.log(`Auto redeem reverted; you can redeem it now:`)  
   }
 
   console.log(`Redeeming the ticket now 🥳`)
