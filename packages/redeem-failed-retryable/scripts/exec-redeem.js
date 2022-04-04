@@ -43,10 +43,27 @@ module.exports = async txnHash => {
 
 
   console.log(
-    autoRedeemHash
+    autoRedeemRec.status
   )
 
 
+switch(autoRedeemRec.status)
+{
+  case 1: 
+    console.log(`Your auto redeem reverted.`)
+  case 2:
+    console.log(`Auto redeem failed; hit congestion in the chain; you can redeem it now:"`)
+  case 8:
+    console.log(`auto redeem _TxResultCode_exceededTxGasLimit; you can redeem it now:"`)
+  case 10:
+    console.log(`auto redeem TxResultCode_belowMinimumTxGas; you can redeem it now:"`)
+  case 11:
+    console.log(`auto redeem TxResultCode_gasPriceTooLow; you can redeem it now:"`)
+  case 12:
+    console.log(`auto redeem TxResultCode_noGasForAutoRedeem; you can redeem it now:"`)  
+  default:
+    console.log(`auto redeem reverted; you can redeem it now:"`)  
+}
 
   // const status = await message.waitForStatus()
 
