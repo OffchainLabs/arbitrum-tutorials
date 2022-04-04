@@ -1,12 +1,16 @@
 # Redeem Failed Retryable Ticket Tutorial
 
 Retryable tickets are the Arbitrum protocol’s canonical method for passing generalized messages from Ethereum to Arbitrum. A retryable ticket is an L2 message encoded and delivered by L1; if gas is provided, it will be executed immediately. If no gas is provided or the execution reverts, it will be placed in the L2 retry buffer, where any user can re-execute for some fixed period (roughly one week).
-`redeem-failed-retryable` shows you how to redeem (re-execute) a ticket that is stting in the L2 retry buffer.
+You can use `exec-createFailedRetryable` script to create a failed retryable ticket and then use `redeem-failed-retryable` which shows you how to redeem (re-execute) a ticket that is stting in the L2 retry buffer.
 
 See [./exec.js](./scripts/exec.js) for inline explanation.
 
 ### Run Demo:
-
+To create a failed retryable ticket:
+```
+ yarn run createFailedRetryable
+```
+To redeem a failed retryable ticket:
 ```
  yarn hardhat redeem-failed-retryable --txhash 0xmytxnhash
 ```
