@@ -42,7 +42,9 @@ module.exports = async txnHash => {
 
   if(status === L1ToL2MessageStatus.REDEEMED) {
     console.log(`L2 retryable txn is already executed 🥳 ${message.l2TxHash}`)
-  } else {
+    return;
+  } 
+  else {
     console.log(`L2 retryable txn failed with status ${L1ToL2MessageStatus[status]}`)
   }  
   console.log(`Let's see why auto redeem failed before manullay redeeming our ticket:`)
