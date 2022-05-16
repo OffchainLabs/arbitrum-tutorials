@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@arbitrum/sdk@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-1.0.0.tgz#46f247bc8ab58c6ba43ea3c05edc8a76014dba5a"
-  integrity sha512-+KhHgYkDO2r3SgK8Lc+vc/7+g3XFphUOfaZTfpF44cSPEsxB7Fc2E8WQr54rLRLHO1HeqD0kTxIgoQsaTWOH2Q==
+"@arbitrum/sdk@^1.1.4":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-1.1.4.tgz#1f51455a93e23aff29ab047ac1be06cec78e6145"
+  integrity sha512-Tosm9p6eS+kpp64VMjqEHdbjsg9XmS+hjnFzarzKjUkILn5ShX+E2oYOhp4eHnYddQOL/jKhJkFdgfPh3tqI/g==
   dependencies:
     "@ethersproject/address" "^5.0.8"
     "@ethersproject/bignumber" "^5.1.1"
