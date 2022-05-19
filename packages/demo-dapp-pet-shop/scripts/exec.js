@@ -1,3 +1,4 @@
+const hre = require('hardhat')
 const { ethers } = require('hardhat')
 const { expect } = require('chai')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
@@ -48,4 +49,4 @@ main()
   .catch(error => {
     console.error(error)
     process.exit(1)
-})
+  })

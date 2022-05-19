@@ -26,7 +26,7 @@ module.exports = async txnHash => {
     )
   if (!txnHash.startsWith('0x') || txnHash.trim().length != 66)
     throw new Error(`Hmm, ${txnHash} doesn't look like a txn hash...`)
-  
+
   /**
    * First, let's find the Arbitrum txn from the txn hash provided
    */
@@ -46,7 +46,9 @@ module.exports = async txnHash => {
    * waitUntilOutboxEntryCreated() waits until the item outbox entry exists
    */
   const timeToWaitMs = 1000 * 60
-  console.log("Waiting for the outbox entry to be created. This only happens when the L2 block is confirmed on L1, ~1 week after it's creation.")
+  console.log(
+    "Waiting for the outbox entry to be created. This only happens when the L2 block is confirmed on L1, ~1 week after it's creation."
+  )
   await l2ToL1Msg.waitUntilOutboxEntryCreated(timeToWaitMs)
   console.log('Outbox entry exists! Trying to execute now')
 
@@ -58,7 +60,7 @@ module.exports = async txnHash => {
   /**
    * Execute if not alredy executed
    */
-  if(await l2ToL1Msg.hasExecuted(proofInfo)) {
+  if (await l2ToL1Msg.hasExecuted(proofInfo)) {
     console.log(`Message already executed! Nothing else to do here`)
     process.exit(1)
   }

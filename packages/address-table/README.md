@@ -27,4 +27,3 @@ cp .env-sample .env
 See our [developer documentation for more info](https://developer.offchainlabs.com/docs/special_features).
 
 <p align="center"><img src="../../assets/offchain_labs_logo.png" width="600"></p>
-

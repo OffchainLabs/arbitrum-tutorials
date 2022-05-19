@@ -1,10 +1,13 @@
 const { utils, providers, Wallet } = require('ethers')
-const { EthBridger, getL2Network, L1ToL2MessageStatus }  = require ('@arbitrum/sdk')
+const {
+  EthBridger,
+  getL2Network,
+  L1ToL2MessageStatus,
+} = require('@arbitrum/sdk')
 const { parseEther } = utils
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
 requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
-
 
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
@@ -13,7 +16,7 @@ const walletPrivateKey = process.env.DEVNET_PRIVKEY
 
 const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
 const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
- 
+
 const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
 const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
@@ -41,7 +44,7 @@ const main = async () => {
   /**
    * transfer ether from L1 to L2
    * This convenience method automatically queries for the retryable's max submission cost and forwards the appropriate amount to L2
-   * Arguments required are: 
+   * Arguments required are:
    * (1) amount: The amount of ETH to be transferred to L2
    * (2) l1Signer: The L1 address transferring ETH to L2
    * (3) l2Provider: An l2 provider
@@ -49,12 +52,12 @@ const main = async () => {
   const depositTx = await ethBridger.deposit({
     amount: ethToL2DepositAmount,
     l1Signer: l1Wallet,
-    l2Provider: l2Provider
+    l2Provider: l2Provider,
   })
 
   const depositRec = await depositTx.wait()
   console.warn('deposit L1 receipt is:', depositRec.transactionHash)
-  
+
   /**
    * With the transaction confirmed on L1, we now wait for the L2 side (i.e., balance credited to L2) to be confirmed as well.
    * Here we're waiting for the Sequencer to include the L2 message in its off-chain queue. The Sequencer should include it in under 10 minutes.
@@ -65,10 +68,14 @@ const main = async () => {
   /**
    * The `complete` boolean tells us if the l1 to l2 message was successul
    */
-  l2Result.complete ? 
-    console.log(`L2 message successful: status: ${L1ToL2MessageStatus[l2Result.status]}`) : 
-    console.log(`L2 message failed: status ${L1ToL2MessageStatus[l2Result.status]}`)
-  
+  l2Result.complete
+    ? console.log(
+        `L2 message successful: status: ${L1ToL2MessageStatus[l2Result.status]}`
+      )
+    : console.log(
+        `L2 message failed: status ${L1ToL2MessageStatus[l2Result.status]}`
+      )
+
   /**
    * Our l2Wallet ETH balance should be updated now
    */
@@ -82,4 +89,4 @@ main()
   .catch(error => {
     console.error(error)
     process.exit(1)
-})
+  })

@@ -6,14 +6,19 @@ You can use `exec-createFailedRetryable` script to create a failed retryable tic
 See [./exec-redeem.js](./scripts/exec-redeem.js) for inline explanation.
 
 ### Run Demo:
+
 To create a failed retryable ticket:
+
 ```
  yarn run createFailedRetryable
 ```
+
 To redeem a failed retryable ticket:
+
 ```
  yarn hardhat redeem-failed-retryable --txhash 0xmytxnhash
 ```
+
 - _0xmytxnhash_ is expected to be the transaction hash of an L1 transaction that triggered an L1 to L2 message.
 
 ## Config Environment Variables
