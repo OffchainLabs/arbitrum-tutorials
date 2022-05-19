@@ -92,27 +92,21 @@ const main = async () => {
    */
   const l1ToL2MessageGasEstimate = new L1ToL2MessageGasEstimator(l2Provider)
 
-  const estimatedPrices =
-    await l1ToL2MessageGasEstimate.estimateSubmissionPrice(
+  const _submissionPriceWei =
+    await l1ToL2MessageGasEstimate.estimateSubmissionFee(
+      l1Provider,
+      await l1Provider.getGasPrice(),
       newGreetingBytesLength
     )
-  const _submissionPriceWei = estimatedPrices.submissionPrice
-  const _nextUpdateTimestamp = estimatedPrices.nextUpdateTimestamp
 
   console.log(
     `Current retryable base submission price: ${_submissionPriceWei.toString()}`
   )
 
-  const timeNow = Math.floor(new Date().getTime() / 1000)
-  console.log(
-    `time in seconds till price update: ${
-      _nextUpdateTimestamp.toNumber() - timeNow
-    }`
-  )
   /**
    * ...Okay, but on the off chance we end up underpaying, our retryable ticket simply fails.
    * This is highly unlikely, but just to be safe, let's increase the amount we'll be paying (the difference between the actual cost and the amount we pay gets refunded to our address on L2 anyway)
-   * (Note that in future releases, the a max cost increase per 24 hour window of 150% will be enforced, so this will be less of a concern.)
+   * In nitro, submission fee will be charged in L1 based on L1 basefee, revert on L1 side upon insufficient fee.
    */
   const submissionPriceWei = _submissionPriceWei.mul(5)
   /**

@@ -19,7 +19,7 @@ cp .env-sample .env
 ### Run demo
 
 ```
- yarn hardhat outbox-exec --txhash 0xmytxnhash
+ yarn outbox-exec --txhash 0xmytxnhash
 ```
 
 - _0xmytxnhash_ is expected to be the transaction hash of an L2 transaction that triggered an L2 to L1 message.
