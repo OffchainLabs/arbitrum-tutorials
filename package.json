@@ -12,7 +12,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "format": "prettier './**/*.{js,json,md,yml}' --write && yarn run lint --fix"
+    "format": "prettier './**/*.{js,json,md,yml,sol}' --write && yarn run lint --fix"
   },
   "devDependencies": {
     "eslint": "^8.15.0",

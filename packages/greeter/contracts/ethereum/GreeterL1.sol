@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity  >=0.6.11;
+pragma solidity >=0.6.11;
 
 import "arb-bridge-eth/contracts/bridge/Inbox.sol";
 import "arb-bridge-eth/contracts/bridge/Outbox.sol";
@@ -8,7 +8,6 @@ import "../Greeter.sol";
 contract GreeterL1 is Greeter {
     address public l2Target;
     IInbox public inbox;
-
 
     event RetryableTicketCreated(uint256 indexed ticketId);
 
@@ -25,16 +24,14 @@ contract GreeterL1 is Greeter {
         l2Target = _l2Target;
     }
 
-
     function setGreetingInL2(
         string memory _greeting,
         uint256 maxSubmissionCost,
         uint256 maxGas,
         uint256 gasPriceBid
     ) public payable returns (uint256) {
-        bytes memory data =
-            abi.encodeWithSelector(Greeter.setGreeting.selector, _greeting);
-        uint256 ticketID = inbox.createRetryableTicket{value: msg.value}(
+        bytes memory data = abi.encodeWithSelector(Greeter.setGreeting.selector, _greeting);
+        uint256 ticketID = inbox.createRetryableTicket{ value: msg.value }(
             l2Target,
             0,
             maxSubmissionCost,

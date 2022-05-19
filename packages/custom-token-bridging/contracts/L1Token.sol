@@ -46,7 +46,11 @@ contract L1Token is ICustomToken, ERC20 {
     address public router;
     bool private shouldRegisterGateway;
 
-    constructor(address _bridge, address _router, uint256 _premine) ERC20("L1CustomToken", "LCT") public {
+    constructor(
+        address _bridge,
+        address _router,
+        uint256 _premine
+    ) public ERC20("L1CustomToken", "LCT") {
         bridge = _bridge;
         router = _router;
         _mint(msg.sender, _premine);
@@ -90,7 +94,7 @@ contract L1Token is ICustomToken, ERC20 {
         bool prev = shouldRegisterGateway;
         shouldRegisterGateway = true;
 
-        ICustomGateway(bridge).registerTokenToL2{value: valueForGateway}(
+        ICustomGateway(bridge).registerTokenToL2{ value: valueForGateway }(
             l2CustomTokenAddress,
             maxGasForCustomBridge,
             gasPriceBid,
@@ -98,7 +102,7 @@ contract L1Token is ICustomToken, ERC20 {
             creditBackAddress
         );
 
-        IGatewayRouter(router).setGateway{value: valueForRouter}(
+        IGatewayRouter(router).setGateway{ value: valueForRouter }(
             bridge,
             maxGasForRouter,
             gasPriceBid,
