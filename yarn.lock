@@ -2,7 +2,16 @@
 # yarn lockfile v1
 
 
-"@arbitrum/sdk@^1.1.4":
+"@arbitrum/nitro-contracts@1.0.0-beta.5", "@arbitrum/nitro-contracts@^1.0.0-beta.2":
+  version "1.0.0-beta.5"
+  resolved "https://registry.yarnpkg.com/@arbitrum/nitro-contracts/-/nitro-contracts-1.0.0-beta.5.tgz#b4ca2a8d99b8a108e7dc412f6c2cb74818d5099a"
+  integrity sha512-hEpRXIL8S6AfTt6dqJsKCa84JufhuXuRgm2BnximdRrhJ8ukqR6Pt/mndYMa4nWRRTBMYkIxy6EA5iYxDwxWAQ==
+  dependencies:
+    "@openzeppelin/contracts" "4.5.0"
+    "@openzeppelin/contracts-upgradeable" "4.5.2"
+    hardhat "^2.6.6"
+
+"@arbitrum/sdk-classic@npm:@arbitrum/sdk@1.1.4":
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-1.1.4.tgz#1f51455a93e23aff29ab047ac1be06cec78e6145"
   integrity sha512-Tosm9p6eS+kpp64VMjqEHdbjsg9XmS+hjnFzarzKjUkILn5ShX+E2oYOhp4eHnYddQOL/jKhJkFdgfPh3tqI/g==
@@ -16,6 +25,44 @@
     arb-bridge-eth "0.7.5"
     arb-bridge-peripherals "1.0.6"
     arbos-precompiles "1.0.2"
+    dotenv "^10.0.0"
+    ethers "^5.1.0"
+    ts-node "^10.2.1"
+    typechain "7.0.0"
+
+"@arbitrum/sdk-nitro@npm:@arbitrum/sdk@3.0.0-beta.0":
+  version "3.0.0-beta.0"
+  resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-3.0.0-beta.0.tgz#3d991616105fcbacda2d63f55969d8494156fbbb"
+  integrity sha512-sHlQNCgweTgOe+8Nf7KoWIGjGSehLNCuME9xbkJoc/bG3Raw1P3S7uGsYO0GNBGB9KjimbfnfIBjb4Torhe+Bw==
+  dependencies:
+    "@arbitrum/nitro-contracts" "1.0.0-beta.5"
+    "@ethersproject/address" "^5.0.8"
+    "@ethersproject/bignumber" "^5.1.1"
+    "@ethersproject/bytes" "^5.0.8"
+    "@typechain/ethers-v5" "9.0.0"
+    "@types/prompts" "^2.0.14"
+    "@types/yargs" "^17.0.9"
+    arb-bridge-peripherals "1.0.9"
+    dotenv "^10.0.0"
+    ethers "^5.1.0"
+    ts-node "^10.2.1"
+    typechain "7.0.0"
+
+"@arbitrum/sdk@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-2.0.0.tgz#56de52e47c4a300e848b951249905f454a204e55"
+  integrity sha512-AX7VsFx+neUmCT1AQBirI3Jlc+Ope553KiEtqdCT+mnk3do1M9C6ixZSZAxrGm4gS+HZjrNFSvEIFQOcJV5Ylw==
+  dependencies:
+    "@arbitrum/nitro-contracts" "^1.0.0-beta.2"
+    "@arbitrum/sdk-classic" "npm:@arbitrum/sdk@1.1.4"
+    "@arbitrum/sdk-nitro" "npm:@arbitrum/sdk@3.0.0-beta.0"
+    "@ethersproject/address" "^5.0.8"
+    "@ethersproject/bignumber" "^5.1.1"
+    "@ethersproject/bytes" "^5.0.8"
+    "@typechain/ethers-v5" "9.0.0"
+    "@types/prompts" "^2.0.14"
+    "@types/yargs" "^17.0.9"
+    arb-bridge-peripherals "1.0.9"
     dotenv "^10.0.0"
     ethers "^5.1.0"
     ts-node "^10.2.1"
@@ -1048,10 +1095,20 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-3.4.2.tgz#2c2a1b0fa748235a1f495b6489349776365c51b3"
   integrity sha512-mDlBS17ymb2wpaLcrqRYdnBAmP1EwqhOXMvqWk2c5Q1N1pm5TkiCtXM9Xzznh4bYsQBq0aIWEkFFE2+iLSN1Tw==
 
+"@openzeppelin/contracts-upgradeable@4.5.2":
+  version "4.5.2"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-4.5.2.tgz#90d9e47bacfd8693bfad0ac8a394645575528d05"
+  integrity sha512-xgWZYaPlrEOQo3cBj97Ufiuv79SPd8Brh4GcFYhPgb6WvAq4ppz8dWKL6h+jLAK01rUqMRp/TS9AdXgAeNvCLA==
+
 "@openzeppelin/contracts@3.4.2", "@openzeppelin/contracts@^3.4.2":
   version "3.4.2"
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-3.4.2.tgz#d81f786fda2871d1eb8a8c5a73e455753ba53527"
   integrity sha512-z0zMCjyhhp4y7XKAcDAi3Vgms4T2PstwBdahiO0+9NaGICQKjynK3wduSRplTgk4LXmoO1yfDGO5RbjKYxtuxA==
+
+"@openzeppelin/contracts@4.5.0":
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.5.0.tgz#3fd75d57de172b3743cdfc1206883f56430409cc"
+  integrity sha512-fdkzKPYMjrRiPK6K4y64e6GzULR7R7RwxSigHS8DDp7aWDeoReqsQI+cxHV1UuhAqX69L1lAaWDxenfP+xiqzA==
 
 "@openzeppelin/upgrades-core@^1.7.6":
   version "1.11.1"
@@ -1622,6 +1679,16 @@ arb-bridge-eth@0.7.5, arb-bridge-eth@^0.7.5:
     "@openzeppelin/contracts-upgradeable" "3.4.2"
     hardhat "^2.6.1"
 
+arb-bridge-eth@0.7.6:
+  version "0.7.6"
+  resolved "https://registry.yarnpkg.com/arb-bridge-eth/-/arb-bridge-eth-0.7.6.tgz#76cfa217c43bb03d488af58f646dee9fa27bb153"
+  integrity sha512-PvEB15QOSd9QZf4cW6bJ+yuZHOiCJWYz+DK9yqk1UQIzZ6wOz3HuvUJezzKznVtOd9MOSen0kg1vo3khgPL4tw==
+  dependencies:
+    "@openzeppelin/contracts" "3.4.2"
+    "@openzeppelin/contracts-0.8" "npm:@openzeppelin/contracts@^4.3.2"
+    "@openzeppelin/contracts-upgradeable" "3.4.2"
+    hardhat "^2.6.1"
+
 arb-bridge-peripherals@1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/arb-bridge-peripherals/-/arb-bridge-peripherals-1.0.6.tgz#91024740b96bf10fc43bf6582ee0debf93cf3d81"
@@ -1630,6 +1697,19 @@ arb-bridge-peripherals@1.0.6:
     "@openzeppelin/contracts" "3.4.2"
     "@openzeppelin/contracts-upgradeable" "3.4.2"
     arb-bridge-eth "0.7.5"
+    arbos-precompiles "^1.0.2"
+    hardhat "^2.6.1"
+  optionalDependencies:
+    "@openzeppelin/upgrades-core" "^1.7.6"
+
+arb-bridge-peripherals@1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/arb-bridge-peripherals/-/arb-bridge-peripherals-1.0.9.tgz#a1a766375c0db0a10b42a821d2ca5dd208433a13"
+  integrity sha512-PStSozLTJxE8hw1l8T27E9JuRpKMfqYXGhy8RP6KYTfsJELJEuk/PHjbq3Gl8JFkfD7H08w434/tqKkOSBjZXA==
+  dependencies:
+    "@openzeppelin/contracts" "3.4.2"
+    "@openzeppelin/contracts-upgradeable" "3.4.2"
+    arb-bridge-eth "0.7.6"
     arbos-precompiles "^1.0.2"
     hardhat "^2.6.1"
   optionalDependencies:

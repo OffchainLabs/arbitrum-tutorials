@@ -37,14 +37,6 @@ module.exports = async txnHash => {
   const message = await l1Receipt.getL1ToL2Message(l2Wallet)
   const status = (await message.waitForStatus()).status
 
-  /**
-   * To check why out autoredeem has failed, we get the autoRedeemRec which has the returnCode field
-   */
-  const autoRedeemRec = await getRawArbTransactionReceipt(
-    l2Provider,
-    message.autoRedeemId
-  )
-
   if (status === L1ToL2MessageStatus.REDEEMED) {
     console.log(`L2 retryable txn is already executed 🥳 ${message.l2TxHash}`)
     return
@@ -52,42 +44,6 @@ module.exports = async txnHash => {
     console.log(
       `L2 retryable txn failed with status ${L1ToL2MessageStatus[status]}`
     )
-  }
-  console.log(
-    `Let's see why auto redeem failed before manullay redeeming our ticket:`
-  )
-
-  switch (autoRedeemRec.returnCode) {
-    case 1:
-      console.log(`Your auto redeem reverted.`)
-      break
-    case 2:
-      console.log(
-        `Auto redeem failed; hit congestion in the chain; you can redeem it now:`
-      )
-      break
-    case 8:
-      console.log(
-        `Auto redeem failed; exceeded the tx gas limit ; you can redeem it now:`
-      )
-      break
-    case 10:
-      console.log(
-        `Auto redeem failed; gas provided is below minimum tx gas; you can redeem it now:`
-      )
-      break
-    case 11:
-      console.log(
-        `Auto redeem failed; L2 gas price is set too low; you can redeem it now:`
-      )
-      break
-    case 12:
-      console.log(
-        `Auto redeem failed; no L2 gas is provided fot auto redeem; you can redeem it now:`
-      )
-      break
-    default:
-      console.log(`Auto redeem reverted; you can redeem it now:`)
   }
 
   console.log(`Redeeming the ticket now 🥳`)
