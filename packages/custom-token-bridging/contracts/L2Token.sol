@@ -41,7 +41,7 @@ contract L2Token is ERC20, IArbToken {
     address public l2Gateway;
     address public override l1Address;
 
-    constructor(address _l2Gateway, address _l1TokenAddress) ERC20("L2CustomToken", "L2CT") public {
+    constructor(address _l2Gateway, address _l1TokenAddress) public ERC20("L2CustomToken", "L2CT") {
         l2Gateway = _l2Gateway;
         l1Address = _l1TokenAddress;
     }
@@ -52,7 +52,7 @@ contract L2Token is ERC20, IArbToken {
         }
     }
 
-    modifier onlyL2Gateway {
+    modifier onlyL2Gateway() {
         require(msg.sender == l2Gateway, "NOT_GATEWAY");
         _;
     }

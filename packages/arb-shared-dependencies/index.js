@@ -17,7 +17,6 @@ const arbLog = async text => {
     while (str.length < 60) {
       str = ` ${str} `
     }
-    str = str
 
     console.log(str)
   }

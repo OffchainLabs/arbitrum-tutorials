@@ -1,8 +1,10 @@
-const { providers, Wallet } = require('ethers') 
+const { providers, Wallet } = require('ethers')
 const hre = require('hardhat')
 const ethers = require('ethers')
 const { hexDataLength } = require('@ethersproject/bytes')
-const { L1ToL2MessageGasEstimator } = require('@arbitrum/sdk/dist/lib/message/L1ToL2MessageGasEstimator')
+const {
+  L1ToL2MessageGasEstimator,
+} = require('@arbitrum/sdk/dist/lib/message/L1ToL2MessageGasEstimator')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 const { L1TransactionReceipt, L1ToL2MessageStatus } = require('@arbitrum/sdk')
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC', 'INBOX_ADDR'])
@@ -14,7 +16,7 @@ const walletPrivateKey = process.env.DEVNET_PRIVKEY
 
 const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
 const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
- 
+
 const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
 const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
@@ -89,13 +91,16 @@ const main = async () => {
    * Now we can query the submission price using a helper method; the first value returned tells us the best cost of our transaction; that's what we'll be using.
    * The second value (nextUpdateTimestamp) tells us when the base cost will next update (base cost changes over time with chain congestion; the value updates every 24 hours). We won't actually use it here, but generally it's useful info to have.
    */
-   const l1ToL2MessageGasEstimate = new L1ToL2MessageGasEstimator(l2Provider)
+  const l1ToL2MessageGasEstimate = new L1ToL2MessageGasEstimator(l2Provider)
 
-   const estimatedPrices = await l1ToL2MessageGasEstimate.estimateSubmissionPrice(newGreetingBytesLength)
-   const _submissionPriceWei = estimatedPrices.submissionPrice
-   const _nextUpdateTimestamp = estimatedPrices.nextUpdateTimestamp
-   
-   console.log(
+  const estimatedPrices =
+    await l1ToL2MessageGasEstimate.estimateSubmissionPrice(
+      newGreetingBytesLength
+    )
+  const _submissionPriceWei = estimatedPrices.submissionPrice
+  const _nextUpdateTimestamp = estimatedPrices.nextUpdateTimestamp
+
+  console.log(
     `Current retryable base submission price: ${_submissionPriceWei.toString()}`
   )
 
@@ -118,7 +123,7 @@ const main = async () => {
   /**
    * For the L2 gas price, we simply query it from the L2 provider, as we would when using L1
    */
-   const gasPriceBid = await l2Provider.getGasPrice()
+  const gasPriceBid = await l2Provider.getGasPrice()
   console.log(`L2 gas price: ${gasPriceBid.toString()}`)
 
   /**
@@ -128,12 +133,11 @@ const main = async () => {
   /**
    * First, we need to calculate the calldata for the function being called (setGreeting())
    */
-  let ABI = ["function setGreeting(string _greeting)"];
-  let iface = new ethers.utils.Interface(ABI);
-  const calldata = iface.encodeFunctionData("setGreeting", [newGreeting])
- 
-  const maxGas = await l1ToL2MessageGasEstimate.estimateRetryableTicketMaxGas
-  (
+  const ABI = ['function setGreeting(string _greeting)']
+  const iface = new ethers.utils.Interface(ABI)
+  const calldata = iface.encodeFunctionData('setGreeting', [newGreeting])
+
+  const maxGas = await l1ToL2MessageGasEstimate.estimateRetryableTicketMaxGas(
     l1Greeter.address,
     ethers.utils.parseEther('1'),
     l2Greeter.address,
@@ -172,19 +176,21 @@ const main = async () => {
   const l1TxReceipt = new L1TransactionReceipt(setGreetingRec)
 
   /**
-   * In principle, a single L1 txn can trigger any number of L1-to-L2 messages (each with its own sequencer number). 
+   * In principle, a single L1 txn can trigger any number of L1-to-L2 messages (each with its own sequencer number).
    * In this case, we know our txn triggered only one
    * Here, We check if our L1 to L2 message is redeemed on L2
-  */
+   */
   const message = await l1TxReceipt.getL1ToL2Message(l2Wallet)
-  const status = await message.waitForStatus();
+  const status = await message.waitForStatus()
   console.log(status)
-    if(status === L1ToL2MessageStatus.REDEEMED) {
-      console.log(`L2 retryable txn executed 🥳 ${message.l2TxHash}`)
-      } else {
-    console.log(`L2 retryable txn failed with status ${L1ToL2MessageStatus[status]}`)
-    }  
-  
+  if (status === L1ToL2MessageStatus.REDEEMED) {
+    console.log(`L2 retryable txn executed 🥳 ${message.l2TxHash}`)
+  } else {
+    console.log(
+      `L2 retryable txn failed with status ${L1ToL2MessageStatus[status]}`
+    )
+  }
+
   /**
    * Note that during L2 execution, a retryable's sender address is transformed to its L2 alias.
    * Thus, when GreeterL2 checks that the message came from the L1, we check that the sender is this L2 Alias.
@@ -204,4 +210,4 @@ main()
   .catch(error => {
     console.error(error)
     process.exit(1)
-})
+  })

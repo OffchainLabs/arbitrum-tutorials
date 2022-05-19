@@ -1,5 +1,5 @@
 const { utils, providers, Wallet } = require('ethers')
-const { EthBridger, getL2Network, L2ToL1Message }  = require ('@arbitrum/sdk')
+const { EthBridger, getL2Network, L2ToL1Message } = require('@arbitrum/sdk')
 const { parseEther } = utils
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
@@ -25,8 +25,8 @@ const main = async () => {
    * We'll use EthBridger for its convenience methods around transferring ETH from L2 to L1
    */
 
-   const l2Network = await getL2Network(l2Provider)
-   const ethBridger = new EthBridger(l2Network)
+  const l2Network = await getL2Network(l2Provider)
+  const ethBridger = new EthBridger(l2Network)
 
   /**
    * First, let's check our L2 wallet's initial ETH balance and ensure there's some ETH to withdraw
@@ -48,7 +48,7 @@ const main = async () => {
 
   const withdrawTx = await ethBridger.withdraw({
     amount: ethFromL2WithdrawAmount,
-    l2Signer: l2Wallet
+    l2Signer: l2Wallet,
   })
   const withdrawRec = await withdrawTx.wait()
 
@@ -63,7 +63,7 @@ const main = async () => {
   console.log('Withdrawal data:', withdrawEventsData)
   console.log(
     `To to claim funds (after dispute period), see outbox-execute repo ✌️`
-  ) 
+  )
 }
 
 main()
@@ -71,4 +71,4 @@ main()
   .catch(error => {
     console.error(error)
     process.exit(1)
-})
+  })

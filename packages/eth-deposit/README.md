@@ -6,7 +6,7 @@
 
 A user deposits Ether onto Arbitrum using Arbitrum's general L1-to-L2 message passing system, and simply passing the desired Ether as callvalue and no additional data. For more info, see [Retryable Tickets documentation](https://developer.offchainlabs.com/docs/l1_l2_messages#depositing-eth-via-retryables).
 
-###  **Using Arbitrum SDK tooling**
+### **Using Arbitrum SDK tooling**
 
 Our [Arbitrum SDK](https://github.com/OffchainLabs/arbitrum-sdk) provides a simply convenience method for depositing Ether, abstracting away the need for the client to connect to any contracts manually.
 
