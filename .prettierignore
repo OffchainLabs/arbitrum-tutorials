@@ -1,0 +1,7 @@
+dist/**
+node_modules/**
+packages/**/artifacts/**
+packages/**/build/**
+packages/**/cache/**
+packages/**/dist/**
+packages/**/node_modules/**
