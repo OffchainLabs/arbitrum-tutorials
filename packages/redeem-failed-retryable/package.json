@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "scripts": {
     "build": "hardhat compile",
-    "createFailedRetryable": "hardhat run scripts/exec-createFailedRetryable.js"
+    "createFailedRetryable": "hardhat run scripts/exec-createFailedRetryable.js",
+    "redeemFailedRetryable": "hardhat redeem-failed-retryable"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
