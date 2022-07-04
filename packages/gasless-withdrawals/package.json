@@ -1,0 +1,19 @@
+{
+  "name": "gasless-withdrawals",
+  "license": "Apache-2.0",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "hardhat compile",
+    "gasless-withdrawals": "hardhat gasless-withdrawals"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "chai": "^4.3.4",
+    "ethers": "^5.1.2",
+    "hardhat": "^2.9.1"
+  },
+  "dependencies": {
+    "@arbitrum/sdk": "^2.0.0",
+    "dotenv": "^8.2.0"
+  }
+}
