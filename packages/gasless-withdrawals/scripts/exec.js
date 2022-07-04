@@ -1,12 +1,12 @@
 const { providers, Wallet } = require('ethers')
-const {
-  L2TransactionReceipt,
-  getL2Network,
-  L2ToL1MessageStatus
-} = require('@arbitrum/sdk')
+const { L2TransactionReceipt, getL2Network, L2ToL1MessageStatus } = require('@arbitrum/sdk')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 const { Outbox__factory } = require ('@arbitrum/sdk/dist/lib/abi/factories/Outbox__factory') 
+const { FlashbotsBundleProvider, FlashbotsBundleResolution } = require("@flashbots/ethers-provider-bundle")
+
 require('dotenv').config()
+
+
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
 
 /**
@@ -19,7 +19,18 @@ const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
 const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
 const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
 
+// `authSigner` is an Ethereum private key that does NOT store funds and is NOT your bot's primary key.
+// This is an identifying key for signing payloads to establish reputation and whitelisting
+// In production, this should be used across multiple bundles to build relationship. In this example, we generate a new wallet each time
+const authSigner = Wallet.createRandom();
+
+
+
+
+
+
 module.exports = async txnHash => {
+
   await arbLog('Gasless-withdrawals')
   /**
    / * We start with a txn hash; we assume this is transaction that triggered an L2 to L1 Message on L2 (i.e., ArbSys.sendTxToL1)
@@ -71,6 +82,73 @@ module.exports = async txnHash => {
   const l2Network = await getL2Network(l2Provider)
   const OutboxAddress = l2Network.ethBridge.outbox
   const outbox = Outbox__factory.connect(OutboxAddress, l1Wallet)
+  
+  //Flashbots provider requires passing in a standard provider
+  const flashbotsProvider = await FlashbotsBundleProvider.create(
+    l1Provider, // a normal ethers.js provider, to perform gas estimiations and nonce lookups
+    authSigner // ethers.js signer wallet, only for signing request payloads, not transactions
+  )
+
+  // first tx in the bundle: Calling Outbox.executeTransaction(), signer: Sponsor.address
+  const tx1 = await outbox.populateTransaction.executeTransaction
+  ( 
+    proofInfo.proof,
+    proofInfo.path,
+    proofInfo.l2Sender,
+    proofInfo.l1Dest,
+    proofInfo.l2Block,
+    proofInfo.l1Block,
+    proofInfo.timestamp,
+    proofInfo.amount,
+    proofInfo.calldataForL1
+  )
 
 
+  const bundledTransactions = [
+    {
+      signer:   l1Wallet, //This tx should be executed by the Sponsor
+      transaction: tx1
+    },
+    // {
+    //   signedTransaction: SIGNED_TX_FROM_USER // serialized signed transaction hex
+    // },
+
+  ];
+  console.log(bundledTransactions)
+
+
+  //const signedBundle = await flashbotsProvider.signBundle(bundledTransactions)
+  //const simulation = await flashbotsProvider.simulate(signedBundle, targetBlockNumber)
+  //const BLOCKS_IN_FUTURE = 2;
+  // for each block we need to continously re-submit the flashbots bundle transaction until it is selected by a miner
+  
+  /* l1Provider.on("block", async (blockNumber) => 
+  {
+    try {
+      console.log(`[${blockNumber}] New block seen`)
+      const targetBlockNumber = blockNumber + BLOCKS_IN_FUTURE;
+      // send the bundle to the flashbots relayer for the closest next future block (ie: t + 1)
+      const bundleResponse = await flashbotsProvider.sendBundle(bundledTransactions, targetBlockNumber);
+      // wait until we receive a response and exit only once the transaction has been mined in the blockchain
+      const bundleResolution = await bundleResponse.wait()
+      if (bundleResolution === FlashbotsBundleResolution.BundleIncluded)
+      {
+        console.log(`[${blockNumber}] Included in ${targetBlockNumber}!`)
+        process.exit(0)
+      } else if (bundleResolution === FlashbotsBundleResolution.BlockPassedWithoutInclusion) {
+        console.log(`[${blockNumber}] Not included in ${targetBlockNumber}`)
+      } else if (bundleResolution === FlashbotsBundleResolution.AccountNonceTooHigh) {
+        console.log(`[${blockNumber}] Nonce too high for ${targetBlockNumber}`)
+      }
+    } catch (err) {
+      console.log(`[${blockNumber}] Error processing`, err);
+    }
+  });
+
+  while (true) {
+    await new Promise(r => setTimeout(r, 100))
+  }
+
+ */
 }
+
