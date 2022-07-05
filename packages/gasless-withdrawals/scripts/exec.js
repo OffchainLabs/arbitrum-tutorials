@@ -1,7 +1,7 @@
 const { providers, Wallet } = require('ethers')
 const { L2TransactionReceipt, getL2Network, L2ToL1MessageStatus } = require('@arbitrum/sdk')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-const { Outbox__factory } = require ('@arbitrum/sdk/dist/lib/abi/factories/Outbox__factory') 
+const { OldOutbox__factory } = require ('@arbitrum/sdk/dist/lib/abi/factories/OldOutbox__factory') 
 const { FlashbotsBundleProvider, FlashbotsBundleResolution } = require("@flashbots/ethers-provider-bundle")
 
 require('dotenv').config()
@@ -35,7 +35,7 @@ module.exports = async txnHash => {
   /**
    / * We start with a txn hash; we assume this is transaction that triggered an L2 to L1 Message on L2 (i.e., ArbSys.sendTxToL1)
   */
-
+  
   if (!txnHash)
     throw new Error(
       'Provide a transaction hash of an L2 transaction that sends an L2 to L1 message'
@@ -48,14 +48,13 @@ module.exports = async txnHash => {
    */
   const receipt = await l2Provider.getTransactionReceipt(txnHash)
   const l2Receipt = new L2TransactionReceipt(receipt)
-
   /**
    * Note that in principle, a single transaction could trigger any number of outgoing messages; the common case will be there's only one.
    * For the sake of this script, we assume there's only one / just grad the first one.
    */
   const messages = await l2Receipt.getL2ToL1Messages(l1Wallet, l2Provider)
   const l2ToL1Msg = messages[0]
-
+  
   /**
    * Check if already executed
    */
@@ -81,17 +80,19 @@ module.exports = async txnHash => {
   const proofInfo = await l2ToL1Msg.getOutboxProof(l2Provider)
   const l2Network = await getL2Network(l2Provider)
   const OutboxAddress = l2Network.ethBridge.outbox
-  const outbox = Outbox__factory.connect(OutboxAddress, l1Wallet)
+  const outbox = OldOutbox__factory.connect(OutboxAddress, l1Wallet)
   
   //Flashbots provider requires passing in a standard provider
   const flashbotsProvider = await FlashbotsBundleProvider.create(
     l1Provider, // a normal ethers.js provider, to perform gas estimiations and nonce lookups
     authSigner // ethers.js signer wallet, only for signing request payloads, not transactions
   )
-
+  console.log(l2ToL1Msg.classicWriter.batchNumber)
+  //console.log(OutboxAddress)
   // first tx in the bundle: Calling Outbox.executeTransaction(), signer: Sponsor.address
   const tx1 = await outbox.populateTransaction.executeTransaction
-  ( 
+  (
+    l2ToL1Msg.classicWriter.batchNumber,
     proofInfo.proof,
     proofInfo.path,
     proofInfo.l2Sender,
@@ -103,6 +104,13 @@ module.exports = async txnHash => {
     proofInfo.calldataForL1
   )
 
+  //console.log(tx1.data)
+
+    const estGas = await l1Provider.estimateGas({
+    to: OutboxAddress,
+    data: tx1.data
+  }) 
+  console.log(estGas.toNumber())
 
   const bundledTransactions = [
     {
@@ -114,7 +122,7 @@ module.exports = async txnHash => {
     // },
 
   ];
-  console.log(bundledTransactions)
+  //console.log(bundledTransactions)
 
 
   //const signedBundle = await flashbotsProvider.signBundle(bundledTransactions)
