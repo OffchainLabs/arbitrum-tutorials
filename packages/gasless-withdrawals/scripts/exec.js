@@ -87,8 +87,7 @@ module.exports = async txnHash => {
     l1Provider, // a normal ethers.js provider, to perform gas estimiations and nonce lookups
     authSigner // ethers.js signer wallet, only for signing request payloads, not transactions
   )
-  console.log(l2ToL1Msg.classicWriter.batchNumber)
-  //console.log(OutboxAddress)
+  
   // first tx in the bundle: Calling Outbox.executeTransaction(), signer: Sponsor.address
   const tx1 = await outbox.populateTransaction.executeTransaction
   (
