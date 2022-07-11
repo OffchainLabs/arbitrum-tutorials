@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "scripts": {
     "build": "hardhat compile",
-    "gasless-withdrawals": "hardhat gasless-withdrawals"
+    "estimate-gas": "hardhat estimate-gas",
+    "flashbots": "hardhat flashbots"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",

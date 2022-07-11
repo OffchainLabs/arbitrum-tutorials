@@ -1,5 +1,6 @@
 require('@nomiclabs/hardhat-ethers')
-const main = require('./scripts/exec.js')
+const main1 = require('./scripts/gasEstimator.js')
+const main2 = require('./scripts/flashbots.js')
 const { hardhatConfig } = require('arb-shared-dependencies')
 
 const { task } = require('hardhat/config.js')
@@ -12,13 +13,20 @@ const accounts = {
   count: 10,
 }
 
-task('gasless-withdrawals', "Prints an account's balance")
+task('estimate-gas', "Prints an account's balance")
   .addParam('txhash', 'Hash of txn that triggered and L2 to L1 message')
 
   .setAction(async args => {
-    await main(args.txhash)
+    await main1(args.txhash)
   })
 
+task('flashbots', "creates and sends flashbot bundle")
+  .addParam('txhash', 'Users tx hash')
+  .addParam('signedtx', 'User signed tx')
+
+  .setAction(async args => {
+    await main2(args.txhash, args.signedtx)
+  })
 /**
  * @type import('hardhat/config.js').HardhatUserConfig
  */

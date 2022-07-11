@@ -1,5 +1,5 @@
 const { providers, Wallet } = require('ethers')
-const { L2TransactionReceipt, getL2Network, L2ToL1MessageStatus } = require('@arbitrum/sdk')
+const { L2TransactionReceipt, getL2Network, L2ToL1MessageStatus } = require('@arbitrum/sdk/')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 const { OldOutbox__factory } = require ('@arbitrum/sdk/dist/lib/abi/factories/OldOutbox__factory') 
 const { FlashbotsBundleProvider, FlashbotsBundleResolution } = require("@flashbots/ethers-provider-bundle")
@@ -24,14 +24,9 @@ const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
 // In production, this should be used across multiple bundles to build relationship. In this example, we generate a new wallet each time
 const authSigner = Wallet.createRandom();
 
+module.exports = async (txnHash, signedTx) => {
 
-
-
-
-
-module.exports = async txnHash => {
-
-  await arbLog('Gasless-withdrawals')
+  await arbLog('Creating and Sending Flashbots Bundle')
   /**
    / * We start with a txn hash; we assume this is transaction that triggered an L2 to L1 Message on L2 (i.e., ArbSys.sendTxToL1)
   */
@@ -103,22 +98,14 @@ module.exports = async txnHash => {
     proofInfo.calldataForL1
   )
 
-  //console.log(tx1.data)
-
-    const estGas = await l1Provider.estimateGas({
-    to: OutboxAddress,
-    data: tx1.data
-  }) 
-  console.log(estGas.toNumber())
-
   const bundledTransactions = [
     {
       signer:   l1Wallet, //This tx should be executed by the Sponsor
       transaction: tx1
     },
-    // {
-    //   signedTransaction: SIGNED_TX_FROM_USER // serialized signed transaction hex
-    // },
+     {
+       signedTransaction: signedTx // serialized signed transaction hex
+     },
 
   ];
   //console.log(bundledTransactions)
