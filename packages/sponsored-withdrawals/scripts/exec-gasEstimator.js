@@ -2,8 +2,6 @@ const { providers, Wallet } = require('ethers')
 const { L2TransactionReceipt, getL2Network, L2ToL1MessageStatus } = require('@arbitrum/sdk/')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 const { OldOutbox__factory } = require ('@arbitrum/sdk/dist/lib/abi/factories/OldOutbox__factory') 
-
-require('dotenv').config()
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
 
 /**

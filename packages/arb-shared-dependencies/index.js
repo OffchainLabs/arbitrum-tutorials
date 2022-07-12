@@ -40,8 +40,9 @@ const requireEnvVariables = envVars => {
       throw new Error(`Error: set your '${envVar}' environmental variable `)
     }
   }
-  console.log('Environmental variables properly set 👍')
 }
+console.log('Environmental variables properly set 👍')
+
 module.exports = {
   arbLog,
   hardhatConfig,

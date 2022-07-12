@@ -1,6 +1,6 @@
 require('@nomiclabs/hardhat-ethers')
-const main1 = require('./scripts/gasEstimator.js')
-const main2 = require('./scripts/flashbots.js')
+const main1 = require('./scripts/exec-gasEstimator.js')
+const main2 = require('./scripts/exec-flashbots.js')
 const { hardhatConfig } = require('arb-shared-dependencies')
 
 const { task } = require('hardhat/config.js')

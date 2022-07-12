@@ -4,9 +4,6 @@ const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 const { OldOutbox__factory } = require ('@arbitrum/sdk/dist/lib/abi/factories/OldOutbox__factory') 
 const { FlashbotsBundleProvider, FlashbotsBundleResolution } = require("@flashbots/ethers-provider-bundle")
 
-require('dotenv').config()
-
-
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
 
 /**
