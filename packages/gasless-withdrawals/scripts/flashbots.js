@@ -97,7 +97,6 @@ module.exports = async (txnHash, signedTx) => {
     proofInfo.amount,
     proofInfo.calldataForL1
   )
-
   const bundledTransactions = [
     {
       signer:   l1Wallet, //This tx should be executed by the Sponsor

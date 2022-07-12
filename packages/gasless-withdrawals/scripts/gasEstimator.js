@@ -91,5 +91,5 @@ module.exports = async txnHash => {
   }) 
   //Adding 10% tip to the estimated Gas
   const totalCost = estGas.toNumber() * 1.1
-  console.log(`You have to send ${totalCost} ETH to the sponsor💰`)
+  console.log(`You have to send ${totalCost} Gas to the sponsor💰`)
 }

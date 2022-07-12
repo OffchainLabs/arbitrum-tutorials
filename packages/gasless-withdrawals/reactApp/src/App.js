@@ -1,10 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import {ethers} from "ethers";
-import {L2TransactionReceipt} from "@arbitrum/sdk/dist/index";
-//import { L2TransactionReceipt, getL2Network, L2ToL1MessageStatus } = require('@arbitrum/sdk')
-//import { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-import { OldOutbox__factory } from '@arbitrum/sdk/dist/lib/abi/factories/OldOutbox__factory'
+
 
 
  
@@ -44,17 +41,16 @@ class App extends Component {
 
     const tx = await signer.populateTransaction(transaction)
     const serializedUnsignedTx = ethers.utils.serializeTransaction(tx);
-    const tx1 = await ethers.utils.arrayify(serializedUnsignedTx)
     ethereum.request({ 
     method: 'eth_sign', 
     params: 
-        [ account, ethers.utils.keccak256(tx1) ]
+        [ account, ethers.utils.keccak256(serializedUnsignedTx) ]
           }).then(data => {
     console.log("data ", data);
-    this.setState({SignedTransction:data});
-    })
-
-    
+    const finalTx = ethers.utils.serializeTransaction(tx, data);
+    console.log(finalTx);
+    this.setState({SignedTransction:finalTx});
+    }) 
 };
 
 TransactionSave = async (t) => {
