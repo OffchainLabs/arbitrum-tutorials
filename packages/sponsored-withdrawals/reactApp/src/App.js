@@ -40,7 +40,7 @@ class App extends Component {
       data: idata,
       value: ethers.utils.parseEther(this.state.AmountToSend)
     })
-    console.log(estGas) 
+    //console.log(estGas) 
     //Change the chainId if you want to transmit to the Georli 
     let transaction = {
           to: '0xB3F44F713A267B95329977caD3E82370C02fE9e0',
@@ -76,7 +76,7 @@ GasSave = async (f) => {
   this.setState({GasAmount:f});
 
 };
-render() {
+render()  {
  return (
    <div className="cargo">
      <div className="case">
@@ -102,11 +102,13 @@ render() {
          <button className="button" type="submit" value="Confirm" onClick={this.AmountSubmit}>
            Confirm
          </button>
-         
          </form>
          <form>
-         The Signed Transaction Is: {this.state.SignedTransction}
+         The Signed Transaction Is:
          </form>
+         <p>
+         <textarea rows="8" cols="100" value={this.state.SignedTransction} />
+         </p>
      </div>
    </div>
  );
