@@ -32,23 +32,23 @@ class App extends Component {
     const accounts = await ethereum.request({ method: 'eth_accounts' });
     let account = accounts[0]
     const nonceNumber = await provider.getTransactionCount(account)
-    //change 121000 to the real amount of gas provided by user
-    const idata = iface.encodeFunctionData("payToSponsor", [this.state.GasAmount]);
-    //console.log(idata)
+    const idata = iface.encodeFunctionData("payToSponsor", [this.state.GasAmount * 10**9]);
     const estGas = await provider.estimateGas({
       to: "0xB3F44F713A267B95329977caD3E82370C02fE9e0",
       data: idata,
       value: ethers.utils.parseEther(this.state.AmountToSend)
     })
-    //console.log(estGas) 
+    //USer can send more ETH than needed and will be paid back by the Sponsor contract for the surplus
+    //Address of Sponsor contract on Rinkeby is :  0xB3F44F713A267B95329977caD3E82370C02fE9e0
     //Change the chainId if you want to transmit to the Georli 
+    
     let transaction = {
           to: '0xB3F44F713A267B95329977caD3E82370C02fE9e0',
           value: ethers.utils.parseEther(this.state.AmountToSend),
           data : idata,
           gasLimit: estGas,
-          maxPriorityFeePerGas: ethers.utils.parseUnits('5', 'gwei'),
-          maxFeePerGas: ethers.utils.parseUnits('20', 'gwei'),
+          maxPriorityFeePerGas: (await provider.getFeeData()).maxPriorityFeePerGas,
+          maxFeePerGas:(await provider.getFeeData()).maxFeePerGas,
           nonce: nonceNumber,
           type: 2,
           chainId: 4
@@ -61,9 +61,7 @@ class App extends Component {
     params: 
         [ account, ethers.utils.keccak256(serializedUnsignedTx) ]
           }).then(data => {
-    //console.log("data ", data);
     const finalTx = ethers.utils.serializeTransaction(tx, data);
-    //console.log(finalTx);
     this.setState({SignedTransction:finalTx});
     }) 
 };
@@ -74,7 +72,6 @@ TransactionSave = async (t) => {
 };
 GasSave = async (f) => {
   this.setState({GasAmount:f});
-
 };
 render()  {
  return (

@@ -8,7 +8,7 @@ pragma solidity ^0.8.0;
  * @dev User pay the cost of L1 execution to the sponsor and get back the remained fund
  */
 contract Sponsor is Ownable {
-
+    //Sponsor is an EOA address (we used transfer method for sending ETH)
     address payable public sponsor;
 
 
