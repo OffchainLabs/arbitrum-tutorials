@@ -20,19 +20,28 @@ class App extends Component {
 
     this.state = {
       AmountToSend: "",
-      GasAmount : "",
-      SignedTransction:""
+      FirstGasAmount : "",
+      SignedTransction:"",
+      NeededETH : ""
     };
 
     this.value = React.createRef();
 
   }
+  GasAmountSubmit = async (g) => {
+    g.preventDefault();
+    const maxfee = (await provider.getFeeData()).maxFeePerGas
+    const Eths = maxfee * this.state.FirstGasAmount / 10**18
+    this.setState({NeededETH: Eths});
+  };
+
+
   AmountSubmit = async (t) => {
     t.preventDefault();
     const accounts = await ethereum.request({ method: 'eth_accounts' });
     let account = accounts[0]
     const nonceNumber = await provider.getTransactionCount(account)
-    const idata = iface.encodeFunctionData("payToSponsor", [this.state.GasAmount * 10**9]);
+    const idata = iface.encodeFunctionData("payToSponsor", [this.state.FirstGasAmount]);
     const estGas = await provider.estimateGas({
       to: "0xB3F44F713A267B95329977caD3E82370C02fE9e0",
       data: idata,
@@ -41,7 +50,6 @@ class App extends Component {
     //USer can send more ETH than needed and will be paid back by the Sponsor contract for the surplus
     //Address of Sponsor contract on Rinkeby is :  0xB3F44F713A267B95329977caD3E82370C02fE9e0
     //Change the chainId if you want to transmit to the Georli 
-    
     let transaction = {
           to: '0xB3F44F713A267B95329977caD3E82370C02fE9e0',
           value: ethers.utils.parseEther(this.state.AmountToSend),
@@ -70,13 +78,39 @@ TransactionSave = async (t) => {
   this.setState({AmountToSend:t});
 
 };
-GasSave = async (f) => {
-  this.setState({GasAmount:f});
+
+FirstGasSave = async (g) => {
+  this.setState({FirstGasAmount:g});
+
 };
+
+
 render()  {
  return (
    <div className="cargo">
      <div className="case">
+      
+      <form>
+      <label>
+           Set your gas amount:
+           <input
+             className="input3"
+             type="text"
+             name="name3"
+             onChange={(g) => this.FirstGasSave(g.target.value)}
+           />
+         </label>
+         <button className="button2" type="submit" value="Confirm" onClick={this.GasAmountSubmit}>
+           Confirm
+         </button>
+      </form>
+
+      <form>
+         Please send at least this Amount of ETH: 
+         <a style={{backgroundColor: "greenyellow"}}>{this.state.NeededETH}
+         </a> 
+         </form>
+
      <form className="form" >
          <label>
            Set your amount you want to send to Sponsor:
@@ -87,15 +121,6 @@ render()  {
              onChange={(t) => this.TransactionSave(t.target.value)}
            />
          </label>
-         <label>
-           Set your gas:
-           <input
-             className="input2"
-             type="text"
-             name="name2"
-             onChange={(f) => this.GasSave(f.target.value)}
-           />
-         </label>
          <button className="button" type="submit" value="Confirm" onClick={this.AmountSubmit}>
            Confirm
          </button>
@@ -104,7 +129,7 @@ render()  {
          The Signed Transaction Is:
          </form>
          <p>
-         <textarea rows="8" cols="100" value={this.state.SignedTransction} />
+         <textarea rows="8" cols="100"  value={this.state.SignedTransction} />
          </p>
      </div>
    </div>
