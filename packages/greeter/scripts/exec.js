@@ -2,9 +2,7 @@ const { providers, Wallet } = require('ethers')
 const hre = require('hardhat')
 const ethers = require('ethers')
 const { hexDataLength } = require('@ethersproject/bytes')
-const {
-  L1ToL2MessageGasEstimator,
-} = require('@arbitrum/sdk/dist/lib/message/L1ToL2MessageGasEstimator')
+const { L1ToL2MessageGasEstimator} = require('@arbitrum/sdk/dist/lib/message/L1ToL2MessageGasEstimator')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 const { L1TransactionReceipt, L1ToL2MessageStatus } = require('@arbitrum/sdk')
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC', 'INBOX_ADDR'])
@@ -93,8 +91,7 @@ const main = async () => {
    */
   const l1ToL2MessageGasEstimate = new L1ToL2MessageGasEstimator(l2Provider)
 
-  const _submissionPriceWei =
-    await l1ToL2MessageGasEstimate.estimateSubmissionFee(
+  const _submissionPriceWei = await l1ToL2MessageGasEstimate.estimateSubmissionFee(
       l1Provider,
       await l1Provider.getGasPrice(),
       newGreetingBytesLength
@@ -121,7 +118,7 @@ const main = async () => {
   console.log(`L2 gas price: ${gasPriceBid.toString()}`)
 
   /**
-   * For the gas limit, we'll use the estimateRetryableTicketMaxGas method in Arbitrum SDK
+   * For the gas limit, we'll use the estimateRetryableTicketGasLimit method in Arbitrum SDK
    */
 
   /**
@@ -131,17 +128,15 @@ const main = async () => {
   const iface = new ethers.utils.Interface(ABI)
   const calldata = iface.encodeFunctionData('setGreeting', [newGreeting])
 
-  const maxGas = await l1ToL2MessageGasEstimate.estimateRetryableTicketMaxGas(
+  const maxGas = await l1ToL2MessageGasEstimate.estimateRetryableTicketGasLimit
+  ( 
     l1Greeter.address,
-    ethers.utils.parseEther('1'),
     l2Greeter.address,
     0,
-    submissionPriceWei,
     l2Wallet.address,
     l2Wallet.address,
-    100000,
-    gasPriceBid,
-    calldata
+    calldata,
+    ethers.utils.parseEther('1')
   )
   /**
    * With these three values, we can calculate the total callvalue we'll need our L1 transaction to send to L2
