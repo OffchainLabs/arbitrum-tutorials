@@ -4,7 +4,7 @@ const ethers = require('ethers')
 const { hexDataLength } = require('@ethersproject/bytes')
 const { L1ToL2MessageGasEstimator} = require('@arbitrum/sdk/dist/lib/message/L1ToL2MessageGasEstimator')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-const { L1TransactionReceipt, L1ToL2MessageStatus } = require('@arbitrum/sdk')
+const { L1TransactionReceipt, L1ToL2MessageStatus, getL2Network } = require('@arbitrum/sdk-nitro')
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC', 'INBOX_ADDR'])
 
 /**
@@ -22,10 +22,8 @@ const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 const main = async () => {
     await arbLog('DelayedInbox normal L2MSG_signedTx')
 
-
     /**
-     * We deploy L1 Greeter to L1, L2 greeter to L2, each with a different "greeting" message.
-     * After deploying, save set each contract's counterparty's address to its state so that they can later talk to each other.
+     * We deploy greeter to L2, to see if delayed inbox tx can be executed as we thought
      */
     const L2Greeter = await (
         await hre.ethers.getContractFactory('Greeter')
@@ -46,10 +44,10 @@ const main = async () => {
     const currentL2Greeting = await l2Greeter.greet()
     console.log(`Current L2 greeting: "${currentL2Greeting}"`)
 
-    console.log(`Now we send a l2 tx through l1 delayed inbox(Please don't send any tx on l2 using ${l2Wallet.address}):`)
+    console.log(`Now we send a l2 tx through l1 delayed inbox (Please don't send any tx on l2 using ${l2Wallet.address}):`)
 
     /**
-     * Here we have a new greeting message that we want to set as the L2 greeting; we'll be setting it by sending it as a message from layer 1!!!
+     * Here we have a new greeting message that we want to set as the L2 greeting; we'll be setting it by sending it as a message from delayed inbox!!!
      */
     const newGreeting = 'Greeting from delayedInbox'
 
@@ -61,29 +59,50 @@ const main = async () => {
         newGreeting
     ])
 
-
-
+    /**
+     * Encode the l2's signed tx so this tx can be executed on l2
+     */
+    const l1GasPrice = await l2Provider.getGasPrice()
     let transactionl2Request = {
         data: calldatal2,
         to: l2Greeter.address,
         nonce: await l2Wallet.getTransactionCount(),
         value: 0,
-        gasPrice: await l2Provider.getGasPrice(),
+        gasPrice: gasPrice,
         chainId: (await l2Provider.getNetwork()).chainId,
         from: l2Wallet.address
     };
-    const gasLimitL2 = await l2Provider.estimateGas(transactionl2Request)
+    const l2GasLimit = await l2Provider.estimateGas(transactionl2Request)
 
     transactionl2Request.gasLimit = gasLimitL2
 
-    let signedTx = await l2Wallet.signTransaction(transactionl2Request);
-    let sendData = ethers.utils.solidityPack(["uint8","bytes"],[ethers.utils.hexlify(L2MSG_signedTx),signedTx]);
-    console.log("Now we get the send data: " + sendData)
-    /**
-     * To send an L1-to-L2 message (aka a "retryable ticket"), we need to send ether from L1 to pay for the txn costs on L2.
-     * There are two costs we need to account for: base submission cost and cost of L2 execution. We'll start with base submission cost.
-     */
+    const l2Balance = await l2Provider.getBalance(l2Wallet.address)
 
+    /**
+     * We need to check if the sender has enough funds on l2 to pay the gas fee
+     */
+    if(l2Balance.lt(l1GasPrice.mul(l2GasLimit))) {
+        console.log("You l2 balance is not enough to pay the gas fee, please bridge some ethers to l2.")
+        return
+    }
+
+    /**
+     * We need extract l2's tx hash first so we can check if this tx executed on l2 later.
+     */
+    const l2SignedTx = await l2Wallet.signTransaction(transactionl2Request);
+
+    const l2Txhash = ethers.utils.parseTransaction(l2SignedTx).hash
+
+    /**
+     * Pack the message data to parse to delayed inbox
+     */
+    const sendData = ethers.utils.solidityPack(["uint8","bytes"],[ethers.utils.hexlify(L2MSG_signedTx),l2SignedTx]);
+    console.log("Now we get the send data: " + sendData)
+    
+    /**
+     * Process the l1 delayed inbox tx, to process it, we need to have delayed inbox's abi and use it to encode the
+     * function call data.
+     */
      const ABI = ['function sendL2Message(bytes calldata messageData) external returns(uint256)']
      const iface = new ethers.utils.Interface(ABI)
      const calldatal1 = iface.encodeFunctionData('sendL2Message', [sendData])
@@ -98,11 +117,11 @@ const main = async () => {
         from: l1Wallet.address
     };
 
-    const gasLimit1 = await l1Provider.estimateGas(transactionl1Request)
+    const l1GasLimit = await l1Provider.estimateGas(transactionl1Request)
 
-    transactionl1Request.gasLimit = gasLimit1
+    transactionl1Request.gasLimit = l1GasLimit
 
-    let resultsL1 = await l1Wallet.sendTransaction(transactionl1Request)
+    const resultsL1 = await l1Wallet.sendTransaction(transactionl1Request)
 
 
     
@@ -112,36 +131,35 @@ const main = async () => {
         `Greeting txn confirmed on L1! 🙌 ${inboxRec.transactionHash}`
     )
 
-    // const l1TxReceipt = new L1TransactionReceipt(inboxRec)
+    /**
+     * Now we successfully send the tx to l1 delayed inbox, then we need to wait the tx executed on l2
+     */
+    console.log(
+        `Now we need to wait tx: ${l2Txhash} to be included on l2 (may takes 5 minutes) ....... `
+    )
 
-    // /**
-    //  * In principle, a single L1 txn can trigger any number of L1-to-L2 messages (each with its own sequencer number).
-    //  * In this case, we know our txn triggered only one
-    //  * Here, We check if our L1 to L2 message is redeemed on L2
-    //  */
-    // const message = await l1TxReceipt.getL1ToL2Message(l2Wallet)
-    // const status = await message.waitForStatus()
-    // console.log(status)
-    // if (status === L1ToL2MessageStatus.REDEEMED) {
-    //     console.log(`L2 txn executed 🥳 ${message.l2TxHash}`)
-    // } else {
-    //     console.log(
-    //     `L2 retryable txn failed with status ${L1ToL2MessageStatus[status]}`
-    //     )
-    // }
+    const l2TxReceipt = await l2Provider.waitForTransaction(l2Txhash);
 
-    // /**
-    //  * Note that during L2 execution, a retryable's sender address is transformed to its L2 alias.
-    //  * Thus, when GreeterL2 checks that the message came from the L1, we check that the sender is this L2 Alias.
-    //  * See setGreeting in GreeterL2.sol for this check.
-    //  */
-
-    // /**
-    //  * Now when we call greet again, we should see our new string on L2!
-    //  */
-    // const newGreetingL2 = await l2Greeter.greet()
-    // console.log(`Updated L2 greeting: "${newGreetingL2}"`)
-    // console.log('✌️')
+    
+    
+    const status = l2TxReceipt.status
+    if(status == true) {
+        console.log(
+            `L2 txn executed!!! 🥳 `
+        )
+    } else {
+        console.log(
+            `L2 txn failed, see if your gas is enough?`
+        )
+        return
+    }
+    
+    /**
+     * Now when we call greet again, we should see our new string on L2!
+     */
+    const newGreetingL2 = await l2Greeter.greet()
+    console.log(`Updated L2 greeting: "${newGreetingL2}"`)
+    console.log('✌️')
 }
 
 main()
