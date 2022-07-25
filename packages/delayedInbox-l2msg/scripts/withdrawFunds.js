@@ -19,42 +19,21 @@ const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
 
 const main = async () => {
-    await arbLog('DelayedInbox normal contract call (L2MSG_signedTx)')
+    await arbLog('DelayedInbox withdraw funds from l2 (L2MSG_signedTx)')
+
+    
+   
 
     /**
-     * We deploy greeter to L2, to see if delayed inbox tx can be executed as we thought
+     * Here we have a arbsys abi to withdraw our funds; we'll be setting it by sending it as a message from delayed inbox!!!
      */
-    const L2Greeter = await (
-        await hre.ethers.getContractFactory('Greeter')
-    ).connect(l2Wallet)
 
-
-    console.log('Deploying Greeter on L2 👋👋')
-
-    const l2Greeter = await L2Greeter.deploy(
-        'Hello world'
-    )
-    await l2Greeter.deployed()
-    console.log(`deployed to ${l2Greeter.address}`)
-
-    /**
-     * Let's log the L2 greeting string
-     */
-    const currentL2Greeting = await l2Greeter.greet()
-    console.log(`Current L2 greeting: "${currentL2Greeting}"`)
-
-    console.log(`Now we send a l2 tx through l1 delayed inbox (Please don't send any tx on l2 using ${l2Wallet.address} during this time):`)
-
-    /**
-     * Here we have a new greeting message that we want to set as the L2 greeting; we'll be setting it by sending it as a message from delayed inbox!!!
-     */
-    const newGreeting = 'Greeting from delayedInbox'
-
-    const GreeterIface = l2Greeter.interface
-
-    const calldatal2 = GreeterIface.encodeFunctionData("setGreeting", [
-        newGreeting
-    ])
+    const ArbsysWithdrawABI = ['function withdrawEth(address destination) external payable returns (uint256)']
+    
+    const arbsysIface = new ethers.utils.Interface(ArbsysWithdrawABI)
+    const calldatal2 = arbsysIface.encodeFunctionData('withdrawEth', [l1Wallet.address])
+    const ARBSYS = "0x0000000000000000000000000000000000000064"
+    
 
     /**
      * Encode the l2's signed tx so this tx can be executed on l2
@@ -63,14 +42,13 @@ const main = async () => {
 
     let transactionl2Request = {
         data: calldatal2,
-        to: l2Greeter.address,
+        to: ARBSYS,
         nonce: await l2Wallet.getTransactionCount(),
-        value: 0,
+        value: 1, // 1 is needed because if we set 0 will affect the gas estimate
         gasPrice: l2GasPrice,
         chainId: (await l2Provider.getNetwork()).chainId,
         from: l2Wallet.address
     }
-
     let l2GasLimit
     try {
         l2GasLimit = await l2Provider.estimateGas(transactionl2Request)
@@ -78,17 +56,20 @@ const main = async () => {
         console.log("execution failed (estimate gas failed), try check your account's balance?")
         return
     }
-
+    
+    
     transactionl2Request.gasLimit = l2GasLimit
 
     const l2Balance = await l2Provider.getBalance(l2Wallet.address)
 
     /**
-     * We need to check if the sender has enough funds on l2 to pay the gas fee
+     * We need to check if the sender has enough funds on l2 to pay the gas fee, if have enough funds, the get the other part funds to withdraw.
      */
     if(l2Balance.lt(l2GasPrice.mul(l2GasLimit))) {
         console.log("You l2 balance is not enough to pay the gas fee, please bridge some ethers to l2.")
         return
+    } else {
+        transactionl2Request.value = l2Balance.sub(l2GasPrice.mul(l2GasLimit))
     }
 
     /**
@@ -107,13 +88,13 @@ const main = async () => {
     /**
      * Process the l1 delayed inbox tx, to process it, we need to have delayed inbox's abi and use it to encode the
      * function call data. After that, we send this tx directly to delayed inbox.
-    */
-    const ABI = ['function sendL2Message(bytes calldata messageData) external returns(uint256)']
-    const iface = new ethers.utils.Interface(ABI)
-    const calldatal1 = iface.encodeFunctionData('sendL2Message', [sendData])
-    const l1GasPrice = await l1Provider.getGasPrice()
+     */
+     const ABI = ['function sendL2Message(bytes calldata messageData) external returns(uint256)']
+     const iface = new ethers.utils.Interface(ABI)
+     const calldatal1 = iface.encodeFunctionData('sendL2Message', [sendData])
+     const l1GasPrice = await l1Provider.getGasPrice()
 
-    let transactionl1Request = {
+     let transactionl1Request = {
         data: calldatal1,
         to: process.env.INBOX_ADDR,
         nonce: await l1Wallet.getTransactionCount(),
@@ -134,7 +115,7 @@ const main = async () => {
     const inboxRec = await resultsL1.wait()
 
     console.log(
-        `Greeting txn confirmed on L1! 🙌 ${inboxRec.transactionHash}`
+        `Withdraw txn initiated on L1! 🙌 ${inboxRec.transactionHash}`
     )
 
     /**
@@ -151,7 +132,7 @@ const main = async () => {
     const status = l2TxReceipt.status
     if(status == true) {
         console.log(
-            `L2 txn executed!!! 🥳 `
+            `L2 txn executed!!! 🥳 , you can go to https://bridge.arbitrum.io/ to withdraw your funds after challenge period!`
         )
     } else {
         console.log(
@@ -159,13 +140,6 @@ const main = async () => {
         )
         return
     }
-    
-    /**
-     * Now when we call greet again, we should see our new string on L2!
-     */
-    const newGreetingL2 = await l2Greeter.greet()
-    console.log(`Updated L2 greeting: "${newGreetingL2}"`)
-    console.log('✌️')
 }
 
 main()
