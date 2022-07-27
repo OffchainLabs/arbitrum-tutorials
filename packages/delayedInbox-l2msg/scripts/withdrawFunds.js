@@ -21,9 +21,6 @@ const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 const main = async () => {
     await arbLog('DelayedInbox withdraw funds from l2 (L2MSG_signedTx)')
 
-    
-   
-
     /**
      * Here we have a arbsys abi to withdraw our funds; we'll be setting it by sending it as a message from delayed inbox!!!
      */
@@ -122,7 +119,7 @@ const main = async () => {
      * Now we successfully send the tx to l1 delayed inbox, then we need to wait the tx executed on l2
      */
     console.log(
-        `Now we need to wait tx: ${l2Txhash} to be included on l2 (may take 5 minutes) ....... `
+        `Now we need to wait tx: ${l2Txhash} to be included on l2 (may take 5 minutes, if longer than 20 minutes, you can use sdk to force include) ....... `
     )
 
     const l2TxReceipt = await l2Provider.waitForTransaction(l2Txhash)
