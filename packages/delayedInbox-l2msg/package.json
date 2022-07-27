@@ -8,7 +8,8 @@
   },
   "scripts": {
     "build": "hardhat compile",
-    "normalTx": "hardhat run scripts/normalTx.js"
+    "normalTx": "hardhat run scripts/normalTx.js",
+    "withdrawFunds": "hardhat run scripts/withdrawFunds.js"
   },
   "author": "",
   "license": "ISC",
