@@ -4,7 +4,7 @@ delayedInbox-l2msg is a simple sample example that allows you to send a l2 msg w
 
 The demo will alow you send a l2 message while you don't need to use l2 rpc but just use l1 rpc; This demo has 2 part, one part will show how to send a normal l2 transaction using delayed inbox, another will show how to withdraw your funds back without sequencer.
 
-If sequencer downs, when you run `Withdraw Funds`, you need use https://github.com/OffchainLabs/arbitrum-sdk/blob/master/src/lib/inbox/inbox.ts#L256 to force include your tx to continue. (example: https://github.com/OffchainLabs/arbitrum-sdk/blob/401fa424bb4c21b54b77d95fbc95faec15787fe2/fork_test/inbox.test.ts#L131)
+If sequencer downs, when you run `Withdraw Funds`, you need use [arbitrum sdk](https://github.com/OffchainLabs/arbitrum-sdk/blob/master/src/lib/inbox/inbox.ts#L256) to force include your tx to continue. (example [here](https://github.com/OffchainLabs/arbitrum-sdk/blob/401fa424bb4c21b54b77d95fbc95faec15787fe2/fork_test/inbox.test.ts#L131))
 
 ## Config Environment Variables
 
@@ -34,3 +34,4 @@ yarn run withdrawFunds
 Once the script is successfully executed, you can go to the [Arbitrum nitro block explorer](https://goerli-rollup-explorer.arbitrum.io/), enter your L2 address, and see the corresponding transactions on the Arbitrum chain!
 
 <p align="center"><img src="../../assets/offchain_labs_logo.png" width="600"></p>
+f9010f830159bb84068e77808318495994d8a920b7a8d7 ba4e6e7a 04287286 7a927662 115180b8 a47898e0 c2
