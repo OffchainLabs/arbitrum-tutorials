@@ -11,6 +11,22 @@
     "@openzeppelin/contracts-upgradeable" "4.5.2"
     hardhat "^2.6.6"
 
+"@arbitrum/sdk-classic@npm:@arbitrum/sdk@1.1.13":
+  version "1.1.13"
+  resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-1.1.13.tgz#5221c61e951b53535d5226d67e99adc398b4bf4f"
+  integrity sha512-XnivIDij4ZLx/Yk1KJj77QwzwcbakU3R1pjzWqv548Nzj8Cg8o15nSg4PQGdwEtsv1VWFhabFHSwZMsmIX37GA==
+  dependencies:
+    "@ethersproject/address" "^5.0.8"
+    "@ethersproject/bignumber" "^5.1.1"
+    "@ethersproject/bytes" "^5.0.8"
+    "@typechain/ethers-v5" "9.0.0"
+    "@types/prompts" "^2.0.14"
+    "@types/yargs" "^17.0.9"
+    dotenv "^10.0.0"
+    ethers "^5.1.0"
+    ts-node "^10.2.1"
+    typechain "7.0.0"
+
 "@arbitrum/sdk-classic@npm:@arbitrum/sdk@1.1.4":
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-1.1.4.tgz#1f51455a93e23aff29ab047ac1be06cec78e6145"
@@ -43,6 +59,40 @@
     "@types/prompts" "^2.0.14"
     "@types/yargs" "^17.0.9"
     arb-bridge-peripherals "1.0.9"
+    dotenv "^10.0.0"
+    ethers "^5.1.0"
+    ts-node "^10.2.1"
+    typechain "7.0.0"
+
+"@arbitrum/sdk-nitro@npm:@arbitrum/sdk@3.0.0-beta.6":
+  version "3.0.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-3.0.0-beta.6.tgz#a36c3e39a7358396b5533f3288125107da6ae59e"
+  integrity sha512-kPCfgj72MeyVcIXQKoztLO29UTcpSbXFzc/S0oDgVNNcHcXp1hWUJqqkVRg0O43P2yKjZRT/I94K0Nj2nZNiiQ==
+  dependencies:
+    "@ethersproject/address" "^5.0.8"
+    "@ethersproject/bignumber" "^5.1.1"
+    "@ethersproject/bytes" "^5.0.8"
+    "@typechain/ethers-v5" "9.0.0"
+    "@types/prompts" "^2.0.14"
+    "@types/yargs" "^17.0.9"
+    dotenv "^10.0.0"
+    ethers "^5.1.0"
+    ts-node "^10.2.1"
+    typechain "7.0.0"
+
+"@arbitrum/sdk@2.0.9":
+  version "2.0.9"
+  resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-2.0.9.tgz#ca76461e660b8b286597c862736d9de94bdda4aa"
+  integrity sha512-HAGuYzD1jtjV1QlpA2moPrvZ+zDk4Kd+PGhfzWOrLBcKFV0LEl0Ny167RGbtOhn2+fYTeXRkkCSnrlmNm0oHYQ==
+  dependencies:
+    "@arbitrum/sdk-classic" "npm:@arbitrum/sdk@1.1.13"
+    "@arbitrum/sdk-nitro" "npm:@arbitrum/sdk@3.0.0-beta.6"
+    "@ethersproject/address" "^5.0.8"
+    "@ethersproject/bignumber" "^5.1.1"
+    "@ethersproject/bytes" "^5.0.8"
+    "@typechain/ethers-v5" "9.0.0"
+    "@types/prompts" "^2.0.14"
+    "@types/yargs" "^17.0.9"
     dotenv "^10.0.0"
     ethers "^5.1.0"
     ts-node "^10.2.1"
