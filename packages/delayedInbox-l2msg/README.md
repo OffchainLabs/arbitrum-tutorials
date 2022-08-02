@@ -1,8 +1,8 @@
 # delayedInbox-l2msg Tutorial
 (Noted this can only be done in nitro stack, not in arbitrum classic, so l2 rpc please use nitro test rpc)
-delayedInbox-l2msg is a simple sample example that allows you to send a l2 msg without using sequencer way, this can be used when sequencer censor your tx or when sequencer downs.
+delayedInbox-l2msg is a simple sample example that allows you to send a l2 msg without using sequencer way, this can be used when sequencer censors your tx or when sequencer is down.
 
-The demo will alow you send a l2 message while you don't need to use l2 rpc but just use l1 rpc; This demo has 2 part, one part will show how to send a normal l2 transaction using delayed inbox, another will show how to withdraw your funds back without sequencer.
+The demo will allow you to send a l2 message while you don't need to use l2 rpc but just use l1 rpc; This demo has 2 parts; one part will show how to send a normal l2 transaction using delayed inbox, another will show how to withdraw your funds back without sequencer.
 
 If sequencer downs, when you run `Withdraw Funds`, you need use [arbitrum sdk](https://github.com/OffchainLabs/arbitrum-sdk/blob/master/src/lib/inbox/inbox.ts#L256) to force include your tx to continue. (example [here](https://github.com/OffchainLabs/arbitrum-sdk/blob/401fa424bb4c21b54b77d95fbc95faec15787fe2/fork_test/inbox.test.ts#L131))
 
