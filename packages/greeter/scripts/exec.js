@@ -2,9 +2,16 @@ const { providers, Wallet } = require('ethers')
 const hre = require('hardhat')
 const ethers = require('ethers')
 const { hexDataLength } = require('@ethersproject/bytes')
-const { L1ToL2MessageGasEstimator} = require('@arbitrum/sdk/dist/lib/message/L1ToL2MessageGasEstimator')
+const {
+  L1ToL2MessageGasEstimator,
+} = require('@arbitrum/sdk/dist/lib/message/L1ToL2MessageGasEstimator')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-const { L1TransactionReceipt, L1ToL2MessageStatus, EthBridger, getL2Network } = require('@arbitrum/sdk')
+const {
+  L1TransactionReceipt,
+  L1ToL2MessageStatus,
+  EthBridger,
+  getL2Network,
+} = require('@arbitrum/sdk')
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
 
 /**
@@ -100,7 +107,8 @@ const main = async () => {
    */
   const l1ToL2MessageGasEstimate = new L1ToL2MessageGasEstimator(l2Provider)
 
-  const _submissionPriceWei = await l1ToL2MessageGasEstimate.estimateSubmissionFee(
+  const _submissionPriceWei =
+    await l1ToL2MessageGasEstimate.estimateSubmissionFee(
       l1Provider,
       await l1Provider.getGasPrice(),
       newGreetingBytesLength
@@ -137,8 +145,7 @@ const main = async () => {
   const iface = new ethers.utils.Interface(ABI)
   const calldata = iface.encodeFunctionData('setGreeting', [newGreeting])
 
-  const maxGas = await l1ToL2MessageGasEstimate.estimateRetryableTicketGasLimit
-  ( 
+  const maxGas = await l1ToL2MessageGasEstimate.estimateRetryableTicketGasLimit(
     l1Greeter.address,
     l2Greeter.address,
     0,

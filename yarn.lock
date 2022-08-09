@@ -2,6 +2,15 @@
 # yarn lockfile v1
 
 
+"@arbitrum/nitro-contracts@1.0.0-beta.8":
+  version "1.0.0-beta.8"
+  resolved "https://registry.yarnpkg.com/@arbitrum/nitro-contracts/-/nitro-contracts-1.0.0-beta.8.tgz#56554091b466ea1539c11691c60835625f6675e5"
+  integrity sha512-idzrJ/yGbcVUaqm45kFzV157B7V8W05G0cyMZazNhkWs39zO/moVwjMUCJpQ/SGW4OlOQggI8Xuw4xfocno7Xg==
+  dependencies:
+    "@openzeppelin/contracts" "4.5.0"
+    "@openzeppelin/contracts-upgradeable" "4.5.2"
+    hardhat "^2.6.6"
+
 "@arbitrum/sdk-classic@npm:@arbitrum/sdk@1.1.13":
   version "1.1.13"
   resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-1.1.13.tgz#5221c61e951b53535d5226d67e99adc398b4bf4f"
@@ -50,7 +59,7 @@
     ts-node "^10.2.1"
     typechain "7.0.0"
 
-"@arbitrum/sdk@^2.0.0", "@arbitrum/sdk@^2.0.9":
+"@arbitrum/sdk@^2.0.0":
   version "2.0.9"
   resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-2.0.9.tgz#ca76461e660b8b286597c862736d9de94bdda4aa"
   integrity sha512-HAGuYzD1jtjV1QlpA2moPrvZ+zDk4Kd+PGhfzWOrLBcKFV0LEl0Ny167RGbtOhn2+fYTeXRkkCSnrlmNm0oHYQ==
@@ -749,10 +758,20 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-3.4.2.tgz#2c2a1b0fa748235a1f495b6489349776365c51b3"
   integrity sha512-mDlBS17ymb2wpaLcrqRYdnBAmP1EwqhOXMvqWk2c5Q1N1pm5TkiCtXM9Xzznh4bYsQBq0aIWEkFFE2+iLSN1Tw==
 
+"@openzeppelin/contracts-upgradeable@4.5.2":
+  version "4.5.2"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-4.5.2.tgz#90d9e47bacfd8693bfad0ac8a394645575528d05"
+  integrity sha512-xgWZYaPlrEOQo3cBj97Ufiuv79SPd8Brh4GcFYhPgb6WvAq4ppz8dWKL6h+jLAK01rUqMRp/TS9AdXgAeNvCLA==
+
 "@openzeppelin/contracts@3.4.2", "@openzeppelin/contracts@^3.4.2":
   version "3.4.2"
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-3.4.2.tgz#d81f786fda2871d1eb8a8c5a73e455753ba53527"
   integrity sha512-z0zMCjyhhp4y7XKAcDAi3Vgms4T2PstwBdahiO0+9NaGICQKjynK3wduSRplTgk4LXmoO1yfDGO5RbjKYxtuxA==
+
+"@openzeppelin/contracts@4.5.0":
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.5.0.tgz#3fd75d57de172b3743cdfc1206883f56430409cc"
+  integrity sha512-fdkzKPYMjrRiPK6K4y64e6GzULR7R7RwxSigHS8DDp7aWDeoReqsQI+cxHV1UuhAqX69L1lAaWDxenfP+xiqzA==
 
 "@resolver-engine/core@^0.3.3":
   version "0.3.3"

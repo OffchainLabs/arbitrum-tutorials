@@ -2,11 +2,11 @@
 pragma solidity >=0.6.11;
 
 import "arbos-precompiles/arbos/builtin/ArbSys.sol";
-import "arb-bridge-eth/contracts/libraries/AddressAliasHelper.sol";
+import "@arbitrum/nitro-contracts/src/libraries/AddressAliasHelper.sol";
 import "../Greeter.sol";
 
 contract GreeterL2 is Greeter {
-    ArbSys constant arbsys = ArbSys(100);
+    ArbSys constant arbsys = ArbSys(address(100));
     address public l1Target;
 
     event L2ToL1TxCreated(uint256 indexed withdrawalId);
