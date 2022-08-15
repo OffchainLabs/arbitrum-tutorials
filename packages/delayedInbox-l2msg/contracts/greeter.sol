@@ -6,7 +6,7 @@ contract Greeter {
     address public deployer;
 
     //use this to check if the tx sent from delayed inbox doesn't alias the sender address.
-    modifier onlyDeployer {
+    modifier onlyDeployer() {
         require(msg.sender == deployer, "Only deployer can do this");
         _;
     }

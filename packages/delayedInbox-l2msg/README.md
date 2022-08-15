@@ -1,4 +1,5 @@
 # delayedInbox-l2msg Tutorial
+
 (Noted this can only be done in nitro stack, not in arbitrum classic, so l2 rpc please use nitro test rpc)
 delayedInbox-l2msg is a simple sample example that allows you to send a l2 msg without using sequencer way, this can be used when sequencer censors your tx or when sequencer is down.
 
@@ -19,15 +20,16 @@ cp .env-sample .env
 ### Run Demo
 
 Normal Transaction:
+
 ```bash
 yarn run normalTx
 ```
 
 Withdraw Funds:
+
 ```bash
 yarn run withdrawFunds
 ```
-
 
 ## Curious to see the output on the Arbitrum chain?
 
