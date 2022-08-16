@@ -12,7 +12,7 @@
     "hardhat": "^2.2.0"
   },
   "dependencies": {
-    "@arbitrum/sdk": "^2.0.9",
+    "@arbitrum/sdk": "^2.0.13",
     "dotenv": "^8.2.0"
   }
 }

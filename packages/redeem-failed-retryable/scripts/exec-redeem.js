@@ -1,9 +1,5 @@
 const { providers, Wallet } = require('ethers')
-const {
-  L1TransactionReceipt,
-  L1ToL2MessageStatus,
-  getRawArbTransactionReceipt,
-} = require('@arbitrum/sdk')
+const { L1TransactionReceipt, L1ToL2MessageStatus } = require('@arbitrum/sdk')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
