@@ -1,6 +1,7 @@
 const { providers, Wallet, ethers } = require('ethers')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC', 'INBOX_ADDR'])
+const { getL2Network } = require("@arbitrum/sdk-nitro/dist/lib/dataEntities/networks")
+requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
 
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
@@ -17,6 +18,8 @@ const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
 const main = async () => {
   await arbLog('DelayedInbox withdraw funds from l2 (L2MSG_signedTx)')
+    
+  const l2Network = await getL2Network(await l2Wallet.getChainId())
 
   /**
    * Here we have a arbsys abi to withdraw our funds; we'll be setting it by sending it as a message from delayed inbox!!!
@@ -43,7 +46,7 @@ const main = async () => {
     nonce: await l2Wallet.getTransactionCount(),
     value: 1, // 1 is needed because if we set 0 will affect the gas estimate
     gasPrice: l2GasPrice,
-    chainId: (await l2Provider.getNetwork()).chainId,
+    chainId: l2Wallet.chainId,
     from: l2Wallet.address,
   }
   let l2GasLimit
@@ -101,7 +104,7 @@ const main = async () => {
 
   const transactionl1Request = {
     data: calldatal1,
-    to: process.env.INBOX_ADDR,
+    to: l2Network.ethBridge.inbox,
     nonce: await l1Wallet.getTransactionCount(),
     value: 0,
     gasPrice: l1GasPrice,

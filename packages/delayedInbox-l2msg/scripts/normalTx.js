@@ -1,7 +1,8 @@
 const { providers, Wallet, ethers } = require('ethers')
 const hre = require('hardhat')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC', 'INBOX_ADDR'])
+const { getL2Network } = require("@arbitrum/sdk-nitro/dist/lib/dataEntities/networks")
+requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
 
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
@@ -18,6 +19,8 @@ const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
 const main = async () => {
   await arbLog('DelayedInbox normal contract call (L2MSG_signedTx)')
+
+  const l2Network = await getL2Network(await l2Wallet.getChainId())
 
   /**
    * We deploy greeter to L2, to see if delayed inbox tx can be executed as we thought
@@ -64,7 +67,7 @@ const main = async () => {
     nonce: await l2Wallet.getTransactionCount(),
     value: 0,
     gasPrice: l2GasPrice,
-    chainId: (await l2Provider.getNetwork()).chainId,
+    chainId: l2Wallet.chainId,
     from: l2Wallet.address,
   }
 
@@ -121,7 +124,7 @@ const main = async () => {
 
   const transactionl1Request = {
     data: calldatal1,
-    to: process.env.INBOX_ADDR,
+    to: l2Network.ethBridge.inbox,
     nonce: await l1Wallet.getTransactionCount(),
     value: 0,
     gasPrice: l1GasPrice,
