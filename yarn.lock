@@ -27,10 +27,10 @@
     ts-node "^10.2.1"
     typechain "7.0.0"
 
-"@arbitrum/sdk-nitro@npm:@arbitrum/sdk@3.0.0-beta.6":
-  version "3.0.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-3.0.0-beta.6.tgz#a36c3e39a7358396b5533f3288125107da6ae59e"
-  integrity sha512-kPCfgj72MeyVcIXQKoztLO29UTcpSbXFzc/S0oDgVNNcHcXp1hWUJqqkVRg0O43P2yKjZRT/I94K0Nj2nZNiiQ==
+"@arbitrum/sdk-nitro@npm:@arbitrum/sdk@3.0.0-beta.11":
+  version "3.0.0-beta.11"
+  resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-3.0.0-beta.11.tgz#54bd4fb150911fcc83f7b50e23bfab8be97971dc"
+  integrity sha512-Lq+c3v4W9lNz3Q68XZFu1+iaAdAr2m9i7mTkdRm/Sk0QD1nX8IAOwxyCruph6JLB/PJtx+QUsdOpwNiIc9IZAQ==
   dependencies:
     "@ethersproject/address" "^5.0.8"
     "@ethersproject/bignumber" "^5.1.1"
@@ -43,57 +43,17 @@
     ts-node "^10.2.1"
     typechain "7.0.0"
 
-"@arbitrum/sdk-nitro@npm:@arbitrum/sdk@3.0.0-beta.8":
-  version "3.0.0-beta.8"
-  resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-3.0.0-beta.8.tgz#639981b0772309552576a61ce66edcb98505a97c"
-  integrity sha512-wSjzilBc2rSAPqJXvr5tIs/1W8SAqBdi/XseH3IwziUiXLcZdZ+yHanN6FfNtwk0Ij6HY9D4Qt3ZLhW0E+LM7A==
-  dependencies:
-    "@ethersproject/address" "^5.0.8"
-    "@ethersproject/bignumber" "^5.1.1"
-    "@ethersproject/bytes" "^5.0.8"
-    "@typechain/ethers-v5" "9.0.0"
-    "@types/prompts" "^2.0.14"
-    "@types/yargs" "^17.0.9"
-    dotenv "^10.0.0"
-    ethers "^5.1.0"
-    ts-node "^10.2.1"
-    typechain "7.0.0"
-
-"@arbitrum/sdk@^2.0.0":
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-2.0.9.tgz#ca76461e660b8b286597c862736d9de94bdda4aa"
-  integrity sha512-HAGuYzD1jtjV1QlpA2moPrvZ+zDk4Kd+PGhfzWOrLBcKFV0LEl0Ny167RGbtOhn2+fYTeXRkkCSnrlmNm0oHYQ==
+"@arbitrum/sdk@2.0.17", "@arbitrum/sdk@^2.0.17":
+  version "2.0.17"
+  resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-2.0.17.tgz#95e3c1ca74abd2462693eeb0db11554d7a1e61aa"
+  integrity sha512-uVfRAtM3KS1lnAmiyVCE7nGddgpuRJO09FeyS+0x0ebOU0i6c4plSV4tMzX5BRqvP4JkKxBcKSYF9kElvSM1Lw==
   dependencies:
     "@arbitrum/sdk-classic" "npm:@arbitrum/sdk@1.1.13"
-    "@arbitrum/sdk-nitro" "npm:@arbitrum/sdk@3.0.0-beta.6"
+    "@arbitrum/sdk-nitro" "npm:@arbitrum/sdk@3.0.0-beta.11"
     "@ethersproject/address" "^5.0.8"
     "@ethersproject/bignumber" "^5.1.1"
     "@ethersproject/bytes" "^5.0.8"
-    "@typechain/ethers-v5" "9.0.0"
-    "@types/prompts" "^2.0.14"
-    "@types/yargs" "^17.0.9"
-    dotenv "^10.0.0"
     ethers "^5.1.0"
-    ts-node "^10.2.1"
-    typechain "7.0.0"
-
-"@arbitrum/sdk@^2.0.13":
-  version "2.0.13"
-  resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-2.0.13.tgz#6c9c60c2fab0a6c1fd4fefc82fbb27e16ef0c8b1"
-  integrity sha512-C/ckSzQkX4e8SKAY5Lz3yfakM5Aj6sA2mB9Q7cvZR/NFsFb0R95DiA6l1VMFT6Z1S1v8W936x4j9rLsJaFd/gg==
-  dependencies:
-    "@arbitrum/sdk-classic" "npm:@arbitrum/sdk@1.1.13"
-    "@arbitrum/sdk-nitro" "npm:@arbitrum/sdk@3.0.0-beta.8"
-    "@ethersproject/address" "^5.0.8"
-    "@ethersproject/bignumber" "^5.1.1"
-    "@ethersproject/bytes" "^5.0.8"
-    "@typechain/ethers-v5" "9.0.0"
-    "@types/prompts" "^2.0.14"
-    "@types/yargs" "^17.0.9"
-    dotenv "^10.0.0"
-    ethers "^5.1.0"
-    ts-node "^10.2.1"
-    typechain "7.0.0"
 
 "@babel/code-frame@7.12.11":
   version "7.12.11"
