@@ -1,8 +1,8 @@
 const { providers, Wallet } = require('ethers')
 const {
   L2TransactionReceipt,
-  getL2Network,
   L2ToL1MessageStatus,
+  addCustomNetwork,
 } = require('@arbitrum/sdk')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
@@ -64,14 +64,9 @@ module.exports = async txnHash => {
   console.log('Outbox entry exists! Trying to execute now')
 
   /**
-   * Now fetch the proof info we'll need in order to execute, or check execution
+   * Now that its confirmed and not executed, we can execute our message in its outbox entry.
    */
-  const proofInfo = await l2ToL1Msg.getOutboxProof(l2Provider)
-
-  /**
-   * Now that its confirmed and not executed, we can use the Merkle proof data to execute our message in its outbox entry.
-   */
-  const res = await l2ToL1Msg.execute(proofInfo)
+  const res = await l2ToL1Msg.execute(l2Provider)
   const rec = await res.wait()
   console.log('Done! Your transaction is executed', rec)
 }

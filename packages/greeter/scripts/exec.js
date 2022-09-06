@@ -6,8 +6,13 @@ const {
   L1ToL2MessageGasEstimator,
 } = require('@arbitrum/sdk/dist/lib/message/L1ToL2MessageGasEstimator')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-const { L1TransactionReceipt, L1ToL2MessageStatus } = require('@arbitrum/sdk')
-requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC', 'INBOX_ADDR'])
+const {
+  L1TransactionReceipt,
+  L1ToL2MessageStatus,
+  EthBridger,
+  getL2Network,
+} = require('@arbitrum/sdk')
+requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
 
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
@@ -24,6 +29,15 @@ const main = async () => {
   await arbLog('Cross-chain Greeter')
 
   /**
+   * Use l2Network to create an Arbitrum SDK EthBridger instance
+   * We'll use EthBridger to retrieve the Inbox address
+   */
+
+  const l2Network = await getL2Network(l2Provider)
+  const ethBridger = new EthBridger(l2Network)
+  const inboxAddress = ethBridger.l2Network.ethBridge.inbox
+
+  /**
    * We deploy L1 Greeter to L1, L2 greeter to L2, each with a different "greeting" message.
    * After deploying, save set each contract's counterparty's address to its state so that they can later talk to each other.
    */
@@ -34,7 +48,7 @@ const main = async () => {
   const l1Greeter = await L1Greeter.deploy(
     'Hello world in L1',
     ethers.constants.AddressZero, // temp l2 addr
-    process.env.INBOX_ADDR
+    inboxAddress
   )
   await l1Greeter.deployed()
   console.log(`deployed to ${l1Greeter.address}`)
