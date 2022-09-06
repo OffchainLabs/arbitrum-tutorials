@@ -22,6 +22,6 @@ yarn run exec
 
 ## Curious to see the output on the Arbitrum chain?
 
-Once the script is successfully executed, you can go to the [Arbitrum block explorer](https://rinkeby-explorer.arbitrum.io/#), enter your L2 address, and see the corresponding transactions on the Arbitrum chain!
+Once the script is successfully executed, you can go to the [Arbitrum block explorer](https://goerli-rollup-explorer.arbitrum.io/), enter your L2 address, and see the corresponding transactions on the Arbitrum chain!
 
 <p align="center"><img src="../../assets/offchain_labs_logo.png" width="600"></p>
