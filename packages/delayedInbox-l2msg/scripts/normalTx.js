@@ -78,7 +78,8 @@ const main = async () => {
   } catch (error) {
     console.error(
       "execution failed (estimate gas failed), try check your account's balance?"
-    )
+    );
+    throw error;
   }
 
   transactionl2Request.gasLimit = l2GasLimit
