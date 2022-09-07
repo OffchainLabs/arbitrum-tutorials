@@ -16,6 +16,36 @@ const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
 const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
 const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
+const NodeInterface = "0x00000000000000000000000000000000000000C8"
+
+const estimateGasWithoutL1Part = async (transactionl2Request) => {
+  const ABI = [
+    `function gasEstimateComponents(
+      address to,
+      bool contractCreation,
+      bytes calldata data
+  )
+      external
+      payable
+      returns (
+          uint64 gasEstimate,
+          uint64 gasEstimateForL1,
+          uint256 baseFee,
+          uint256 l1BaseFeeEstimate
+      )`,
+  ]
+  const iface = new ethers.utils.Interface(ABI)
+  const calldata = iface.encodeFunctionData('gasEstimateComponents', [transactionl2Request.to, false, transactionl2Request.data])
+  const transactionEstimateRequest = {
+    data: calldata,
+    to: NodeInterface,
+    from: l1Wallet.address,
+  }
+  const res = await l2Wallet.call(transactionEstimateRequest)
+  const feeData = iface.decodeFunctionResult('gasEstimateComponents',res)
+  return feeData.gasEstimate.sub(feeData.gasEstimateForL1)
+}
+
 const main = async () => {
   await arbLog('DelayedInbox withdraw funds from l2 (L2MSG_signedTx)')
     
@@ -52,7 +82,7 @@ const main = async () => {
   let l2GasLimit
 
   try {
-    l2GasLimit = await l2Provider.estimateGas(transactionl2Request)
+    l2GasLimit = await estimateGasWithoutL1Part(transactionl2Request)
   } catch (error) {
     console.error(
       "execution failed (estimate gas failed), try check your account's balance?"
