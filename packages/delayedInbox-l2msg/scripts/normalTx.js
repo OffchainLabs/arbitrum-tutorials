@@ -1,7 +1,9 @@
 const { providers, Wallet, ethers } = require('ethers')
 const hre = require('hardhat')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-const { getL2Network } = require("@arbitrum/sdk-nitro/dist/lib/dataEntities/networks")
+const { getL2Network } = require('@arbitrum/sdk-nitro/dist/lib/dataEntities/networks')
+const { NodeInterface__factory } = require('@arbitrum/sdk/dist/lib/abi/factories/NodeInterface__factory')
+const { NODE_INTERFACE_ADDRESS } = require('@arbitrum/sdk/dist/lib/dataEntities/constants')
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
 
 /**
@@ -17,29 +19,17 @@ const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
 const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
 const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
-const NodeInterface = "0x00000000000000000000000000000000000000C8"
-
+/**
+   * We should use nodeInterface to get the gas estimate is because we 
+   * are making a delayed inbox message which doesn't need l1 calldata
+   * gas fee part.
+   */
 const estimateGasWithoutL1Part = async (transactionl2Request) => {
-  const ABI = [
-    `function gasEstimateComponents(
-      address to,
-      bool contractCreation,
-      bytes calldata data
-  )
-      external
-      payable
-      returns (
-          uint64 gasEstimate,
-          uint64 gasEstimateForL1,
-          uint256 baseFee,
-          uint256 l1BaseFeeEstimate
-      )`,
-  ]
-  const iface = new ethers.utils.Interface(ABI)
+  const iface = new ethers.utils.Interface(NodeInterface__factory.abi)
   const calldata = iface.encodeFunctionData('gasEstimateComponents', [transactionl2Request.to, false, transactionl2Request.data])
   const transactionEstimateRequest = {
     data: calldata,
-    to: NodeInterface,
+    to: NODE_INTERFACE_ADDRESS,
     from: l1Wallet.address,
   }
   const res = await l2Wallet.call(transactionEstimateRequest)
@@ -112,6 +102,7 @@ const main = async () => {
   }
 
   transactionl2Request.gasLimit = l2GasLimit
+  console.log(l2GasLimit)
 
   const l2Balance = await l2Provider.getBalance(l2Wallet.address)
 
