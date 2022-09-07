@@ -11,8 +11,8 @@
     "normalTx": "hardhat run scripts/normalTx.js",
     "withdrawFunds": "hardhat run scripts/withdrawFunds.js"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Offchain Labs, Inc.",
+  "license": "Apache-2.0",
   "devDependencies": {
     "hardhat": "^2.10.1"
   },

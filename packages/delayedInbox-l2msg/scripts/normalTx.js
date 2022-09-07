@@ -1,9 +1,19 @@
 const { providers, Wallet, ethers } = require('ethers')
 const hre = require('hardhat')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-const { getL2Network } = require('@arbitrum/sdk-nitro/dist/lib/dataEntities/networks')
-const { NodeInterface__factory } = require('@arbitrum/sdk/dist/lib/abi/factories/NodeInterface__factory')
-const { NODE_INTERFACE_ADDRESS } = require('@arbitrum/sdk/dist/lib/dataEntities/constants')
+const {
+  getL2Network,
+} = require('@arbitrum/sdk-nitro/dist/lib/dataEntities/networks')
+const {
+  NodeInterface__factory,
+} = require('@arbitrum/sdk/dist/lib/abi/factories/NodeInterface__factory')
+const {
+  IInbox__factory,
+} = require('@arbitrum/sdk/dist/lib/abi/factories/IInbox__factory')
+
+const {
+  NODE_INTERFACE_ADDRESS,
+} = require('@arbitrum/sdk/dist/lib/dataEntities/constants')
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
 
 /**
@@ -20,21 +30,24 @@ const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
 const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
 /**
-   * We should use nodeInterface to get the gas estimate is because we 
-   * are making a delayed inbox message which doesn't need l1 calldata
-   * gas fee part.
-   */
-const estimateGasWithoutL1Part = async (transactionl2Request) => {
-  const iface = new ethers.utils.Interface(NodeInterface__factory.abi)
-  const calldata = iface.encodeFunctionData('gasEstimateComponents', [transactionl2Request.to, false, transactionl2Request.data])
-  const transactionEstimateRequest = {
-    data: calldata,
-    to: NODE_INTERFACE_ADDRESS,
-    from: l1Wallet.address,
-  }
-  const res = await l2Wallet.call(transactionEstimateRequest)
-  const feeData = iface.decodeFunctionResult('gasEstimateComponents',res)
-  return feeData.gasEstimate.sub(feeData.gasEstimateForL1)
+ * We should use nodeInterface to get the gas estimate is because we
+ * are making a delayed inbox message which doesn't need l1 calldata
+ * gas fee part.
+ */
+const estimateGasWithoutL1Part = async transactionl2Request => {
+  const nodeInterface = NodeInterface__factory.connect(
+    NODE_INTERFACE_ADDRESS,
+    l2Provider
+  )
+  const gasComponents = await nodeInterface.callStatic.gasEstimateComponents(
+    transactionl2Request.to,
+    false,
+    transactionl2Request.data,
+    {
+      from: transactionl2Request.from,
+    }
+  )
+  return gasComponents.gasEstimate.sub(gasComponents.gasEstimateForL1)
 }
 
 const main = async () => {
@@ -90,19 +103,17 @@ const main = async () => {
     chainId: l2Wallet.chainId,
     from: l2Wallet.address,
   }
-
-
+  let l2GasLimit
   try {
     l2GasLimit = await estimateGasWithoutL1Part(transactionl2Request)
   } catch (error) {
     console.error(
       "execution failed (estimate gas failed), try check your account's balance?"
-    );
-    throw error;
+    )
+    throw error
   }
 
   transactionl2Request.gasLimit = l2GasLimit
-  console.log(l2GasLimit)
 
   const l2Balance = await l2Provider.getBalance(l2Wallet.address)
 
@@ -136,28 +147,12 @@ const main = async () => {
    * Process the l1 delayed inbox tx, to process it, we need to have delayed inbox's abi and use it to encode the
    * function call data. After that, we send this tx directly to delayed inbox.
    */
-  const ABI = [
-    'function sendL2Message(bytes calldata messageData) external returns(uint256)',
-  ]
-  const iface = new ethers.utils.Interface(ABI)
-  const calldatal1 = iface.encodeFunctionData('sendL2Message', [sendData])
-  const l1GasPrice = await l1Provider.getGasPrice()
-
-  const transactionl1Request = {
-    data: calldatal1,
-    to: l2Network.ethBridge.inbox,
-    nonce: await l1Wallet.getTransactionCount(),
-    value: 0,
-    gasPrice: l1GasPrice,
-    chainId: (await l1Provider.getNetwork()).chainId,
-    from: l1Wallet.address,
-  }
-
-  const l1GasLimit = await l1Provider.estimateGas(transactionl1Request)
-
-  transactionl1Request.gasLimit = l1GasLimit
-
-  const resultsL1 = await l1Wallet.sendTransaction(transactionl1Request)
+  const inbox = new ethers.Contract(
+    l2Network.ethBridge.inbox,
+    IInbox__factory.abi
+  )
+  const inboxInstance = inbox.connect(l1Wallet)
+  const resultsL1 = await inboxInstance.sendL2Message(sendData)
 
   const inboxRec = await resultsL1.wait()
 
