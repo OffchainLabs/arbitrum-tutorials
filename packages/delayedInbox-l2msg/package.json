@@ -1,0 +1,23 @@
+{
+  "name": "delayedinbox-l2msg",
+  "version": "1.0.0",
+  "description": "(Noted this can only be done in nitro stack, not in arbitrum classic, so l2 rpc please use nitro test rpc) delayedInbox-l2msg is a simple sample example that allows you to send a l2 msg without using sequencer way, this can be used when sequencer censor your tx or when sequencer downs.",
+  "main": "hardhat.config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "hardhat compile",
+    "normalTx": "hardhat run scripts/normalTx.js",
+    "withdrawFunds": "hardhat run scripts/withdrawFunds.js"
+  },
+  "author": "Offchain Labs, Inc.",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "hardhat": "^2.10.1"
+  },
+  "dependencies": {
+    "hardhat": "^2.10.1",
+    "@arbitrum/sdk": "^2.0.15"
+  }
+}
