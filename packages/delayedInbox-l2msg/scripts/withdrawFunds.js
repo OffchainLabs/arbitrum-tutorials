@@ -7,11 +7,15 @@ const {
   NodeInterface__factory,
 } = require('@arbitrum/sdk/dist/lib/abi/factories/NodeInterface__factory')
 const {
+  ArbSys__factory
+} = require('@arbitrum/sdk/dist/lib/abi/factories/ArbSys__factory')
+const {
   IInbox__factory,
 } = require('@arbitrum/sdk/dist/lib/abi/factories/IInbox__factory')
 
 const {
   NODE_INTERFACE_ADDRESS,
+  ARB_SYS_ADDRESS
 } = require('@arbitrum/sdk/dist/lib/dataEntities/constants')
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
 
@@ -44,6 +48,7 @@ const estimateGasWithoutL1Part = async transactionl2Request => {
     transactionl2Request.data,
     {
       from: transactionl2Request.from,
+      value: transactionl2Request.value
     }
   )
   return gasComponents.gasEstimate.sub(gasComponents.gasEstimateForL1)
@@ -58,6 +63,10 @@ const main = async () => {
    * Here we have a arbsys abi to withdraw our funds; we'll be setting it by sending it as a message from delayed inbox!!!
    */
 
+  const arbSys = ArbSys__factory.connect(
+    ARB_SYS_ADDRESS,
+    l2Provider
+  )
   const ArbsysWithdrawABI = [
     'function withdrawEth(address destination) external payable returns (uint256)',
   ]
