@@ -67,15 +67,12 @@ const main = async () => {
     ARB_SYS_ADDRESS,
     l2Provider
   )
-  const ArbsysWithdrawABI = [
-    'function withdrawEth(address destination) external payable returns (uint256)',
-  ]
-
-  const arbsysIface = new ethers.utils.Interface(ArbsysWithdrawABI)
+  
+  const arbsysIface = arbSys.interface
   const calldatal2 = arbsysIface.encodeFunctionData('withdrawEth', [
     l1Wallet.address,
   ])
-  const ARBSYS = '0x0000000000000000000000000000000000000064'
+  
 
   /**
    * Encode the l2's signed tx so this tx can be executed on l2
@@ -84,7 +81,7 @@ const main = async () => {
 
   const transactionl2Request = {
     data: calldatal2,
-    to: ARBSYS,
+    to: ARB_SYS_ADDRESS,
     nonce: await l2Wallet.getTransactionCount(),
     value: 1, // 1 is needed because if we set 0 will affect the gas estimate
     gasPrice: l2GasPrice,
@@ -152,7 +149,7 @@ const main = async () => {
    * Now we successfully send the tx to l1 delayed inbox, then we need to wait the tx executed on l2
    */
   console.log(
-    `Now we need to wait tx: ${l2Txhash} to be included on l2 (may take 5 minutes, if longer than 20 minutes, you can use sdk to force include) ....... `
+    `Now we need to wait tx: ${l2Txhash} to be included on l2 (may take 5 minutes, if longer than 1 day, you can use sdk to force include) ....... `
   )
 
   const l2TxReceipt = await l2Provider.waitForTransaction(l2Txhash)
