@@ -55,7 +55,7 @@ async function main() {
    */
 
   const txnRes = await arbitrumVIP.addVIPPoints(addressIndex)
-  const txnRec = await txnRes.wait()
+  await txnRes.wait()
   /**
    * We got VIP points, and we minimized the calldata required, saving us precious gas. Yay rollups!
    */

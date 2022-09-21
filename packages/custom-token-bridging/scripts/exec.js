@@ -98,7 +98,6 @@ const main = async () => {
    * Here, We check if both messages are redeemed on L2
    */
   expect(l1ToL2Msgs.length, 'Should be 2 messages.').to.eq(2)
-
   const setTokenTx = await l1ToL2Msgs[0].waitForStatus()
   expect(setTokenTx.status, 'Set token not redeemed.').to.eq(
     L1ToL2MessageStatus.REDEEMED
