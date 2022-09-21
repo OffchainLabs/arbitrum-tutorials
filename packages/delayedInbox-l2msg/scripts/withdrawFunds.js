@@ -47,7 +47,8 @@ const estimateGasWithoutL1Part = async transactionl2Request => {
     false,
     transactionl2Request.data,
     {
-      from: transactionl2Request.from
+      from: transactionl2Request.from,
+      value: transactionl2Request.value
     }
   )
   return gasComponents.gasEstimate.sub(gasComponents.gasEstimateForL1)
@@ -82,6 +83,7 @@ const main = async () => {
     data: calldatal2,
     to: ARB_SYS_ADDRESS,
     nonce: await l2Wallet.getTransactionCount(),
+    value: 1, // 1 is needed because if we set 0 will affect the gas estimate
     gasPrice: l2GasPrice,
     chainId: l2Wallet.chainId,
     from: l2Wallet.address,
