@@ -66,15 +66,15 @@ const main = async () => {
   const l2Result = await depositRec.waitForL2(l2Provider)
 
   /**
-   * The `complete` boolean tells us if the l1 to l2 message was successul
+   * The `complete` boolean tells us if the l1 to l2 message was successful
    */
   l2Result.complete
     ? console.log(
-        `L2 message successful: status: ${L1ToL2MessageStatus[l2Result.status]}`
-      )
+      `L2 message successful: status: ${L1ToL2MessageStatus[l2Result.status]}`
+    )
     : console.log(
-        `L2 message failed: status ${L1ToL2MessageStatus[l2Result.status]}`
-      )
+      `L2 message failed: status ${L1ToL2MessageStatus[l2Result.status]}`
+    )
 
   /**
    * Our l2Wallet ETH balance should be updated now
