@@ -49,6 +49,7 @@ const main = async () => {
   const withdrawTx = await ethBridger.withdraw({
     amount: ethFromL2WithdrawAmount,
     l2Signer: l2Wallet,
+    destinationAddress: l2Wallet.address
   })
   const withdrawRec = await withdrawTx.wait()
 
