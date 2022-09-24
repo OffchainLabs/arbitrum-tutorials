@@ -30,11 +30,12 @@ module.exports = async txnHash => {
   const receipt = await l1Provider.getTransactionReceipt(txnHash)
   const l1Receipt = new L1TransactionReceipt(receipt)
 
-  const message = await l1Receipt.getL1ToL2Message(l2Wallet)
-  const status = (await message.waitForStatus()).status
-
+  const messages = await l1Receipt.getL1ToL2Messages(l2Wallet)
+  const message = await messages[0]
+  const messageRec = await message.waitForStatus()
+  const status = await messageRec.status
   if (status === L1ToL2MessageStatus.REDEEMED) {
-    console.log(`L2 retryable txn is already executed 🥳 ${message.l2TxHash}`)
+    console.log(`L2 retryable txn is already executed 🥳 ${await messageRec.l2TxReceipt.transactionHash}`)
     return
   } else {
     console.log(
@@ -46,9 +47,10 @@ module.exports = async txnHash => {
   /**
    * We use the redeem() method from Arbitrum SDK to manually redeem our ticket
    */
-  await message.redeem()
+  const l2Tx = await message.redeem()
+  const rec = await l2Tx.waitForRedeem()
   console.log(
     'The L2 side of your transaction is now execeuted 🥳 :',
-    message.l2TxHash
+    await rec.transactionHash
   )
 }

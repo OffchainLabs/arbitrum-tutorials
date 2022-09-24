@@ -13,7 +13,7 @@
     "hardhat": "^2.2.0"
   },
   "dependencies": {
-    "@arbitrum/sdk": "^v3.0.0-rc.0",
+    "@arbitrum/sdk": "^v3.0.0-rc.1",
     "@arbitrum/nitro-contracts": "1.0.0-beta.8",
     "arbos-precompiles": "^1.0.2",
     "dotenv": "^8.2.0"
