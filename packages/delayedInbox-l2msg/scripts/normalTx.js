@@ -162,7 +162,7 @@ const main = async () => {
    * Now we successfully send the tx to l1 delayed inbox, then we need to wait the tx executed on l2
    */
   console.log(
-    `Now we need to wait tx: ${l2Txhash} to be included on l2 (may take 5 minutes) ....... `
+    `Now we need to wait tx: ${l2Txhash} to be included on l2 (may take 15 minutes) ....... `
   )
 
   const l2TxReceipt = await l2Provider.waitForTransaction(l2Txhash)
