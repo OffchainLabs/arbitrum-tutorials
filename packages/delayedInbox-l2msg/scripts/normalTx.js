@@ -1,9 +1,7 @@
 const { providers, Wallet, ethers } = require('ethers')
 const hre = require('hardhat')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-const {
-  getL2Network,
-} = require('@arbitrum/sdk/dist/lib/dataEntities/networks')
+const { getL2Network } = require('@arbitrum/sdk/dist/lib/dataEntities/networks')
 const {
   NodeInterface__factory,
 } = require('@arbitrum/sdk/dist/lib/abi/factories/NodeInterface__factory')

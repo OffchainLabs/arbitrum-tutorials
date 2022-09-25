@@ -35,7 +35,10 @@ module.exports = async txnHash => {
   const messageRec = await message.waitForStatus()
   const status = await messageRec.status
   if (status === L1ToL2MessageStatus.REDEEMED) {
-    console.log(`L2 retryable txn is already executed 🥳 ${await messageRec.l2TxReceipt.transactionHash}`)
+    console.log(
+      `L2 retryable txn is already executed 🥳 ${await messageRec.l2TxReceipt
+        .transactionHash}`
+    )
     return
   } else {
     console.log(

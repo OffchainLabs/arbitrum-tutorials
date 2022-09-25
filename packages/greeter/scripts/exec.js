@@ -145,13 +145,15 @@ const main = async () => {
   const iface = new ethers.utils.Interface(ABI)
   const calldata = iface.encodeFunctionData('setGreeting', [newGreeting])
   console.log(await l2Wallet.address)
-  const maxGas = await l1ToL2MessageGasEstimate.estimateRetryableTicketGasLimit({
-    from: await l1Greeter.address,
-    to: await l2Greeter.address,
-    l2CallValue : 0,
-    excessFeeRefundAddress: await l2Wallet.address,
-    callValueRefundAddress: await l2Wallet.address,
-    data: calldata,},
+  const maxGas = await l1ToL2MessageGasEstimate.estimateRetryableTicketGasLimit(
+    {
+      from: await l1Greeter.address,
+      to: await l2Greeter.address,
+      l2CallValue: 0,
+      excessFeeRefundAddress: await l2Wallet.address,
+      callValueRefundAddress: await l2Wallet.address,
+      data: calldata,
+    },
     ethers.utils.parseEther('1')
   )
   /**
@@ -187,13 +189,13 @@ const main = async () => {
    */
   const messages = await l1TxReceipt.getL1ToL2Messages(l2Wallet)
   const message = messages[0]
-  console.log(
-    "Waiting for L2 side. It may take 10-15 minutes ⏰⏰"
-  )
+  console.log('Waiting for L2 side. It may take 10-15 minutes ⏰⏰')
   const messageResult = await message.waitForStatus()
   const status = messageResult.status
   if (status === L1ToL2MessageStatus.REDEEMED) {
-    console.log(`L2 retryable txn executed 🥳 ${messageResult.l2TxReceipt.transactionHash}`)
+    console.log(
+      `L2 retryable txn executed 🥳 ${messageResult.l2TxReceipt.transactionHash}`
+    )
   } else {
     console.log(
       `L2 retryable txn failed with status ${L1ToL2MessageStatus[status]}`
@@ -211,7 +213,7 @@ const main = async () => {
    */
   const newGreetingL2 = await l2Greeter.greet()
   console.log(`Updated L2 greeting: "${newGreetingL2}"`)
-  console.log("🫡")
+  console.log('🫡')
 }
 
 main()

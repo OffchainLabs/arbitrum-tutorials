@@ -121,7 +121,7 @@ const main = async () => {
 
   const withdrawTx = await erc20Bridge.withdraw({
     amount: tokenWithdrawAmount,
-    destinationAddress : l2Wallet.address,
+    destinationAddress: l2Wallet.address,
     erc20l1Address: erc20Address,
     l2Signer: l2Wallet,
   })
