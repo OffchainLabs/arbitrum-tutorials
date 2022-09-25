@@ -65,7 +65,7 @@ const main = async () => {
   console.warn('Now we wait for L2 side of the transaction to be executed ⏳')
   const l2Result = await depositRec.waitForL2(l2Provider)
   /**
-   * The `complete` boolean tells us if the l1 to l2 message was successul
+   * The `complete` boolean tells us if the l1 to l2 message was successful
    */
   l2Result.complete
     ? console.log(

@@ -5,11 +5,15 @@ const {
   NodeInterface__factory,
 } = require('@arbitrum/sdk/dist/lib/abi/factories/NodeInterface__factory')
 const {
+  ArbSys__factory
+} = require('@arbitrum/sdk/dist/lib/abi/factories/ArbSys__factory')
+const {
   IInbox__factory,
 } = require('@arbitrum/sdk/dist/lib/abi/factories/IInbox__factory')
 
 const {
   NODE_INTERFACE_ADDRESS,
+  ARB_SYS_ADDRESS
 } = require('@arbitrum/sdk/dist/lib/dataEntities/constants')
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
 
@@ -42,6 +46,7 @@ const estimateGasWithoutL1Part = async transactionl2Request => {
     transactionl2Request.data,
     {
       from: transactionl2Request.from,
+      value: transactionl2Request.value
     }
   )
   return gasComponents.gasEstimate.sub(gasComponents.gasEstimateForL1)
@@ -56,15 +61,16 @@ const main = async () => {
    * Here we have a arbsys abi to withdraw our funds; we'll be setting it by sending it as a message from delayed inbox!!!
    */
 
-  const ArbsysWithdrawABI = [
-    'function withdrawEth(address destination) external payable returns (uint256)',
-  ]
-
-  const arbsysIface = new ethers.utils.Interface(ArbsysWithdrawABI)
+  const arbSys = ArbSys__factory.connect(
+    ARB_SYS_ADDRESS,
+    l2Provider
+  )
+  
+  const arbsysIface = arbSys.interface
   const calldatal2 = arbsysIface.encodeFunctionData('withdrawEth', [
     l1Wallet.address,
   ])
-  const ARBSYS = '0x0000000000000000000000000000000000000064'
+  
 
   /**
    * Encode the l2's signed tx so this tx can be executed on l2
@@ -73,7 +79,7 @@ const main = async () => {
 
   const transactionl2Request = {
     data: calldatal2,
-    to: ARBSYS,
+    to: ARB_SYS_ADDRESS,
     nonce: await l2Wallet.getTransactionCount(),
     value: 1, // 1 is needed because if we set 0 will affect the gas estimate
     gasPrice: l2GasPrice,
