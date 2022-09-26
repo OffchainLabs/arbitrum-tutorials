@@ -144,7 +144,6 @@ const main = async () => {
   const ABI = ['function setGreeting(string _greeting)']
   const iface = new ethers.utils.Interface(ABI)
   const calldata = iface.encodeFunctionData('setGreeting', [newGreeting])
-  console.log(await l2Wallet.address)
   const maxGas = await l1ToL2MessageGasEstimate.estimateRetryableTicketGasLimit(
     {
       from: await l1Greeter.address,
