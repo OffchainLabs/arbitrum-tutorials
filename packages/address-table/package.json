@@ -14,7 +14,7 @@
     "hardhat": "^2.5.0"
   },
   "dependencies": {
-    "@arbitrum/sdk": "^v3.0.0-rc.0",
+    "@arbitrum/sdk": "^v3.0.0",
     "arbos-precompiles": "^1.0.2"
   }
 }

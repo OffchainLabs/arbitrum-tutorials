@@ -75,7 +75,7 @@ const main = async () => {
   /**
    * Encode the l2's signed tx so this tx can be executed on l2
    */
-  const l2GasPrice = await l2Provider.getGasPrice()
+  const l2GasPrice = (await l2Provider.getGasPrice()).mul(11).div(10)
 
   const transactionl2Request = {
     data: calldatal2,
@@ -89,7 +89,7 @@ const main = async () => {
   let l2GasLimit
 
   try {
-    l2GasLimit = await estimateGasWithoutL1Part(transactionl2Request)
+    l2GasLimit = (await estimateGasWithoutL1Part(transactionl2Request)).mul(2)
   } catch (error) {
     console.error(
       "execution failed (estimate gas failed), try check your account's balance?"

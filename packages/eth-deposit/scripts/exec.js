@@ -2,7 +2,7 @@ const { utils, providers, Wallet } = require('ethers')
 const {
   EthBridger,
   getL2Network,
-  L1ToL2MessageStatus,
+  EthDepositStatus,
 } = require('@arbitrum/sdk')
 const { parseEther } = utils
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
@@ -70,12 +70,12 @@ const main = async () => {
   l2Result.complete
     ? console.log(
         `L2 message successful: status: ${
-          L1ToL2MessageStatus[await l2Result.message.status()]
+          EthDepositStatus[await l2Result.message.status()]
         }`
       )
     : console.log(
         `L2 message failed: status ${
-          L1ToL2MessageStatus[await l2Result.message.status()]
+          EthDepositStatus[await l2Result.message.status()]
         }`
       )
 
