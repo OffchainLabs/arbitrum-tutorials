@@ -63,7 +63,7 @@ const main = async () => {
   const withdrawEventsData = await withdrawRec.getL2ToL1Events()
   console.log('Withdrawal data:', withdrawEventsData)
   console.log(
-    `To to claim funds (after dispute period), see outbox-execute repo ✌️`
+    `To to claim funds (after dispute period), see outbox-execute repo 🫡`
   )
 }
 

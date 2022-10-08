@@ -21,26 +21,6 @@
     "@ethersproject/bytes" "^5.0.8"
     ethers "^5.1.0"
 
-"@arbitrum/sdk@^v3.0.0-rc.0":
-  version "3.0.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-3.0.0-rc.0.tgz#8e9e4681195b38b2abd78ab1d083d9f6c070ae61"
-  integrity sha512-C4Y0jP8HOTGML1bxj1yXFMLP4AuQfgpE82045tAoZy8MKv/iiWH7KwLQ9Wz6NyDOgM1Nka+fXLu5qwHMVi7kKw==
-  dependencies:
-    "@ethersproject/address" "^5.0.8"
-    "@ethersproject/bignumber" "^5.1.1"
-    "@ethersproject/bytes" "^5.0.8"
-    ethers "^5.1.0"
-
-"@arbitrum/sdk@^v3.0.0-rc.1":
-  version "3.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-3.0.0-rc.1.tgz#5335bd833ded89bfe95328a44ccd2ba743f82239"
-  integrity sha512-8t4fgvQR/83whezeb1WKBeWtBnfmZ0vaDE1w96cKEt8bdrmTQ8yQF3Vpeq/Y21/SrOdDNj5CQWor1Y6wB+FbyQ==
-  dependencies:
-    "@ethersproject/address" "^5.0.8"
-    "@ethersproject/bignumber" "^5.1.1"
-    "@ethersproject/bytes" "^5.0.8"
-    ethers "^5.1.0"
-
 "@babel/code-frame@7.12.11":
   version "7.12.11"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.12.11.tgz#f4ad435aa263db935b8f10f2c552d23fb716a63f"
