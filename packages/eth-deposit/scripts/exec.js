@@ -2,7 +2,7 @@ const { utils, providers, Wallet } = require('ethers')
 const {
   EthBridger,
   getL2Network,
-  L1ToL2MessageStatus,
+  EthDepositStatus,
 } = require('@arbitrum/sdk')
 const { parseEther } = utils
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
@@ -64,17 +64,20 @@ const main = async () => {
    */
   console.warn('Now we wait for L2 side of the transaction to be executed ⏳')
   const l2Result = await depositRec.waitForL2(l2Provider)
-
   /**
    * The `complete` boolean tells us if the l1 to l2 message was successful
    */
   l2Result.complete
     ? console.log(
-      `L2 message successful: status: ${L1ToL2MessageStatus[l2Result.status]}`
-    )
+        `L2 message successful: status: ${
+          EthDepositStatus[await l2Result.message.status()]
+        }`
+      )
     : console.log(
-      `L2 message failed: status ${L1ToL2MessageStatus[l2Result.status]}`
-    )
+        `L2 message failed: status ${
+          EthDepositStatus[await l2Result.message.status()]
+        }`
+      )
 
   /**
    * Our l2Wallet ETH balance should be updated now

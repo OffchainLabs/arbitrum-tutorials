@@ -91,7 +91,7 @@ const main = async () => {
    * Now we wait for L1 and L2 side of transactions to be confirmed
    */
   console.log(
-    `Deposit initiated: waiting for L2 retryable (takes < 10 minutes; current time: ${new Date().toTimeString()}) `
+    `Deposit initiated: waiting for L2 retryable (takes 10-15 minutes; current time: ${new Date().toTimeString()}) `
   )
   const depositRec = await depositTx.wait()
   const l2Result = await depositRec.waitForL2(l2Provider)
@@ -121,6 +121,7 @@ const main = async () => {
 
   const withdrawTx = await erc20Bridge.withdraw({
     amount: tokenWithdrawAmount,
+    destinationAddress: l2Wallet.address,
     erc20l1Address: erc20Address,
     l2Signer: l2Wallet,
   })
@@ -148,7 +149,7 @@ const main = async () => {
   ).to.be.true
 
   console.log(
-    `To to claim funds (after dispute period), see outbox-execute repo ✌️`
+    `To to claim funds (after dispute period), see outbox-execute repo 🤞🏻`
   )
 }
 

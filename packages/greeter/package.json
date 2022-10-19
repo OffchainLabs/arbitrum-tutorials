@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "arb-bridge-eth": "^0.7.5",
-    "@arbitrum/sdk": "^2.0.18",
+    "@arbitrum/sdk": "^v3.0.0",
     "@arbitrum/nitro-contracts": "1.0.0-beta.8",
     "arbos-precompiles": "^1.0.2",
     "dotenv": "^8.2.0"

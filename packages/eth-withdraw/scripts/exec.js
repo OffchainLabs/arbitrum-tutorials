@@ -49,6 +49,7 @@ const main = async () => {
   const withdrawTx = await ethBridger.withdraw({
     amount: ethFromL2WithdrawAmount,
     l2Signer: l2Wallet,
+    destinationAddress: l2Wallet.address,
   })
   const withdrawRec = await withdrawTx.wait()
 
@@ -62,7 +63,7 @@ const main = async () => {
   const withdrawEventsData = await withdrawRec.getL2ToL1Events()
   console.log('Withdrawal data:', withdrawEventsData)
   console.log(
-    `To to claim funds (after dispute period), see outbox-execute repo ✌️`
+    `To to claim funds (after dispute period), see outbox-execute repo 🫡`
   )
 }
 

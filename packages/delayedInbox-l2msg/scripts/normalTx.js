@@ -1,9 +1,7 @@
 const { providers, Wallet, ethers } = require('ethers')
 const hre = require('hardhat')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-const {
-  getL2Network,
-} = require('@arbitrum/sdk-nitro/dist/lib/dataEntities/networks')
+const { getL2Network } = require('@arbitrum/sdk/dist/lib/dataEntities/networks')
 const {
   NodeInterface__factory,
 } = require('@arbitrum/sdk/dist/lib/abi/factories/NodeInterface__factory')
@@ -162,7 +160,7 @@ const main = async () => {
    * Now we successfully send the tx to l1 delayed inbox, then we need to wait the tx executed on l2
    */
   console.log(
-    `Now we need to wait tx: ${l2Txhash} to be included on l2 (may take 5 minutes) ....... `
+    `Now we need to wait tx: ${l2Txhash} to be included on l2 (may take 15 minutes) ....... `
   )
 
   const l2TxReceipt = await l2Provider.waitForTransaction(l2Txhash)

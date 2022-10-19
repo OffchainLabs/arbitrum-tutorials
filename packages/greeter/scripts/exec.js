@@ -144,14 +144,15 @@ const main = async () => {
   const ABI = ['function setGreeting(string _greeting)']
   const iface = new ethers.utils.Interface(ABI)
   const calldata = iface.encodeFunctionData('setGreeting', [newGreeting])
-
   const maxGas = await l1ToL2MessageGasEstimate.estimateRetryableTicketGasLimit(
-    l1Greeter.address,
-    l2Greeter.address,
-    0,
-    l2Wallet.address,
-    l2Wallet.address,
-    calldata,
+    {
+      from: await l1Greeter.address,
+      to: await l2Greeter.address,
+      l2CallValue: 0,
+      excessFeeRefundAddress: await l2Wallet.address,
+      callValueRefundAddress: await l2Wallet.address,
+      data: calldata,
+    },
     ethers.utils.parseEther('1')
   )
   /**
@@ -185,11 +186,15 @@ const main = async () => {
    * In this case, we know our txn triggered only one
    * Here, We check if our L1 to L2 message is redeemed on L2
    */
-  const message = await l1TxReceipt.getL1ToL2Message(l2Wallet)
-  const status = await message.waitForStatus()
-  console.log(status)
+  const messages = await l1TxReceipt.getL1ToL2Messages(l2Wallet)
+  const message = messages[0]
+  console.log('Waiting for L2 side. It may take 10-15 minutes ⏰⏰')
+  const messageResult = await message.waitForStatus()
+  const status = messageResult.status
   if (status === L1ToL2MessageStatus.REDEEMED) {
-    console.log(`L2 retryable txn executed 🥳 ${message.l2TxHash}`)
+    console.log(
+      `L2 retryable txn executed 🥳 ${messageResult.l2TxReceipt.transactionHash}`
+    )
   } else {
     console.log(
       `L2 retryable txn failed with status ${L1ToL2MessageStatus[status]}`
@@ -207,7 +212,7 @@ const main = async () => {
    */
   const newGreetingL2 = await l2Greeter.greet()
   console.log(`Updated L2 greeting: "${newGreetingL2}"`)
-  console.log('✌️')
+  console.log('🫡')
 }
 
 main()
