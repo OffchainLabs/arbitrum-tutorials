@@ -45,6 +45,7 @@ contract L1Token is ICustomToken, ERC20 {
     address public bridge;
     address public router;
     bool private shouldRegisterGateway;
+    address public owner;
 
     constructor(
         address _bridge,
@@ -53,9 +54,15 @@ contract L1Token is ICustomToken, ERC20 {
     ) public ERC20("L1CustomToken", "LCT") {
         bridge = _bridge;
         router = _router;
+        owner = msg.sender;
         _mint(msg.sender, _premine);
     }
 
+    // Modifier to check that the caller is the owner of the L1 Token Contract.
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Not the owner of the L1 Token");
+        _;
+    }
     function transferFrom(
         address sender,
         address recipient,
@@ -89,7 +96,7 @@ contract L1Token is ICustomToken, ERC20 {
         uint256 valueForGateway,
         uint256 valueForRouter,
         address creditBackAddress
-    ) public payable override {
+    ) public payable override onlyOwner{
         // we temporarily set `shouldRegisterGateway` to true for the callback in registerTokenToL2 to succeed
         bool prev = shouldRegisterGateway;
         shouldRegisterGateway = true;
