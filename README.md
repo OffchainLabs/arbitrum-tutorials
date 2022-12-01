@@ -26,6 +26,11 @@ yarn install
 - ⤴️ 💸 [Deposit Token](./packages/token-deposit/)
 - ⤵️ 💸 [Withdraw token](./packages/token-withdraw/)
 
+
+#### :white_check_mark: NFTs and Smart Contracts
+- 📄 [Arbitrum NFTs: Creating and Deploying ERC-721](https://docs.alchemy.com/docs/arbitrum-nfts-creating-and-deploying-erc-721)
+- 📜 [Arbitrum Solidity development](https://jamesbachini.com/arbitrum-tutorial/)
+
 #### :white_check_mark: General Interop
 
 - 🤝 [Greeter](./packages/greeter/) (L1 to L2)
