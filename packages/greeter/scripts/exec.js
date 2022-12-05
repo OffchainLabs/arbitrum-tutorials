@@ -1,4 +1,5 @@
 const { providers, Wallet } = require('ethers')
+const { BigNumber } = require('@ethersproject/bignumber')
 const hre = require('hardhat')
 const ethers = require('ethers')
 const {
@@ -11,6 +12,7 @@ const {
   EthBridger,
   getL2Network,
 } = require('@arbitrum/sdk')
+const { getBaseFee } = require('@arbitrum/sdk/dist/lib/utils/lib')
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
 
 /**
@@ -98,10 +100,32 @@ const main = async () => {
   const calldata = iface.encodeFunctionData('setGreeting', [newGreeting])
 
   /**
-   * The estimateAll method gives us the following values:
-   * (1) maxSubmissionCost:  A special cost for creating a retryable ticket
-   * (2) gasLimit: the gas limit for our L2 transaction
-   * (3) deposit: The total callvalue we'll need our L1 transaction to send to L2
+   * Users can override the estimated gas params when sending an L1-L2 message
+   * Note that this is totally optional
+   * Here we include and example for how to provide these overriding values
+   */
+
+  const RetryablesGasOverrides = {
+    gasLimit: {
+      base: undefined, //when defining as "undefined", the value will be estimated
+      min: BigNumber.from(100000), //set a minimum max gas
+      percentIncrease: BigNumber.from(10), //how much to increase the base by
+    },
+    maxSubmissionFee: {
+      base: undefined,
+      percentIncrease: BigNumber.from(10),
+    },
+    maxFeePerGas: {
+      base: undefined,
+      percentIncrease: BigNumber.from(10),
+    },
+  }
+
+  /**
+   * The estimateAll method gives us the following values for sending an L1->L2 message
+   * (1) maxSubmissionCost: The maximum cost to be paid for submitting the transaction
+   * (2) gasLimit: The L2 gas limit
+   * (3) deposit: The total amount to deposit on L1 to cover L2 gas and L2 call value
    */
   const L1ToL2MessageGasParams = await l1ToL2MessageGasEstimate.estimateAll(
     {
@@ -112,8 +136,9 @@ const main = async () => {
       callValueRefundAddress: await l2Wallet.address,
       data: calldata,
     },
-    await l1Provider.getGasPrice(),
-    l1Provider
+    await getBaseFee(l1Provider),
+    l1Provider,
+    RetryablesGasOverrides //if provided, it will override the estimated values. Note that providing "RetryablesGasOverrides" is totally optiional.
   )
   console.log(
     `Current retryable base submission price is: ${L1ToL2MessageGasParams.maxSubmissionCost.toString()}`
