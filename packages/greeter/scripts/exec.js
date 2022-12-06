@@ -107,9 +107,9 @@ const main = async () => {
 
   const RetryablesGasOverrides = {
     gasLimit: {
-      base: undefined, //when defining as "undefined", the value will be estimated
-      min: BigNumber.from(100000), //set a minimum max gas
-      percentIncrease: BigNumber.from(10), //how much to increase the base by
+      base: undefined, // when undefined, the value will be estimated from rpc
+      min: BigNumber.from(1000), // set a minimum gas limit, using 1000 as an example
+      percentIncrease: BigNumber.from(10), // how much to increase the base for buffer
     },
     maxSubmissionFee: {
       base: undefined,
