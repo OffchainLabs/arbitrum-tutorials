@@ -1,7 +1,7 @@
 const { providers, Wallet } = require('ethers')
+const { BigNumber } = require('@ethersproject/bignumber')
 const hre = require('hardhat')
 const ethers = require('ethers')
-const { hexDataLength } = require('@ethersproject/bytes')
 const {
   L1ToL2MessageGasEstimator,
 } = require('@arbitrum/sdk/dist/lib/message/L1ToL2MessageGasEstimator')
@@ -12,6 +12,7 @@ const {
   EthBridger,
   getL2Network,
 } = require('@arbitrum/sdk')
+const { getBaseFee } = require('@arbitrum/sdk/dist/lib/utils/lib')
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
 
 /**
@@ -86,65 +87,47 @@ const main = async () => {
   const newGreeting = 'Greeting from far, far away'
 
   /**
-   * To send an L1-to-L2 message (aka a "retryable ticket"), we need to send ether from L1 to pay for the txn costs on L2.
-   * There are two costs we need to account for: base submission cost and cost of L2 execution. We'll start with base submission cost.
-   */
-
-  /**
-   * Base submission cost is a special cost for creating a retryable ticket; querying the cost requires us to know how many bytes of calldata out retryable ticket will require, so let's figure that out.
-   * We'll get the bytes for our greeting data, then add 4 for the 4-byte function signature.
-   */
-
-  const newGreetingBytes = ethers.utils.defaultAbiCoder.encode(
-    ['string'],
-    [newGreeting]
-  )
-  const newGreetingBytesLength = hexDataLength(newGreetingBytes) + 4 // 4 bytes func identifier
-
-  /**
-   * Now we can query the submission price using a helper method; the first value returned tells us the best cost of our transaction; that's what we'll be using.
-   * The second value (nextUpdateTimestamp) tells us when the base cost will next update (base cost changes over time with chain congestion; the value updates every 24 hours). We won't actually use it here, but generally it's useful info to have.
+   * Now we can query the required gas params using the estimateAll method in Arbitrum SDK
    */
   const l1ToL2MessageGasEstimate = new L1ToL2MessageGasEstimator(l2Provider)
 
-  const _submissionPriceWei =
-    await l1ToL2MessageGasEstimate.estimateSubmissionFee(
-      l1Provider,
-      await l1Provider.getGasPrice(),
-      newGreetingBytesLength
-    )
-
-  console.log(
-    `Current retryable base submission price: ${_submissionPriceWei.toString()}`
-  )
-
   /**
-   * ...Okay, but on the off chance we end up underpaying, our retryable ticket simply fails.
-   * This is highly unlikely, but just to be safe, let's increase the amount we'll be paying (the difference between the actual cost and the amount we pay gets refunded to our address on L2 anyway)
-   * In nitro, submission fee will be charged in L1 based on L1 basefee, revert on L1 side upon insufficient fee.
-   */
-  const submissionPriceWei = _submissionPriceWei.mul(5)
-  /**
-   * Now we'll figure out the gas we need to send for L2 execution; this requires the L2 gas price and gas limit for our L2 transaction
-   */
-
-  /**
-   * For the L2 gas price, we simply query it from the L2 provider, as we would when using L1
-   */
-  const gasPriceBid = await l2Provider.getGasPrice()
-  console.log(`L2 gas price: ${gasPriceBid.toString()}`)
-
-  /**
-   * For the gas limit, we'll use the estimateRetryableTicketGasLimit method in Arbitrum SDK
-   */
-
-  /**
-   * First, we need to calculate the calldata for the function being called (setGreeting())
+   * To be able to estimate the gas related params to our L1-L2 message, we need to know how many bytes of calldata out retryable ticket will require
+   * i.e., we need to calculate the calldata for the function being called (setGreeting())
    */
   const ABI = ['function setGreeting(string _greeting)']
   const iface = new ethers.utils.Interface(ABI)
   const calldata = iface.encodeFunctionData('setGreeting', [newGreeting])
-  const maxGas = await l1ToL2MessageGasEstimate.estimateRetryableTicketGasLimit(
+
+  /**
+   * Users can override the estimated gas params when sending an L1-L2 message
+   * Note that this is totally optional
+   * Here we include and example for how to provide these overriding values
+   */
+
+  const RetryablesGasOverrides = {
+    gasLimit: {
+      base: undefined, // when undefined, the value will be estimated from rpc
+      min: BigNumber.from(1000), // set a minimum gas limit, using 1000 as an example
+      percentIncrease: BigNumber.from(10), // how much to increase the base for buffer
+    },
+    maxSubmissionFee: {
+      base: undefined,
+      percentIncrease: BigNumber.from(10),
+    },
+    maxFeePerGas: {
+      base: undefined,
+      percentIncrease: BigNumber.from(10),
+    },
+  }
+
+  /**
+   * The estimateAll method gives us the following values for sending an L1->L2 message
+   * (1) maxSubmissionCost: The maximum cost to be paid for submitting the transaction
+   * (2) gasLimit: The L2 gas limit
+   * (3) deposit: The total amount to deposit on L1 to cover L2 gas and L2 call value
+   */
+  const L1ToL2MessageGasParams = await l1ToL2MessageGasEstimate.estimateAll(
     {
       from: await l1Greeter.address,
       to: await l2Greeter.address,
@@ -153,24 +136,30 @@ const main = async () => {
       callValueRefundAddress: await l2Wallet.address,
       data: calldata,
     },
-    ethers.utils.parseEther('1')
+    await getBaseFee(l1Provider),
+    l1Provider,
+    RetryablesGasOverrides //if provided, it will override the estimated values. Note that providing "RetryablesGasOverrides" is totally optiional.
   )
+  console.log(
+    `Current retryable base submission price is: ${L1ToL2MessageGasParams.maxSubmissionCost.toString()}`
+  )
+
   /**
-   * With these three values, we can calculate the total callvalue we'll need our L1 transaction to send to L2
+   * For the L2 gas price, we simply query it from the L2 provider, as we would when using L1
    */
-  const callValue = submissionPriceWei.add(gasPriceBid.mul(maxGas))
+  const gasPriceBid = await l2Provider.getGasPrice()
+  console.log(`L2 gas price: ${gasPriceBid.toString()}`)
 
   console.log(
-    `Sending greeting to L2 with ${callValue.toString()} callValue for L2 fees:`
+    `Sending greeting to L2 with ${L1ToL2MessageGasParams.deposit.toString()} callValue for L2 fees:`
   )
-
   const setGreetingTx = await l1Greeter.setGreetingInL2(
     newGreeting, // string memory _greeting,
-    submissionPriceWei,
-    maxGas,
+    L1ToL2MessageGasParams.maxSubmissionCost,
+    L1ToL2MessageGasParams.gasLimit,
     gasPriceBid,
     {
-      value: callValue,
+      value: L1ToL2MessageGasParams.deposit,
     }
   )
   const setGreetingRec = await setGreetingTx.wait()
