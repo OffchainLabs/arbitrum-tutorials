@@ -37,7 +37,7 @@ module.exports = async txnHash => {
    * Note that in principle, a single transaction could trigger any number of outgoing messages; the common case will be there's only one.
    * For the sake of this script, we assume there's only one / just grad the first one.
    */
-  const messages = await l2Receipt.getL2ToL1Messages(l1Wallet, l2Provider)
+  const messages = await l2Receipt.getL2ToL1Messages(l1Wallet)
   const l2ToL1Msg = messages[0]
 
   /**
