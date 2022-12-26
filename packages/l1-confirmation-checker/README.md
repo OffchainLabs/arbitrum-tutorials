@@ -11,9 +11,9 @@ See [./exec.js](./scripts/exec.js) for inline explanation.
 
 check if tx recorded to l1 or not:
 ```
-yarn ts-node scripts/exec.ts --action checkConfirmation --blockHash {YOUR_BLOCK_HASH}
+yarn ts-node scripts/exec.ts --action checkConfirmation --blockNumber {YOUR_BLOCK_NUMBER}
 ```
-get submissiontx by a given l2 transaction:
+get submissiontx by a given l2 transaction status:
 ```
 yarn ts-node scripts/exec.ts --action findSubmissionTx --blockNumber {YOUR_BLOCK_NUMBER}
 ```
