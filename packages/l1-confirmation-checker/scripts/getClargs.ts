@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-// import yargs from 'yargs/yargs';
 'use strict';
 import yargs from 'yargs/yargs';
 

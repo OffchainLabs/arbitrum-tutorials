@@ -2,16 +2,14 @@
 import { NodeInterface__factory } from "@arbitrum/sdk/dist/lib/abi/factories/NodeInterface__factory"
 import { SequencerInbox__factory } from "@arbitrum/sdk/dist/lib/abi/factories/SequencerInbox__factory"
 import { NODE_INTERFACE_ADDRESS } from "@arbitrum/sdk/dist/lib/dataEntities/constants"
-import { getL1Network, getL2Network } from "@arbitrum/sdk"
+import { getL2Network } from "@arbitrum/sdk"
 import { providers, BigNumber } from "ethers";
-import { exit } from 'process';
 
 export const checkConfirmation = async (blockNumber: number,  l2Provider:providers.JsonRpcProvider) => {
     // check if blockNumber valid
     const currentBlockNumber = await l2Provider.getBlockNumber()
     if(currentBlockNumber < blockNumber) {
-        console.log("Block number set too high!")
-        exit(1)
+        throw new Error("Block number set too high!")
     }
     const blockHash = (await l2Provider.getBlock(blockNumber)).hash
     const nodeInterface = NodeInterface__factory.connect( NODE_INTERFACE_ADDRESS, l2Provider)
@@ -19,8 +17,7 @@ export const checkConfirmation = async (blockNumber: number,  l2Provider:provide
     try {
         result = await nodeInterface.functions.getL1Confirmations(blockHash)
     } catch(e){
-        console.log("Check fail, reason: " + e)
-        exit(1)
+        throw new Error("Check fail, reason: " + e)
     }
     
     if(result.confirmations.eq(0)) {
@@ -38,8 +35,7 @@ export const findSubmissionTx = async (
     // check if blockNumber valid
     const currentBlockNumber = await l2Provider.getBlockNumber()
     if(currentBlockNumber < blockNumber) {
-        console.log("Block number set too high!")
-        exit(1)
+        throw new Error("Block number set too high!")
     }
 
     const l2Network = await getL2Network(l2Provider)
@@ -51,8 +47,7 @@ export const findSubmissionTx = async (
     try {
         result = await (await nodeInterface.functions.findBatchContainingBlock(blockNumber)).batch
     } catch(e){
-        console.log("Check l2 block fail, reason: " + e)
-        exit(1)
+        throw new Error("Check l2 block fail, reason: " + e)
     }
 
     // Use batch number to query l1 sequencerInbox's SequencerBatchDelivered event,
@@ -61,8 +56,7 @@ export const findSubmissionTx = async (
     const emittedEvent = await sequencer.queryFilter(queryBatch)
     if(emittedEvent.length === 0) {
         console.log("No submission transaction found. (If event too old some rpc will discard it)")
-        exit(1)
+    } else {
+        console.log(`Submission transaction found: ${emittedEvent[0].transactionHash}`)
     }
-    
-    console.log(`Submission transaction found: ${emittedEvent[0].transactionHash}`)
 }
