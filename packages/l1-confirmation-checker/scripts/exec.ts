@@ -1,22 +1,33 @@
-
-const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 import {providers} from "ethers"
-import { exit } from "yargs";
+import args from './getClargs';
+import { checkConfirmation, findSubmissionTx } from "./utils";
+const { requireEnvVariables } = require('arb-shared-dependencies')
+
 requireEnvVariables(['L2RPC'])
 const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
 const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
-import args from './getClargs';
-import { checkConfirmation } from "./utils";
+
 const main = async () => {
+    if(!args.blockNumber) {
+        throw new Error("blockNumber not defined!")
+    }
     switch(args.action) {
         case "checkConfirmation":
-            console.log("in")
-            if(!args.blockHash) {
-                throw new Error("blockHash not defined!")
-            }
-            await checkConfirmation(args.blockHash, l2Provider)
+            await checkConfirmation(args.blockNumber, l2Provider)
             break
         case "findSubmissionTx":
+            if(process.env.L1RPC === ''){
+                throw new Error("L1RPC not defined in env!")
+            }
+            await findSubmissionTx(args.blockNumber, l1Provider, l2Provider)
+            break
+        default:
+            console.log(`Unknown action: ${args.action}`)
     }
 }
 main()
+.then(() => process.exit(0))
+.catch(error => {
+  console.error(error)
+  process.exit(1)
+})

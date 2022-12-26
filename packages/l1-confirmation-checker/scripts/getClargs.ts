@@ -26,8 +26,8 @@ const argv = yargs(process.argv.slice(2))
     action: {
       type: 'string',
     },
-    blockHash: {
-      type: 'string'
+    blockNumber: {
+      type: 'number'
     }
   })
   .demandOption('action')
