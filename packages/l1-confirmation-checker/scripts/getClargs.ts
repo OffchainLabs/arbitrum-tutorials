@@ -25,11 +25,12 @@ const argv = yargs(process.argv.slice(2))
     action: {
       type: 'string',
     },
-    blockNumber: {
-      type: 'number'
+    txHash: {
+      type: 'string'
     }
   })
   .demandOption('action')
+  .demandOption('txHash')
   .parseSync();
 
 export default argv;

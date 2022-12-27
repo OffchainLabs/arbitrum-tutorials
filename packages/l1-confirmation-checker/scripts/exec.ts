@@ -8,18 +8,15 @@ const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
 const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
 
 const main = async () => {
-    if(!args.blockNumber) {
-        throw new Error("blockNumber not defined!")
-    }
     switch(args.action) {
         case "checkConfirmation":
-            await checkConfirmation(args.blockNumber, l2Provider)
+            await checkConfirmation(args.txHash, l2Provider)
             break
         case "findSubmissionTx":
             if(process.env.L1RPC === ''){
                 throw new Error("L1RPC not defined in env!")
             }
-            await findSubmissionTx(args.blockNumber, l1Provider, l2Provider)
+            await findSubmissionTx(args.txHash, l1Provider, l2Provider)
             break
         default:
             console.log(`Unknown action: ${args.action}`)
