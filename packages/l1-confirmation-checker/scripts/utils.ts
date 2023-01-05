@@ -5,7 +5,10 @@ import { NODE_INTERFACE_ADDRESS } from "@arbitrum/sdk/dist/lib/dataEntities/cons
 import { getL2Network } from "@arbitrum/sdk"
 import { providers, BigNumber } from "ethers";
 
-// This function will output  the number of L1 block confirmations the L1 batch-posting transaction has 
+ /**
+   * This function will output the number of L1 block confirmations the L1 batch-posting transaction has 
+   * by a given L2 transaction
+   */
 // by a given L2 transaction.
 export const checkConfirmation = async (
     txHash: string,
