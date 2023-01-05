@@ -4,20 +4,20 @@
 
 It calls precompile `NodeInterface` to find information about an L1 transaction that posted the L2 transaction in a batch.
 
-It has 2 functions; both function will show you whether you L2 transaction has been posted in an L1 batch. 
-The first, `checkConfirmation`, will output the number of L1 block confirmations the L1 batch-posting transaction has.
-The second is `findSubmissionTx`, will output the L1 batch-posting transaction hash.
+It has 2 functions; both functions will show you whether your L2 transaction has been posted in an L1 batch. 
+The first function, `checkConfirmation`, will output the number of L1 block confirmations the L1 batch-posting transaction has.
+The second is `findSubmissionTx`, which will output the L1 batch-posting transaction hash.
 
-See [./exec.js](./scripts/exec.js) for inline explanation.
+See [./exec.js](./scripts/exec.js) for inline explanations.
 
 
 ### Run Demo:
 
-Check if tx recorded in l1 or not:
+Check if tx recorded in L1 or not:
 ```
 yarn ts-node scripts/exec.ts --action checkConfirmation --txHash {YOUR_TX_HASH}
 ```
-Get submissiontx by a given l2 transaction status:
+Get submissiontx by a given L2 transaction status:
 ```
 yarn ts-node scripts/exec.ts --action findSubmissionTx --txHash {YOUR_TX_HASH}
 ```

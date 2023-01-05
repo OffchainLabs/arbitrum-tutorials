@@ -11,7 +11,7 @@ export const checkConfirmation = async (
     txHash: string,
     l2Provider:providers.JsonRpcProvider
 ): Promise<BigNumber> => {
-    // get related block hash
+    // Call the related block hash
     let blockHash
     try{
         blockHash = (await l2Provider.getTransactionReceipt(txHash)).blockHash
@@ -22,7 +22,7 @@ export const checkConfirmation = async (
     const nodeInterface = NodeInterface__factory.connect( NODE_INTERFACE_ADDRESS, l2Provider)
     let result
 
-    // call nodeInterface precompile to get the number of L1 confirmations the sequencer batch has.
+    // Call nodeInterface precompile to get the number of L1 confirmations the sequencer batch has.
     try {
         result = await nodeInterface.functions.getL1Confirmations(blockHash)
     } catch(e){
@@ -38,7 +38,7 @@ export const findSubmissionTx = async (
     l1Provider: providers.JsonRpcProvider,
     l2Provider: providers.JsonRpcProvider
 ): Promise<string> => {
-    // get related block number
+    // Get the related block number
     let blockNumber
     try{
         blockNumber = (await l2Provider.getTransactionReceipt(txHash)).blockNumber
@@ -50,7 +50,7 @@ export const findSubmissionTx = async (
     const nodeInterface = NodeInterface__factory.connect( NODE_INTERFACE_ADDRESS, l2Provider)
     const sequencer = SequencerInbox__factory.connect(l2Network.ethBridge.sequencerInbox, l1Provider)
     
-    // call nodeInterface precompile to get batch number first
+    // Call the nodeInterface precompile to get the batch number first
     let result: BigNumber
     try {
         result = await (await nodeInterface.functions.findBatchContainingBlock(blockNumber)).batch
@@ -58,12 +58,14 @@ export const findSubmissionTx = async (
         throw new Error("Check l2 block fail, reason: " + e)
     }
 
-    // Use batch number to query l1 sequencerInbox's SequencerBatchDelivered event,
-    // then get it emitted transaction hash
+    /**
+      * We use the batch number to query the L1 sequencerInbox's SequencerBatchDelivered event
+      * then, we get its emitted transaction hash.
+    */
     const queryBatch = sequencer.filters.SequencerBatchDelivered(result)
     const emittedEvent = await sequencer.queryFilter(queryBatch)
 
-    // if no event emitted, just return ""
+    // If no event has been emitted, it just returns ""
     if(emittedEvent.length === 0) {
         return ""
     } else {
