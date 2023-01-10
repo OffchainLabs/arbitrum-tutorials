@@ -30,6 +30,7 @@ yarn install
 
 - 🤝 [Greeter](./packages/greeter/) (L1 to L2)
 - 📤 [Outbox](./packages/outbox-execute/) (L2 to L1)
+- ⏰ [L1 Confirmation Checker](./packages/l1-confirmation-checker/)
 
 #### :white_check_mark: Advanced Features
 
