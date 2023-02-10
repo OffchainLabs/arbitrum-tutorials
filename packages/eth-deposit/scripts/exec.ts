@@ -1,9 +1,10 @@
 import { utils, providers, Wallet } from 'ethers'
-import { EthBridger, getL2Network, EthDepositStatus } from '@arbitrum/sdk'
-import { arbLog, requireEnvVariables } from 'arb-shared-dependencies'
+import * as ArbSdk from '@arbitrum/sdk'
+import * as ArbFunc from 'arb-shared-dependencies'
 require('dotenv').config()
-requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
+ArbFunc.requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
 const { parseEther } = utils
+const { EthBridger, EthDepositStatus } = ArbSdk
 
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
@@ -22,14 +23,14 @@ const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 const ethToL2DepositAmount = parseEther('0.0001')
 
 const main = async () => {
-  await arbLog('Deposit Eth via Arbitrum SDK')
+  await ArbFunc.arbLog('Deposit Eth via Arbitrum SDK')
 
   /**
    * Use l2Network to create an Arbitrum SDK EthBridger instance
    * We'll use EthBridger for its convenience methods around transferring ETH to L2
    */
 
-  const l2Network = await getL2Network(l2Provider)
+  const l2Network = await ArbSdk.getL2Network(l2Provider)
   const ethBridger = new EthBridger(l2Network)
 
   /**

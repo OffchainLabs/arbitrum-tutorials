@@ -13,7 +13,7 @@
     "strictNullChecks": true,
     "noImplicitThis": true,
     "resolveJsonModule": true,
-    "esModuleInterop": true,
+    "esModuleInterop": false,
     "experimentalDecorators": true
   },
   "include": ["scripts/**/*.ts", "scripts/**/*.d.ts", "scripts/**/*.js"],
