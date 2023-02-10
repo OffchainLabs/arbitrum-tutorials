@@ -1,18 +1,14 @@
-const { utils, providers, Wallet } = require('ethers')
-const {
-  EthBridger,
-  getL2Network,
-  EthDepositStatus,
-} = require('@arbitrum/sdk')
-const { parseEther } = utils
-const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
+import { utils, providers, Wallet } from 'ethers'
+import { EthBridger, getL2Network, EthDepositStatus } from '@arbitrum/sdk'
+import { arbLog, requireEnvVariables } from 'arb-shared-dependencies'
 require('dotenv').config()
 requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
+const { parseEther } = utils
 
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
  */
-const walletPrivateKey = process.env.DEVNET_PRIVKEY
+const walletPrivateKey = process.env.DEVNET_PRIVKEY as string
 
 const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
 const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
@@ -47,12 +43,10 @@ const main = async () => {
    * Arguments required are:
    * (1) amount: The amount of ETH to be transferred to L2
    * (2) l1Signer: The L1 address transferring ETH to L2
-   * (3) l2Provider: An l2 provider
    */
   const depositTx = await ethBridger.deposit({
     amount: ethToL2DepositAmount,
-    l1Signer: l1Wallet,
-    l2Provider: l2Provider,
+    l1Signer: l1Wallet
   })
 
   const depositRec = await depositTx.wait()

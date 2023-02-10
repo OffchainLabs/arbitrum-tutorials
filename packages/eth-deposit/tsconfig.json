@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "commonjs",
+    "declaration": true,
+    "rootDir": "./scripts",
+    "outDir": "./build",
+    "strict": true,
+    "allowJs": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true
+  },
+  "include": ["scripts/**/*.ts", "scripts/**/*.d.ts", "scripts/**/*.js"],
+  "ts-node": {
+    "files": true
+  }
+}

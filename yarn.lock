@@ -1143,6 +1143,11 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.55.tgz#c329cbd434c42164f846b909bd6f85b5537f6240"
   integrity sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ==
 
+"@types/node@^18.13.0":
+  version "18.13.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.13.0.tgz#0400d1e6ce87e9d3032c19eb6c58205b0d3f7850"
+  integrity sha512-gC3TazRzGoOnoKAhUx+Q0t8S9Tzs74z7m0ipwGpSqQrleP14hKxP4/JUeEQcD3W1/aIpnWl8pHowI7WokuZpXg==
+
 "@types/pbkdf2@^3.0.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@types/pbkdf2/-/pbkdf2-3.1.0.tgz#039a0e9b67da0cdc4ee5dab865caa6b267bb66b1"
@@ -8213,7 +8218,7 @@ ts-generator@^0.1.1:
     resolve "^1.8.1"
     ts-essentials "^1.0.0"
 
-ts-node@^10.8.1:
+ts-node@^10.8.1, ts-node@^10.9.1:
   version "10.9.1"
   resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-10.9.1.tgz#e73de9102958af9e1f0b168a6ff320e25adcff4b"
   integrity sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==
@@ -8338,6 +8343,11 @@ typescript@^4.7.3:
   version "4.9.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.4.tgz#a2a3d2756c079abda241d75f149df9d561091e78"
   integrity sha512-Uz+dTXYzxXXbsFpM86Wh3dKCxrQqUcVMxwU54orwlJjOpO3ao8L7j5lH+dWfTwgCwIuM9GQ2kvVotzYJMXTBZg==
+
+typescript@^4.9.5:
+  version "4.9.5"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
+  integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
 
 typewise-core@^1.2, typewise-core@^1.2.0:
   version "1.2.0"
