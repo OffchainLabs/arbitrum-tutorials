@@ -1,7 +1,8 @@
 import { utils, providers, Wallet } from 'ethers'
 import * as ArbSdk from '@arbitrum/sdk'
 import * as ArbFunc from 'arb-shared-dependencies'
-require('dotenv').config()
+import * as dotenv from 'dotenv'
+dotenv.config()
 ArbFunc.requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
 const { parseEther } = utils
 const { EthBridger, EthDepositStatus } = ArbSdk

@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "hardhat compile && tsc",
+    "build-esm": "hardhat compile && tsc -p tsconfig-esm.json",
     "depositETH": "hardhat run scripts/exec.js"
   },
   "devDependencies": {
