@@ -22,6 +22,13 @@ module.exports = {
     ],
   },
   networks: {
+    // When running the tutorials, we generally don't specify a network to use, but we configure the desired network
+    // in the .env file. Thus, we generally end up using the default network config within hardhat, the "hardhat" network.
+    // However, hardhat network config has some defaults that we want to override because they don't make sense
+    // in other networks.
+    hardhat: {
+      gas: 'auto', // Default is 30000000
+    },
     l1: {
       gas: 2100000,
       gasLimit: 0,
