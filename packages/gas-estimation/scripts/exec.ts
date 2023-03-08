@@ -10,7 +10,9 @@ require('dotenv').config();
 const baseL2Provider = new providers.StaticJsonRpcProvider(process.env.L2RPC);
 const GENERIC_NON_ZERO_ADDRESS = "0x1234563d5de0d7198451f87bcbf15aefd00d434d";
 
-// Transaction dependent variables (modify this values)
+// The input data of the transaction, in hex. You can find examples of this information in Arbiscan,
+// in the "Input Data" field of a transaction.
+// (You can modify this value to fit your needs)
 const txData = "0x";
 
 const gasEstimator = async () => {
