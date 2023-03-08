@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "exec": "yarn ts-node scripts/exec.ts"
+    "exec": "ts-node scripts/exec.ts"
   },
   "dependencies": {
     "@arbitrum/sdk": "^v3.0.0",

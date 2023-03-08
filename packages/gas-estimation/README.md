@@ -4,7 +4,7 @@
 
 It uses the formula described in this Medium article to estimate the fees to be paid on a transaction, also calculating each component of the formula sepparately: [https://medium.com/offchainlabs/understanding-arbitrum-2-dimensional-fees-fd1d582596c9](Understanding Arbitrum: 2-Dimensional Fees).
 
-See [./exec.js](./scripts/exec.js) for inline explanations.
+See [./exec.ts](./scripts/exec.ts) for inline explanations.
 
 Inside the script, you can edit `txData` constant to suit your needs.
 
