@@ -2,9 +2,11 @@ import { utils, providers } from "ethers";
 import { ArbGasInfo__factory } from "@arbitrum/sdk/dist/lib/abi/factories/ArbGasInfo__factory";
 import { NodeInterface__factory } from "@arbitrum/sdk/dist/lib/abi/factories/NodeInterface__factory";
 import { ARB_GAS_INFO, NODE_INTERFACE_ADDRESS } from "@arbitrum/sdk/dist/lib/dataEntities/constants";
+const { requireEnvVariables } = require('arb-shared-dependencies');
 
 // Importing configuration //
 require('dotenv').config();
+requireEnvVariables(['L2RPC']);
 
 // Initial setup //
 const baseL2Provider = new providers.StaticJsonRpcProvider(process.env.L2RPC);

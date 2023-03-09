@@ -1,5 +1,6 @@
 const hardhatConfig = require('./hardhat.config.js')
-require('dotenv').config()
+const path = require('path')
+require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') })
 
 const wait = (ms = 0) => {
   return new Promise(res => setTimeout(res, ms || 0))
