@@ -22,7 +22,7 @@ const gasEstimator = async () => {
     //
     // Transaction fees (TXFEES) = L2 Gas Price (P) * Gas Limit (G)
     //      ----> Gas Limit (G) = L2 Gas used (L2G) + Extra Buffer for L1 cost (B)
-    //      ----> L1 Cost (L1C) = L1 Calldata price per byte (L1P) * L1 Calldata size in bytes (L1S)
+    //      ----> L1 Estimated Cost (L1C) = L1 estimated calldata price per byte (L1P) * L1 Calldata size in bytes (L1S)
     //      ----> Extra Buffer (B) = L1 Cost (L1C) / L2 Gas Price (P)
     //
     // TXFEES = P * (L2G + ((L1P * L1S) / P))
@@ -35,7 +35,8 @@ const gasEstimator = async () => {
     //      NodeInterface.GasEstimateL1Component() and get the second element => result[1]
     //      NodeInterface.GasEstimateComponents() and get the third element => result[2]
     // L2G (L2 Gas used) => Will depend on the transaction itself
-    // L1P (L1 Calldata price per byte) => 
+    // L1P (L1 estimated calldata price per byte) =>
+    //      (this is the L2's estimated view of the current L1's price per byte of data, which the L2 dynamically adjusts over time)
     //      ArbGasInfo.getL1BaseFeeEstimate() and multiply by 16
     //      ArbGasInfo.getL1GasPriceEstimate() and multiply by 16
     //      ArbGasInfo.getPricesInWei() and get the second element => result[1]
@@ -100,7 +101,7 @@ const gasEstimator = async () => {
     console.log("-------------------");
     console.log(`P (L2 Gas Price) = ${utils.formatUnits(P, "gwei")} gwei`);
     console.log(`L2G (L2 Gas used) = ${L2G.toNumber()} units`);
-    console.log(`L1P (L1 Calldata price per byte) = ${utils.formatUnits(L1P, "gwei")} gwei`);
+    console.log(`L1P (L1 estimated calldata price per byte) = ${utils.formatUnits(L1P, "gwei")} gwei`);
     console.log(`L1S (L1 Calldata size in bytes) = ${L1S} bytes`);
     console.log("-------------------");
     console.log(`Transaction estimated fees to pay = ${utils.formatEther(TXFEES)} ETH`);

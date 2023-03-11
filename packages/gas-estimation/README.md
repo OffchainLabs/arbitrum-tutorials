@@ -2,7 +2,7 @@
 
 `gas-estimation` is a simple demo of how a developer can estimate transaction fees on Arbitrum.
 
-It uses the formula described in this Medium article to estimate the fees to be paid on a transaction, also calculating each component of the formula sepparately: [https://medium.com/offchainlabs/understanding-arbitrum-2-dimensional-fees-fd1d582596c9](Understanding Arbitrum: 2-Dimensional Fees).
+It uses the formula described in this Medium article to estimate the fees to be paid on a transaction, also estimating each component of the formula sepparately: [Understanding Arbitrum: 2-Dimensional Fees](https://medium.com/offchainlabs/understanding-arbitrum-2-dimensional-fees-fd1d582596c9).
 
 See [./exec.ts](./scripts/exec.ts) for inline explanations.
 
