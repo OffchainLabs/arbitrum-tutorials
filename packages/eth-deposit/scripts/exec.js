@@ -3,6 +3,7 @@ const {
   EthBridger,
   getL2Network,
   EthDepositStatus,
+  addDefaultLocalNetwork,
 } = require('@arbitrum/sdk')
 const { parseEther } = utils
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
@@ -27,6 +28,7 @@ const ethToL2DepositAmount = parseEther('0.0001')
 
 const main = async () => {
   await arbLog('Deposit Eth via Arbitrum SDK')
+  addDefaultLocalNetwork()
 
   /**
    * Use l2Network to create an Arbitrum SDK EthBridger instance
