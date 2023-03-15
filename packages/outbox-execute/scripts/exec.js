@@ -1,5 +1,9 @@
 const { providers, Wallet } = require('ethers')
-const { L2TransactionReceipt, L2ToL1MessageStatus } = require('@arbitrum/sdk')
+const {
+  addDefaultLocalNetwork,
+  L2TransactionReceipt,
+  L2ToL1MessageStatus,
+} = require('@arbitrum/sdk')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
@@ -16,10 +20,16 @@ const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
 
 module.exports = async txnHash => {
   await arbLog('Outbox Execution')
+
+  /**
+   * Add the default local network configuration to the SDK
+   * to allow this script to run on a local node
+   */
+  addDefaultLocalNetwork()
+
   /**
    / * We start with a txn hash; we assume this is transaction that triggered an L2 to L1 Message on L2 (i.e., ArbSys.sendTxToL1)
   */
-
   if (!txnHash)
     throw new Error(
       'Provide a transaction hash of an L2 transaction that sends an L2 to L1 message'

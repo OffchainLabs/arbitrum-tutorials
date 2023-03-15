@@ -28,6 +28,11 @@ const ethToL2DepositAmount = parseEther('0.0001')
 
 const main = async () => {
   await arbLog('Deposit Eth via Arbitrum SDK')
+
+  /**
+   * Add the default local network configuration to the SDK
+   * to allow this script to run on a local node
+   */
   addDefaultLocalNetwork()
 
   /**

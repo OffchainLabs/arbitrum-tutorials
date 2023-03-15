@@ -1,7 +1,10 @@
 const { providers, Wallet, ethers } = require('ethers')
 const hre = require('hardhat')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-const { getL2Network } = require('@arbitrum/sdk/dist/lib/dataEntities/networks')
+const {
+  getL2Network,
+  addDefaultLocalNetwork,
+} = require('@arbitrum/sdk/dist/lib/dataEntities/networks')
 const {
   NodeInterface__factory,
 } = require('@arbitrum/sdk/dist/lib/abi/factories/NodeInterface__factory')
@@ -50,6 +53,12 @@ const estimateGasWithoutL1Part = async transactionl2Request => {
 
 const main = async () => {
   await arbLog('DelayedInbox normal contract call (L2MSG_signedTx)')
+
+  /**
+   * Add the default local network configuration to the SDK
+   * to allow this script to run on a local node
+   */
+  addDefaultLocalNetwork()
 
   const l2Network = await getL2Network(await l2Wallet.getChainId())
 

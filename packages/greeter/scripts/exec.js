@@ -11,6 +11,7 @@ const {
   L1ToL2MessageStatus,
   EthBridger,
   getL2Network,
+  addDefaultLocalNetwork,
 } = require('@arbitrum/sdk')
 const { getBaseFee } = require('@arbitrum/sdk/dist/lib/utils/lib')
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
@@ -28,6 +29,12 @@ const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
 const main = async () => {
   await arbLog('Cross-chain Greeter')
+
+  /**
+   * Add the default local network configuration to the SDK
+   * to allow this script to run on a local node
+   */
+  addDefaultLocalNetwork()
 
   /**
    * Use l2Network to create an Arbitrum SDK EthBridger instance

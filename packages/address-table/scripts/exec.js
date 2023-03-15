@@ -2,12 +2,20 @@ const hre = require('hardhat')
 const {
   ArbAddressTable__factory,
 } = require('@arbitrum/sdk/dist/lib/abi/factories/ArbAddressTable__factory')
+const { addDefaultLocalNetwork } = require('@arbitrum/sdk')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC'])
 require('dotenv').config()
 
 async function main() {
   await arbLog('Using the Address Table')
+
+  /**
+   * Add the default local network configuration to the SDK
+   * to allow this script to run on a local node
+   */
+  addDefaultLocalNetwork()
+
   /**
    * Deploy ArbitrumVIP contract to L2
    */
