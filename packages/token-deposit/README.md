@@ -30,4 +30,6 @@ cp .env-sample .env
 yarn run token-deposit
 ```
 
-<p align="center"><img src="../../assets/offchain_labs_logo.png" width="600"></p>
+<p align="left">
+  <img width="350" height="150" src= "../../assets/logo.svg" />
+</p>
