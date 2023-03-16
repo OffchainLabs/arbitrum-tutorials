@@ -39,4 +39,4 @@ yarn install
 - ✈️ [Delayed inbox message(l2MSG)](./packages/delayedInbox-l2msg/)
 - 🎁 [Redeem Retryable Ticket](./packages/redeem-failed-retryable/)
 
-<p align="center"><img src="assets/offchain_labs_logo.svg" width="300"></p>
+<p align="center"><img src="assets/logo.svg" width="300"></p>

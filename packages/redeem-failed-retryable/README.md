@@ -35,4 +35,6 @@ cp .env-sample .env
 
 For more information on the retryable tickets, see our [developer documentation on messaging between layers](https://developer.offchainlabs.com/docs/l1_l2_messages).
 
-<p align="left"><img src="../../assets/offchain_labs_logo.svg" width="150"></p>
+<p align="left">
+  <img width="350" height="150" src= "../../assets/logo.svg" />
+</p>
