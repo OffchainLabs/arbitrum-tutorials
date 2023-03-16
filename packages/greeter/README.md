@@ -26,4 +26,5 @@ cp .env-sample .env
 
 (you'll still need to edit some variables, i.e., `DEVNET_PRIVKEY`)
 
-<p align="center"><img src="../../assets/offchain_labs_logo.png" width="600"></p>
+<p align="left"><img src="../../assets/offchain_labs_logo.svg" width="150"></p>
+

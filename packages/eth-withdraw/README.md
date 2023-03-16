@@ -40,4 +40,4 @@ cp .env-sample .env
 
 Once the script is successfully executed, you can go to the [Arbitrum block explorer](https://goerli-rollup-explorer.arbitrum.io/), enter your address and see the amount of ETH has been deducted from your Layer 2 balance. Note that your Layer 1 balance will only be updated after rollup's confirmation period is over.
 
-<p align="center"><img src="../../assets/offchain_labs_logo.png" width="600"></p>
+<p align="left"><img src="../../assets/offchain_labs_logo.svg" width="150"></p>

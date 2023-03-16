@@ -28,4 +28,4 @@ cp .env-sample .env
 
 See our [developer documentation on messaging between layers](https://developer.offchainlabs.com/docs/l1_l2_messages).
 
-<p align="center"><img src="../../assets/offchain_labs_logo.png" width="600"></p>
+<p align="left"><img src="../../assets/offchain_labs_logo.svg" width="150"></p>

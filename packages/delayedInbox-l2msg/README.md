@@ -36,4 +36,5 @@ yarn run withdrawFunds
 
 Once the script is successfully executed, you can go to the [Arbitrum nitro block explorer](https://goerli-rollup-explorer.arbitrum.io/), enter your L2 address, and see the corresponding transactions on the Arbitrum chain!
 
-<p align="center"><img src="../../assets/offchain_labs_logo.png" width="600"></p>
+<p align="left"><img src="../../assets/offchain_labs_logo.svg" width="150"></p>
+
