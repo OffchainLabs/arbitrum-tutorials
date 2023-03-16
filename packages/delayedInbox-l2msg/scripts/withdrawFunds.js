@@ -3,15 +3,11 @@ const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 const { getL2Network } = require('@arbitrum/sdk/dist/lib/dataEntities/networks')
 const { InboxTools } = require('@arbitrum/sdk')
 const {
-  NodeInterface__factory,
-} = require('@arbitrum/sdk/dist/lib/abi/factories/NodeInterface__factory')
-const {
-  ArbSys__factory
+  ArbSys__factory,
 } = require('@arbitrum/sdk/dist/lib/abi/factories/ArbSys__factory')
 
 const {
-  NODE_INTERFACE_ADDRESS,
-  ARB_SYS_ADDRESS
+  ARB_SYS_ADDRESS,
 } = require('@arbitrum/sdk/dist/lib/dataEntities/constants')
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
 
@@ -20,13 +16,11 @@ requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
  */
 const walletPrivateKey = process.env.DEVNET_PRIVKEY
 
-
 const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
 const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
 
 const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
 const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
-
 
 const main = async () => {
   await arbLog('DelayedInbox withdraw funds from l2 (L2MSG_signedTx)')
@@ -39,22 +33,18 @@ const main = async () => {
    * Here we have a arbsys abi to withdraw our funds; we'll be setting it by sending it as a message from delayed inbox!!!
    */
 
-  const arbSys = ArbSys__factory.connect(
-    ARB_SYS_ADDRESS,
-    l2Provider
-  )
-  
+  const arbSys = ArbSys__factory.connect(ARB_SYS_ADDRESS, l2Provider)
+
   const arbsysIface = arbSys.interface
   const calldatal2 = arbsysIface.encodeFunctionData('withdrawEth', [
     l1Wallet.address,
   ])
-  
+
   const transactionl2Request = {
     data: calldatal2,
     to: ARB_SYS_ADDRESS,
     value: 1, // Only set 1 wei since it just a test tutorial, you can set whatever you want in real runtime.
   }
-
 
   /**
    * We need extract l2's tx hash first so we can check if this tx executed on l2 later.
