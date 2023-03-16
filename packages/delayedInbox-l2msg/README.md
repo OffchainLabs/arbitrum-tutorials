@@ -23,13 +23,13 @@ cp .env-sample .env
 Normal Transaction:
 
 ```bash
-yarn run normalTx
+yarn normalTx
 ```
 
 Withdraw Funds:
 
 ```bash
-yarn run withdrawFunds
+yarn withdrawFunds
 ```
 
 ## Curious to see the output on the Arbitrum chain?
