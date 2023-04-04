@@ -1,8 +1,7 @@
-
 import { NodeInterface__factory } from "@arbitrum/sdk/dist/lib/abi/factories/NodeInterface__factory"
 import { Bridge__factory } from "@arbitrum/sdk/dist/lib/abi/factories/Bridge__factory"
 import { NODE_INTERFACE_ADDRESS } from "@arbitrum/sdk/dist/lib/dataEntities/constants"
-import { getL2Network, L2Network, MultiCaller } from "@arbitrum/sdk"
+import { getL2Network, L2Network } from "@arbitrum/sdk"
 import { providers, BigNumber } from "ethers";
 import { NodeInterface } from "@arbitrum/sdk/dist/lib/abi/NodeInterface";
 
@@ -64,7 +63,6 @@ const findBlockRange =async (
     }
     for(let i = start; i <= (start + 15); i++){
         if((await nodeInterface.findBatchContainingBlock(i)).eq(batchNum)) {
-            console.log(await nodeInterface.findBatchContainingBlock(i))
             start = i;
             break;
         }
@@ -82,7 +80,6 @@ const findBlockRange =async (
     }
     for(let i = end; i >= (end - 15); i--){
         if((await nodeInterface.findBatchContainingBlock(i)).eq(batchNum)) {
-            console.log(await nodeInterface.findBatchContainingBlock(i))
             end = i;
             break;
         }
@@ -139,7 +136,7 @@ export const getBlockRangeByBatch = async (
     }
 
     //Then find one of the matched block.
-    console.log("Start querying nodeInterface to find one of matched Block...")
+    console.log("Start querying nodeInterface to find one of matched block...")
     const oneOfMatchedBlock = await binarySearchMatchedBlock(batchNum, latestBlockNum, nodeInterface, l2Network)
     
     //Search around the block to find all matched blocks

@@ -63,6 +63,7 @@ contract L1Token is ICustomToken, ERC20 {
         require(msg.sender == owner, "Not the owner of the L1 Token");
         _;
     }
+
     function transferFrom(
         address sender,
         address recipient,
@@ -96,7 +97,7 @@ contract L1Token is ICustomToken, ERC20 {
         uint256 valueForGateway,
         uint256 valueForRouter,
         address creditBackAddress
-    ) public payable override onlyOwner{
+    ) public payable override onlyOwner {
         // we temporarily set `shouldRegisterGateway` to true for the callback in registerTokenToL2 to succeed
         bool prev = shouldRegisterGateway;
         shouldRegisterGateway = true;

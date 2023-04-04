@@ -1,9 +1,5 @@
 const { utils, providers, Wallet } = require('ethers')
-const {
-  EthBridger,
-  getL2Network,
-  EthDepositStatus,
-} = require('@arbitrum/sdk')
+const { EthBridger, getL2Network, EthDepositStatus } = require('@arbitrum/sdk')
 const { parseEther } = utils
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()

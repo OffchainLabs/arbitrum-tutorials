@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "checkConfirmation": "yarn ts-node scripts/exec.ts --action checkConfirmation",
-    "findSubmissionTx": "yarn ts-node scripts/exec.ts --action findSubmissionTx"
+    "getBlockRange": "yarn ts-node scripts/exec.ts --action getBlockRange",
+    "getAllTxns": "yarn ts-node scripts/exec.ts --action getAllTxns"
   },
   "dependencies": {
     "@arbitrum/sdk": "^v3.0.0",

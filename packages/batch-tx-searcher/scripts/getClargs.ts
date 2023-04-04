@@ -15,7 +15,6 @@
  */
 
 'use strict';
-import { number } from 'yargs';
 import yargs from 'yargs/yargs';
 
 const argv = yargs(process.argv.slice(2))
