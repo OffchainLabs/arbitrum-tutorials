@@ -27,7 +27,7 @@ const main = async () => {
             console.log(blockRange)
             console.log("Now we query the txns within those blocks...")
             const allTxns = await getAllTxByBlockRange(blockRange, l2BatchProvider)
-            console.log(`All ${allTxns.length} txns found, now write to ${args.outputFile}...`)
+            console.log(`All ${allTxns.length} txns found, now writing to ${args.outputFile}...`)
             writeFileSync(args.outputFile, allTxns.toString())
     }
 }
