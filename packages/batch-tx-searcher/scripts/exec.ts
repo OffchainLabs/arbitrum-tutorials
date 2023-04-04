@@ -20,7 +20,7 @@ const main = async () => {
 
         case "getAllTxns":
             if(!args.outputFile) {
-                throw new Error("No outputFile... (You should add --outputFile)")
+                throw new Error("No outputFile! (You should add --outputFile)")
             }
             const blockRange:BlockRange = await getBlockRangeByBatch(BigNumber.from(args.batchNum), l1Provider, l2Provider)
             console.log("Here is the block range of this batch: ")
@@ -29,6 +29,10 @@ const main = async () => {
             const allTxns = await getAllTxByBlockRange(blockRange, l2BatchProvider)
             console.log(`All ${allTxns.length} txns found, now writing to ${args.outputFile}...`)
             writeFileSync(args.outputFile, allTxns.toString())
+            break
+
+        default:
+                console.log(`Unknown action: ${args.action}`)
     }
 }
 

@@ -1,6 +1,6 @@
 # Batch tx searcher Tutorial
 
-`Batch tx searcher` is a simple demo of how to query all the blocks and transactions on Arbitrum.
+`Batch tx searcher` is a simple demo of how to query all the blocks and transactions related to a specific batch on Arbitrum.
 
 To achieve this, we should use binary search to find one of the matched Block by calling precompile nodeInterface.findBatchContainingBlock method, then after we found one, we can search around this block to find all matched block. After got all matched block (block range), we can use rpc call to get all txns within those blocks.
 
