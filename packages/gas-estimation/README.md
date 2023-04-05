@@ -24,4 +24,6 @@ cp .env-sample .env
 
 (you'll still need to edit some variables, i.e., `L2RPC`)
 
-<p align="center"><img src="../../assets/offchain_labs_logo.png" width="600"></p>
+<p align="left">
+  <img width="350" height="150" src= "../../assets/logo.svg" />
+</p>

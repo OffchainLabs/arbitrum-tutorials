@@ -39,6 +39,4 @@ yarn install
 - ✈️ [Delayed inbox message(l2MSG)](./packages/delayedInbox-l2msg/)
 - 🎁 [Redeem Retryable Ticket](./packages/redeem-failed-retryable/)
 
-<p align="center">
-  <img width="350" height="100" src= "https://arbitrum.io/wp-content/uploads/2021/01/cropped-Arbitrum_Horizontal-Logo-Full-color-White-background-scaled-1.jpg" />
-</p>
+<p align="center"><img src="assets/logo.svg" width="300"></p>

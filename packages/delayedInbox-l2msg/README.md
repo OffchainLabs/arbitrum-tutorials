@@ -23,17 +23,20 @@ cp .env-sample .env
 Normal Transaction:
 
 ```bash
-yarn run normalTx
+yarn normalTx
 ```
 
 Withdraw Funds:
 
 ```bash
-yarn run withdrawFunds
+yarn withdrawFunds
 ```
 
 ## Curious to see the output on the Arbitrum chain?
 
 Once the script is successfully executed, you can go to the [Arbitrum nitro block explorer](https://goerli-rollup-explorer.arbitrum.io/), enter your L2 address, and see the corresponding transactions on the Arbitrum chain!
 
-<p align="center"><img src="../../assets/offchain_labs_logo.png" width="600"></p>
+<p align="left">
+  <img width="350" height="150" src= "../../assets/logo.svg" />
+</p>
+
