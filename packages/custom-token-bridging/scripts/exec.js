@@ -1,6 +1,10 @@
 const { ethers } = require('hardhat')
 const { providers, Wallet } = require('ethers')
-const { getL2Network, L1ToL2MessageStatus } = require('@arbitrum/sdk')
+const {
+  getL2Network,
+  addDefaultLocalNetwork,
+  L1ToL2MessageStatus,
+} = require('@arbitrum/sdk')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 const {
   AdminErc20Bridger,
@@ -30,6 +34,12 @@ const main = async () => {
   await arbLog(
     'Setting Up Your Token With The Generic Custom Gateway Using Arbitrum SDK Library'
   )
+
+  /**
+   * Add the default local network configuration to the SDK
+   * to allow this script to run on a local node
+   */
+  addDefaultLocalNetwork()
 
   /**
    * Use l2Network to create an Arbitrum SDK AdminErc20Bridger instance

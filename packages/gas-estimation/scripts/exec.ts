@@ -1,4 +1,5 @@
 import { utils, providers } from "ethers";
+import { addDefaultLocalNetwork } from "@arbitrum/sdk";
 import { ArbGasInfo__factory } from "@arbitrum/sdk/dist/lib/abi/factories/ArbGasInfo__factory";
 import { NodeInterface__factory } from "@arbitrum/sdk/dist/lib/abi/factories/NodeInterface__factory";
 import { ARB_GAS_INFO, NODE_INTERFACE_ADDRESS } from "@arbitrum/sdk/dist/lib/dataEntities/constants";
@@ -56,6 +57,10 @@ const gasEstimator = async () => {
     //      NodeInterface.GasEstimateL1Component() and get the first element => result[0]
     //      NodeInterface.GasEstimateComponents() and get the second element => result[1]
     //
+
+    // Add the default local network configuration to the SDK
+    // to allow this script to run on a local node
+    addDefaultLocalNetwork()
 
     // Instantiation of the ArbGasInfo and NodeInterface objects
     const arbGasInfo = ArbGasInfo__factory.connect(

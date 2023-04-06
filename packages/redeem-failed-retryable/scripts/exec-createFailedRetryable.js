@@ -5,7 +5,11 @@ const { hexDataLength } = require('@ethersproject/bytes')
 const {
   L1ToL2MessageGasEstimator,
 } = require('@arbitrum/sdk/dist/lib/message/L1ToL2MessageGasEstimator')
-const { EthBridger, getL2Network } = require('@arbitrum/sdk')
+const {
+  EthBridger,
+  getL2Network,
+  addDefaultLocalNetwork,
+} = require('@arbitrum/sdk')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
 
@@ -22,6 +26,12 @@ const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
 const main = async () => {
   await arbLog('Creating Failed Retryables for Cross-chain Greeter')
+
+  /**
+   * Add the default local network configuration to the SDK
+   * to allow this script to run on a local node
+   */
+  addDefaultLocalNetwork()
 
   /**
    * Use l2Network to create an Arbitrum SDK EthBridger instance

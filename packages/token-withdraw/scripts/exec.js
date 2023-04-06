@@ -2,6 +2,7 @@ const { ethers } = require('hardhat')
 const { BigNumber, providers, Wallet } = require('ethers')
 const { expect } = require('chai')
 const {
+  addDefaultLocalNetwork,
   getL2Network,
   Erc20Bridger,
   L1ToL2MessageStatus,
@@ -29,6 +30,12 @@ const tokenWithdrawAmount = BigNumber.from(20)
 
 const main = async () => {
   await arbLog('Withdraw token using Arbitrum SDK')
+
+  /**
+   * Add the default local network configuration to the SDK
+   * to allow this script to run on a local node
+   */
+  addDefaultLocalNetwork()
 
   /**
    * Use l2Network to create an Arbitrum SDK Erc20Bridger instance

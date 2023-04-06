@@ -2,7 +2,7 @@
 import { NodeInterface__factory } from "@arbitrum/sdk/dist/lib/abi/factories/NodeInterface__factory"
 import { SequencerInbox__factory } from "@arbitrum/sdk/dist/lib/abi/factories/SequencerInbox__factory"
 import { NODE_INTERFACE_ADDRESS } from "@arbitrum/sdk/dist/lib/dataEntities/constants"
-import { getL2Network } from "@arbitrum/sdk"
+import { getL2Network, addDefaultLocalNetwork } from "@arbitrum/sdk"
 import { providers, BigNumber } from "ethers";
 
  /**
@@ -14,6 +14,10 @@ export const checkConfirmation = async (
     txHash: string,
     l2Provider:providers.JsonRpcProvider
 ): Promise<BigNumber> => {
+    // Add the default local network configuration to the SDK
+    // to allow this script to run on a local node
+    addDefaultLocalNetwork()
+
     // Call the related block hash
     let blockHash
     try{
@@ -41,6 +45,10 @@ export const findSubmissionTx = async (
     l1Provider: providers.JsonRpcProvider,
     l2Provider: providers.JsonRpcProvider
 ): Promise<string> => {
+    // Add the default local network configuration to the SDK
+    // to allow this script to run on a local node
+    addDefaultLocalNetwork()
+    
     // Get the related block number
     let blockNumber
     try{

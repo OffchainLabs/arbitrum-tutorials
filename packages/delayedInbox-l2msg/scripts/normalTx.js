@@ -1,9 +1,11 @@
 const { providers, Wallet, ethers } = require('ethers')
 const hre = require('hardhat')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-const { getL2Network } = require('@arbitrum/sdk/dist/lib/dataEntities/networks')
+const {
+  getL2Network,
+  addDefaultLocalNetwork,
+} = require('@arbitrum/sdk/dist/lib/dataEntities/networks')
 const { InboxTools } = require('@arbitrum/sdk')
-
 requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
 
 /**
@@ -19,6 +21,12 @@ const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 
 const main = async () => {
   await arbLog('DelayedInbox normal contract call (L2MSG_signedTx)')
+
+  /**
+   * Add the default local network configuration to the SDK
+   * to allow this script to run on a local node
+   */
+  addDefaultLocalNetwork()
 
   const l2Network = await getL2Network(await l2Wallet.getChainId())
 
