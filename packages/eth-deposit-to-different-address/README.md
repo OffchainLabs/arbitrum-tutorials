@@ -5,7 +5,7 @@
 ## How it works (Under the hood)
 
 For the common case of depositing ETH to the same account on L2, use the tutorial [eth-deposit](../eth-deposit/README.md).
-In this specific case, we will use the retryable tickets system to deposit ETH into a different address. We will use the parameter `l2CallValue` of the Retryable ticket to specify the amount of ETH to deposit, and `callValueRefundAddress` to specify the destination address. For more info on Retryable tickets, see [Retryable Tickets documentation](https://developer.offchainlabs.com/docs/l1_l2_messages#depositing-eth-via-retryables).
+In this specific case, we will use the retryable tickets (Arbitrum's canonical method for creating L1 to L2 messages) to deposit ETH into a different address. We will use the parameter `l2CallValue` of the retryable ticket to specify the amount of ETH to deposit, and `callValueRefundAddress` to specify the destination address. For more info on retryable tickets, see [retryable tickets documentation](https://developer.offchainlabs.com/docs/l1_l2_messages#depositing-eth-via-retryables).
 
 ### **Using Arbitrum SDK tooling**
 

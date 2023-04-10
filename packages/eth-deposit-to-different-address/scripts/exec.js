@@ -1,5 +1,10 @@
 const { utils, providers, Wallet } = require('ethers')
-const { EthBridger, getL2Network, EthDepositStatus } = require('@arbitrum/sdk')
+const {
+  EthBridger,
+  getL2Network,
+  EthDepositStatus,
+  addDefaultLocalNetwork,
+} = require('@arbitrum/sdk')
 const { parseEther } = utils
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
@@ -23,6 +28,12 @@ const ethToL2DepositAmount = parseEther('0.0001')
 
 const main = async () => {
   await arbLog('Deposit Eth via Arbitrum SDK on a different address')
+
+  /**
+   * Add the default local network configuration to the SDK
+   * to allow this script to run on a local node
+   */
+  addDefaultLocalNetwork()
 
   /**
    * Use l2Network to create an Arbitrum SDK EthBridger instance
