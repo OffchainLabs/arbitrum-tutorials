@@ -21,6 +21,16 @@
     "@ethersproject/bytes" "^5.0.8"
     ethers "^5.1.0"
 
+"@arbitrum/sdk@^v3.1.0":
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-3.1.1.tgz#f1cd96351dcae138ec8a6359926c1b1a81989463"
+  integrity sha512-nM97/qPIqJCa6xisZEiyWNKzhgBjlTeHeURu/yDF2r8OXfTV9oqfFlE3BtkcTZYzZXOlJsngMcISwRMXIKXbvQ==
+  dependencies:
+    "@ethersproject/address" "^5.0.8"
+    "@ethersproject/bignumber" "^5.1.1"
+    "@ethersproject/bytes" "^5.0.8"
+    ethers "^5.1.0"
+
 "@babel/code-frame@7.12.11":
   version "7.12.11"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.12.11.tgz#f4ad435aa263db935b8f10f2c552d23fb716a63f"
