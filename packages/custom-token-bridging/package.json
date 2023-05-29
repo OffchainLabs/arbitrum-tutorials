@@ -7,7 +7,7 @@
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
-    "@openzeppelin/contracts": "^3.4.2",
+    "@openzeppelin/contracts": "^4.8.3",
     "chai": "^4.3.4",
     "ethers": "^5.1.2",
     "hardhat": "^2.6.6"
