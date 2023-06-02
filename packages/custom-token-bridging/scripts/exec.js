@@ -82,7 +82,7 @@ const main = async () => {
   console.log('Registering custom token on L2:')
 
   /**
-   * ٍRegister custom token on our custom gateway
+   * Register custom token on our custom gateway
    */
   const registerTokenTx = await adminTokenBridger.registerCustomToken(
     l1CustomToken.address,
@@ -97,21 +97,26 @@ const main = async () => {
   )
 
   /**
-   * The L1 side is confirmed; now we listen and wait for the for the Sequencer to include the L2 side; we can do this by computing the expected txn hash of the L2 transaction.
-   * To compute this txn hash, we need our message's "sequence numbers", unique identifiers of each L1 to L2 message. We'll fetch them from the event logs with a helper method
+   * The L1 side is confirmed; now we listen and wait for the L2 side to be executed; we can do this by computing the expected txn hash of the L2 transaction.
+   * To compute this txn hash, we need our message's "sequence numbers", unique identifiers of each L1 to L2 message.
+   * We'll fetch them from the event logs with a helper method.
    */
   const l1ToL2Msgs = await registerTokenRec.getL1ToL2Messages(l2Provider)
 
   /**
    * In principle, a single L1 txn can trigger any number of L1-to-L2 messages (each with its own sequencer number).
-   * In this case, the registerTokenOnL2 method created 2 L1-to-L2 messages; (1) one to set the L1 token to the Custom Gateway via the Router, and (2) another to set the L1 token to its L2 token address via the Generic-Custom Gateway
+   * In this case, the registerTokenOnL2 method created 2 L1-to-L2 messages;
+   * - (1) one to set the L1 token to the Custom Gateway via the Router, and
+   * - (2) another to set the L1 token to its L2 token address via the Generic-Custom Gateway
    * Here, We check if both messages are redeemed on L2
    */
   expect(l1ToL2Msgs.length, 'Should be 2 messages.').to.eq(2)
+
   const setTokenTx = await l1ToL2Msgs[0].waitForStatus()
   expect(setTokenTx.status, 'Set token not redeemed.').to.eq(
     L1ToL2MessageStatus.REDEEMED
   )
+
   const setGateways = await l1ToL2Msgs[1].waitForStatus()
   expect(setGateways.status, 'Set gateways not redeemed.').to.eq(
     L1ToL2MessageStatus.REDEEMED

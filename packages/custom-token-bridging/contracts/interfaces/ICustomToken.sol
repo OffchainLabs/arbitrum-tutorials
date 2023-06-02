@@ -16,19 +16,20 @@
  * limitations under the License.
  */
 
-pragma solidity ^0.6.11;
+// solhint-disable-next-line compiler-version
+pragma solidity >=0.6.9 <0.9.0;
 
 interface ArbitrumEnabledToken {
-    /// @notice should return `0xa4b1` if token is enabled for arbitrum gateways
+    /// @notice should return `0xb1` if token is enabled for arbitrum gateways
     function isArbitrumEnabled() external view returns (uint8);
 }
 
 /**
- * @title Minimum expected interface for L1 custom token (see TestCustomTokenL1.sol for an example implementation)
+ * @title Minimum expected interface for L1 custom token
  */
 interface ICustomToken is ArbitrumEnabledToken {
     /**
-     * @notice Should make an external call to EthERC20Bridge.registerCustomL2Token
+     * @notice Should make an external call to L1CustomGateway.registerTokenToL2 and L2GatewayRouter.setGateway
      */
     function registerTokenOnL2(
         address l2CustomTokenAddress,
@@ -49,4 +50,12 @@ interface ICustomToken is ArbitrumEnabledToken {
     ) external returns (bool);
 
     function balanceOf(address account) external view returns (uint256);
+}
+
+interface L1MintableToken is ICustomToken {
+    function bridgeMint(address account, uint256 amount) external;
+}
+
+interface L1ReverseToken is L1MintableToken {
+    function bridgeBurn(address account, uint256 amount) external;
 }
