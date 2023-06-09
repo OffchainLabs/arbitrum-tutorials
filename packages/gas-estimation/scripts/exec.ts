@@ -11,15 +11,17 @@ requireEnvVariables(['L2RPC']);
 // Initial setup //
 const baseL2Provider = new providers.StaticJsonRpcProvider(process.env.L2RPC);
 
-/////////////////////////
-// Variables to modify //
-/////////////////////////
+///////////////////////////////////////////
+// Values of the transaction to estimate //
+///////////////////////////////////////////
 
 // Address where the transaction being estimated will be sent
+// (add here the address you will send the transaction to)
 const destinationAddress = "0x1234563d5de0d7198451f87bcbf15aefd00d434d";
 
 // The input data of the transaction, in hex. You can find examples of this information in Arbiscan,
 // in the "Input Data" field of a transaction.
+// (add here the calladata you will send in the transaction)
 const txData = "0x";
 
 const gasEstimator = async () => {
