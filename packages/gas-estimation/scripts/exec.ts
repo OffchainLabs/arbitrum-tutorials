@@ -1,8 +1,7 @@
 import { utils, providers } from "ethers";
 import { addDefaultLocalNetwork } from "@arbitrum/sdk";
-import { ArbGasInfo__factory } from "@arbitrum/sdk/dist/lib/abi/factories/ArbGasInfo__factory";
 import { NodeInterface__factory } from "@arbitrum/sdk/dist/lib/abi/factories/NodeInterface__factory";
-import { ARB_GAS_INFO, NODE_INTERFACE_ADDRESS } from "@arbitrum/sdk/dist/lib/dataEntities/constants";
+import { NODE_INTERFACE_ADDRESS } from "@arbitrum/sdk/dist/lib/dataEntities/constants";
 const { requireEnvVariables } = require('arb-shared-dependencies');
 
 // Importing configuration //
@@ -11,11 +10,18 @@ requireEnvVariables(['L2RPC']);
 
 // Initial setup //
 const baseL2Provider = new providers.StaticJsonRpcProvider(process.env.L2RPC);
-const GENERIC_NON_ZERO_ADDRESS = "0x1234563d5de0d7198451f87bcbf15aefd00d434d";
+
+///////////////////////////////////////////
+// Values of the transaction to estimate //
+///////////////////////////////////////////
+
+// Address where the transaction being estimated will be sent
+// (add here the address you will send the transaction to)
+const destinationAddress = "0x1234563d5de0d7198451f87bcbf15aefd00d434d";
 
 // The input data of the transaction, in hex. You can find examples of this information in Arbiscan,
 // in the "Input Data" field of a transaction.
-// (You can modify this value to fit your needs)
+// (add here the calladata you will send in the transaction)
 const txData = "0x";
 
 const gasEstimator = async () => {
@@ -62,35 +68,44 @@ const gasEstimator = async () => {
     // to allow this script to run on a local node
     addDefaultLocalNetwork()
 
-    // Instantiation of the ArbGasInfo and NodeInterface objects
-    const arbGasInfo = ArbGasInfo__factory.connect(
-        ARB_GAS_INFO,
-        baseL2Provider
-    );
+    // Instantiation of the NodeInterface object
     const nodeInterface = NodeInterface__factory.connect(
         NODE_INTERFACE_ADDRESS,
         baseL2Provider
     );
 
-    // Getting the gas prices from ArbGasInfo.getPricesInWei()
-    const gasComponents = await arbGasInfo.callStatic.getPricesInWei();
-
-    // And the estimations from NodeInterface.GasEstimateComponents()
+    // Getting the estimations from NodeInterface.GasEstimateComponents()
+    // ------------------------------------------------------------------
     const gasEstimateComponents = await nodeInterface.callStatic.gasEstimateComponents(
-        GENERIC_NON_ZERO_ADDRESS,
+        destinationAddress,
         false,
-        txData
+        txData,
+        {
+            blockTag: "latest"
+        }
     );
-    const l2GasUsed = gasEstimateComponents.gasEstimate.sub(gasEstimateComponents.gasEstimateForL1);
 
-    // Setting the variables of the formula
-    const P = gasComponents[5];
-    const L2G = l2GasUsed;
-    const L1P = gasComponents[1];
-    const L1S = 140 + utils.hexDataLength(txData);
+    // Getting useful values for calculating the formula
+    const l1GasEstimated = gasEstimateComponents.gasEstimateForL1;
+    const l2GasUsed = gasEstimateComponents.gasEstimate.sub(gasEstimateComponents.gasEstimateForL1);
+    const l2EstimatedPrice = gasEstimateComponents.baseFee;
+    const l1EstimatedPrice = gasEstimateComponents.l1BaseFeeEstimate.mul(16);
+
+
+    // Calculating some extra values to be able to apply all variables of the formula
+    // -------------------------------------------------------------------------------
+    // NOTE: This one might be a bit confusing, but l1GasEstimated (B in the formula) is calculated based on l2 gas fees
+    const l1Cost = l1GasEstimated.mul(l2EstimatedPrice);
+    // NOTE: This is similar to 140 + utils.hexDataLength(txData);
+    const l1Size = l1Cost.div(l1EstimatedPrice);
 
     // Getting the result of the formula
     // ---------------------------------
+    // Setting the basic variables of the formula
+    const P = l2EstimatedPrice;
+    const L2G = l2GasUsed;
+    const L1P = l1EstimatedPrice;
+    const L1S = l1Size;
 
     // L1C (L1 Cost) = L1P * L1S
     const L1C = L1P.mul(L1S);
@@ -104,12 +119,16 @@ const gasEstimator = async () => {
     // TXFEES (Transaction fees) = P * G
     const TXFEES = P.mul(G);
 
-    console.log("Transaction summary");
+    console.log("Gas estimation components");
     console.log("-------------------");
+    console.log(`Full gas estimation = ${gasEstimateComponents.gasEstimate.toNumber()} units`);
+    console.log(`L2 Gas (L2G) = ${L2G.toNumber()} units`);
+    console.log(`L1 estimated Gas (L1G) = ${l1GasEstimated.toNumber()} units`);
+
     console.log(`P (L2 Gas Price) = ${utils.formatUnits(P, "gwei")} gwei`);
-    console.log(`L2G (L2 Gas used) = ${L2G.toNumber()} units`);
     console.log(`L1P (L1 estimated calldata price per byte) = ${utils.formatUnits(L1P, "gwei")} gwei`);
     console.log(`L1S (L1 Calldata size in bytes) = ${L1S} bytes`);
+    
     console.log("-------------------");
     console.log(`Transaction estimated fees to pay = ${utils.formatEther(TXFEES)} ETH`);
 }
