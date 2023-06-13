@@ -22,6 +22,9 @@ contract L2CustomGateway is IL2CustomGateway, L2CrosschainMessenger, Ownable {
     address public router;
     bool private tokenBridgeInformationSet = false;
 
+    // Custom functionality
+    bool public allowsWithdrawals = false;
+
     /**
      * Contract constructor, sets the L2 router to be used in the contract's functions
      * @param router_ L2GatewayRouter address
@@ -47,6 +50,9 @@ contract L2CustomGateway is IL2CustomGateway, L2CrosschainMessenger, Ownable {
         l1CustomToken = l1CustomToken_;
         l2CustomToken = l2CustomToken_;
         l1Gateway = l1Gateway_;
+
+        // Allows deposits after the information has been set
+        allowsWithdrawals = true;
     }
 
     /// @dev See {ICustomGateway-outboundTransfer}
@@ -68,6 +74,9 @@ contract L2CustomGateway is IL2CustomGateway, L2CrosschainMessenger, Ownable {
         uint256, /* _gasPriceBid */
         bytes calldata data
     ) public payable override returns (bytes memory res) {
+        // Only execute if deposits are allowed
+        require(allowsWithdrawals == true, "Withdrawals are currently disabled");
+
         // The function is marked as payable to conform to the inheritance setup
         // This particular code path shouldn't have a msg.value > 0
         require(msg.value == 0, "NO_VALUE");
@@ -178,5 +187,23 @@ contract L2CustomGateway is IL2CustomGateway, L2CrosschainMessenger, Ownable {
             from = msg.sender;
             extraData = data;
         }
+    }
+
+    // --------------------
+    // Custom methods
+    // --------------------
+    /**
+     * Disables the ability to deposit funds
+     */
+    function disableWithdrawals() public onlyOwner {
+        allowsWithdrawals = false;
+    }
+
+    /**
+     * Enables the ability to deposit funds
+     */
+    function enableWithdrawals() public onlyOwner {
+        require(tokenBridgeInformationSet == true, "Token bridge information has not been set yet");
+        allowsWithdrawals = true;
     }
 }

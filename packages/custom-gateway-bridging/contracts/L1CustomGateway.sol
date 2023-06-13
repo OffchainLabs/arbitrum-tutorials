@@ -20,6 +20,9 @@ contract L1CustomGateway is IL1CustomGateway, L1CrosschainMessenger, Ownable {
     address public router;
     bool private tokenBridgeInformationSet = false;
 
+    // Custom functionality
+    bool public allowsDeposits = false;
+
     /**
      * Contract constructor, sets the L1 router to be used in the contract's functions and calls L1CrosschainMessenger's constructor
      * @param router_ L1GatewayRouter address
@@ -49,6 +52,9 @@ contract L1CustomGateway is IL1CustomGateway, L1CrosschainMessenger, Ownable {
         l1CustomToken = l1CustomToken_;
         l2CustomToken = l2CustomToken_;
         l2Gateway = l2Gateway_;
+
+        // Allows deposits after the information has been set
+        allowsDeposits = true;
     }
 
     /// @dev See {ICustomGateway-outboundTransfer}
@@ -73,6 +79,9 @@ contract L1CustomGateway is IL1CustomGateway, L1CrosschainMessenger, Ownable {
         uint256 gasPriceBid,
         bytes calldata data
     ) public payable override returns (bytes memory res) {
+        // Only execute if deposits are allowed
+        require(allowsDeposits == true, "Deposits are currently disabled");
+
         // Only allow calls from the router
         require(msg.sender == router, "Call not received from router");
 
@@ -191,5 +200,23 @@ contract L1CustomGateway is IL1CustomGateway, L1CrosschainMessenger, Ownable {
 
         // User encoded
         (maxSubmissionCost, extraData) = abi.decode(extraData, (uint256, bytes));
+    }
+
+    // --------------------
+    // Custom methods
+    // --------------------
+    /**
+     * Disables the ability to deposit funds
+     */
+    function disableDeposits() public onlyOwner {
+        allowsDeposits = false;
+    }
+
+    /**
+     * Enables the ability to deposit funds
+     */
+    function enableDeposits() public onlyOwner {
+        require(tokenBridgeInformationSet == true, "Token bridge information has not been set yet");
+        allowsDeposits = true;
     }
 }
