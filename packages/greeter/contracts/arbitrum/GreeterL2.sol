@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity >=0.6.11;
 
-import "arbos-precompiles/arbos/builtin/ArbSys.sol";
+import "@arbitrum/nitro-contracts/src/precompiles/ArbSys.sol";
 import "@arbitrum/nitro-contracts/src/libraries/AddressAliasHelper.sol";
 import "../Greeter.sol";
 

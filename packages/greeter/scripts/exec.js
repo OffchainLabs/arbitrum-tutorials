@@ -115,16 +115,16 @@ const main = async () => {
   const RetryablesGasOverrides = {
     gasLimit: {
       base: undefined, // when undefined, the value will be estimated from rpc
-      min: BigNumber.from(1000), // set a minimum gas limit, using 1000 as an example
-      percentIncrease: BigNumber.from(10), // how much to increase the base for buffer
+      min: BigNumber.from(10000), // set a minimum gas limit, using 10000 as an example
+      percentIncrease: BigNumber.from(30), // how much to increase the base for buffer
     },
     maxSubmissionFee: {
       base: undefined,
-      percentIncrease: BigNumber.from(10),
+      percentIncrease: BigNumber.from(30),
     },
     maxFeePerGas: {
       base: undefined,
-      percentIncrease: BigNumber.from(10),
+      percentIncrease: BigNumber.from(30),
     },
   }
 
@@ -145,7 +145,7 @@ const main = async () => {
     },
     await getBaseFee(l1Provider),
     l1Provider,
-    RetryablesGasOverrides //if provided, it will override the estimated values. Note that providing "RetryablesGasOverrides" is totally optiional.
+    RetryablesGasOverrides //if provided, it will override the estimated values. Note that providing "RetryablesGasOverrides" is totally optional.
   )
   console.log(
     `Current retryable base submission price is: ${L1ToL2MessageGasParams.maxSubmissionCost.toString()}`
@@ -184,16 +184,16 @@ const main = async () => {
    */
   const messages = await l1TxReceipt.getL1ToL2Messages(l2Wallet)
   const message = messages[0]
-  console.log('Waiting for L2 side. It may take 10-15 minutes ⏰⏰')
+  console.log('Waiting for the L2 execution of the transaction. This may take up to 10-15 minutes ⏰')
   const messageResult = await message.waitForStatus()
   const status = messageResult.status
   if (status === L1ToL2MessageStatus.REDEEMED) {
     console.log(
-      `L2 retryable txn executed 🥳 ${messageResult.l2TxReceipt.transactionHash}`
+      `L2 retryable ticket is executed 🥳 ${messageResult.l2TxReceipt.transactionHash}`
     )
   } else {
     console.log(
-      `L2 retryable txn failed with status ${L1ToL2MessageStatus[status]}`
+      `L2 retryable ticket is failed with status ${L1ToL2MessageStatus[status]}`
     )
   }
 
@@ -207,8 +207,7 @@ const main = async () => {
    * Now when we call greet again, we should see our new string on L2!
    */
   const newGreetingL2 = await l2Greeter.greet()
-  console.log(`Updated L2 greeting: "${newGreetingL2}"`)
-  console.log('🫡')
+  console.log(`Updated L2 greeting: "${newGreetingL2}" 🥳`)
 }
 
 main()
