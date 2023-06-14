@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@arbitrum/sdk": "^v3.1.2",
+    "@arbitrum/token-bridge-contracts": "^1.0.0-beta.0",
     "dotenv": "^8.2.0"
   }
 }

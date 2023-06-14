@@ -1,24 +1,22 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-import "@arbitrum/token-bridge-contracts/contracts/tokenbridge/ethereum/gateway/L1ArbitrumExtendedGateway.sol";
-import "@arbitrum/token-bridge-contracts/contracts/tokenbridge/libraries/gateway/ICustomGateway.sol";
+import "./interfaces/ICustomGateway.sol";
+import "./CrosschainMessenger.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 /**
  * @title Example implementation of a custom gateway to be deployed on L1
  * @dev Inheritance of Ownable is optional. In this case we use it to call the function setTokenBridgeInformation
  * and simplify the test
  */
-contract L1CustomGateway is L1ArbitrumExtendedGateway, ICustomGateway, Ownable {
+contract L1CustomGateway is IL1CustomGateway, L1CrosschainMessenger, Ownable {
     
     // Token bridge state variables
     address public l1CustomToken;
     address public l2CustomToken;
     address public l2Gateway;
-    address public inbox;
     address public router;
     bool private tokenBridgeInformationSet = false;
 
@@ -33,9 +31,8 @@ contract L1CustomGateway is L1ArbitrumExtendedGateway, ICustomGateway, Ownable {
     constructor(
         address router_,
         address inbox_
-    ) {
+    ) L1CrosschainMessenger(inbox_) {
         router = router_;
-        inbox = inbox_;
     }
 
     /**
@@ -55,9 +52,6 @@ contract L1CustomGateway is L1ArbitrumExtendedGateway, ICustomGateway, Ownable {
         l1CustomToken = l1CustomToken_;
         l2CustomToken = l2CustomToken_;
         l2Gateway = l2Gateway_;
-
-        // Initializing ArbitrumGateway
-        L1ArbitrumGateway._initialize(l2Gateway, router, inbox);
 
         // Allows deposits after the information has been set
         allowsDeposits = true;
@@ -84,23 +78,48 @@ contract L1CustomGateway is L1ArbitrumExtendedGateway, ICustomGateway, Ownable {
         uint256 maxGas,
         uint256 gasPriceBid,
         bytes calldata data
-    ) public payable override nonReentrant() returns (bytes memory res) {
+    ) public payable override returns (bytes memory res) {
         // Only execute if deposits are allowed
         require(allowsDeposits == true, "Deposits are currently disabled");
+
+        // Only allow calls from the router
+        require(msg.sender == router, "Call not received from router");
 
         // Only allow the custom token to be bridged through this gateway
         require(l1Token == l1CustomToken, "Token is not allowed through this gateway");
 
-        return
-            super.outboundTransferCustomRefund(
-                l1Token,
+        address from;
+        uint256 seqNum;
+        bytes memory extraData;
+        {
+            uint256 maxSubmissionCost;
+            (from, maxSubmissionCost, extraData) = _parseOutboundData(data);
+
+            // The inboundEscrowAndCall functionality has been disabled, so no data is allowed
+            require(extraData.length == 0, "EXTRA_DATA_DISABLED");
+
+            // Escrowing the tokens in the gateway
+            IERC20(l1Token).transferFrom(from, address(this), amount);
+
+            // We override the res field to save on the stack
+            res = getOutboundCalldata(l1Token, from, to, amount, extraData);
+
+            // Trigger the crosschain message
+            seqNum = _sendTxToL2CustomRefund(
+                l2Gateway,
                 refundTo,
-                to,
-                amount,
+                from,
+                msg.value,
+                0,
+                maxSubmissionCost,
                 maxGas,
                 gasPriceBid,
-                data
+                res
             );
+        }
+
+        emit DepositInitiated(l1Token, from, to, seqNum, amount);
+        return abi.encode(seqNum);
     }
 
     /// @dev See {ICustomGateway-finalizeInboundTransfer}
@@ -110,12 +129,39 @@ contract L1CustomGateway is L1ArbitrumExtendedGateway, ICustomGateway, Ownable {
         address to,
         uint256 amount,
         bytes calldata data
-    ) public payable override nonReentrant {
+    ) public payable override onlyCounterpartGateway(l2Gateway) {
         // Only allow the custom token to be bridged through this gateway
         require(l1Token == l1CustomToken, "Token is not allowed through this gateway");
 
-        // the superclass checks onlyCounterpartGateway
-        super.finalizeInboundTransfer(l1Token, from, to, amount, data);
+        // Decoding exitNum
+        (uint256 exitNum, ) = abi.decode(data, (uint256, bytes));
+
+        // Releasing the tokens in the gateway
+        IERC20(l1Token).transferFrom(address(this), to, amount);
+
+        emit WithdrawalFinalized(l1Token, from, to, exitNum, amount);
+    }
+
+    /// @dev See {ICustomGateway-getOutboundCalldata}
+    function getOutboundCalldata(
+        address l1Token,
+        address from,
+        address to,
+        uint256 amount,
+        bytes memory data
+    ) public pure override returns (bytes memory outboundCalldata) {
+        bytes memory emptyBytes = "";
+
+        outboundCalldata = abi.encodeWithSelector(
+            ICustomGateway.finalizeInboundTransfer.selector,
+            l1Token,
+            from,
+            to,
+            amount,
+            abi.encode(emptyBytes, data)
+        );
+
+        return outboundCalldata;
     }
 
     /// @dev See {ICustomGateway-calculateL2TokenAddress}
@@ -126,6 +172,34 @@ contract L1CustomGateway is L1ArbitrumExtendedGateway, ICustomGateway, Ownable {
     /// @dev See {ICustomGateway-counterpartGateway}
     function counterpartGateway() public view override returns (address) {
         return l2Gateway;
+    }
+
+    /**
+     * Parse data received in outboundTransfer
+     * @param data encoded data received
+     * @return from account that initiated the deposit,
+     *         maxSubmissionCost max gas deducted from user's L2 balance to cover base submission fee,
+     *         extraData decoded data
+     */
+    function _parseOutboundData(bytes memory data)
+    internal
+    view
+    returns (
+        address from,
+        uint256 maxSubmissionCost,
+        bytes memory extraData
+    )
+    {
+        if (msg.sender == router) {
+            // Router encoded
+            (from, extraData) = abi.decode(data, (address, bytes));
+        } else {
+            from = msg.sender;
+            extraData = data;
+        }
+
+        // User encoded
+        (maxSubmissionCost, extraData) = abi.decode(extraData, (uint256, bytes));
     }
 
     // --------------------
