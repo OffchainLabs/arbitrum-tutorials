@@ -32,10 +32,11 @@ const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
 /**
  * Set the initial supply of L1 token that we want to bridge
  * Note that you can change the value.
- * We also set the amount we want to send in the test deposit
+ * We also set the amount we want to send in the test deposit and withdraw
  */
 const premint = ethers.utils.parseEther('1000')
 const tokenAmountToDeposit = BigNumber.from(50)
+const tokenAmountToWithdraw = BigNumber.from(30)
 
 const main = async () => {
   await arbLog(
@@ -299,6 +300,96 @@ const main = async () => {
     testWalletL2Balance.eq(tokenDepositAmount),
     'l2 wallet not updated after deposit'
   ).to.be.true
+
+  /**
+   * We finally test a withdrawal to verify the L2 gateway is also working as intended
+   */
+  arbLogTitle('Test withdrawal')
+
+  /**
+   * Because the token might have decimals, we update the amount to withdraw taking into account those decimals
+   */
+  const tokenWithdrawAmount = tokenAmountToWithdraw.mul(
+    BigNumber.from(10).pow(tokenDecimals)
+  )
+
+  /**
+   * Withdraw L2Token to L1 using erc20Bridger. This will burn tokens on L2 and release funds in the custom gateway contract on L1
+   */
+  console.log('Withdrawing L2Token to L1:')
+  const withdrawTx = await erc20Bridger.withdraw({
+    amount: tokenWithdrawAmount,
+    destinationAddress: l1Wallet.address,
+    erc20l1Address: l1CustomToken.address,
+    l2Signer: l2Wallet,
+  })
+  const withdrawRec = await withdrawTx.wait()
+  console.log(`Token withdrawal initiated! 🥳 ${withdrawRec.transactionHash}`)
+
+  /**
+   * And with that, our withdrawal is initiated.
+   * Any time after the transaction's assertion is confirmed (around 7 days), funds can be transferred out of the bridge via the outbox contract
+   * We'll check our l2Wallet L2CustomToken balance here:
+   */
+  const l2WalletBalance = await l2CustomToken.balanceOf(l2Wallet.address)
+
+  expect(
+    l2WalletBalance.add(tokenWithdrawAmount).eq(tokenDepositAmount),
+    'token withdraw balance not deducted'
+  ).to.be.true
+
+  console.log(
+    `To to claim funds (after dispute period), see outbox-execute repo 🤞🏻`
+  )
+
+  /**
+   * As a final test, we remove the ability to do deposits and test the reverting call
+   */
+  arbLogTitle('Test custom functionality (Disable deposits)')
+  const disableTx = await l1CustomGateway.disableDeposits()
+  await disableTx.wait()
+
+  console.log('Trying to deposit tokens after disabling deposits')
+  try {
+    await erc20Bridger.deposit({
+      amount: tokenDepositAmount,
+      erc20L1Address: l1CustomToken.address,
+      l1Signer: l1Wallet,
+      l2Provider: l2Provider,
+    })
+    return
+  } catch (error) {
+    console.log('Transaction failed as expected')
+  }
+
+  const enableTx = await l1CustomGateway.enableDeposits()
+  await enableTx.wait()
+
+  console.log('Trying to deposit after enabling deposits back:')
+  const depositEnabledTx = await erc20Bridger.deposit({
+    amount: tokenDepositAmount,
+    erc20L1Address: l1CustomToken.address,
+    l1Signer: l1Wallet,
+    l2Provider: l2Provider,
+  })
+  const depositEnabledRec = await depositEnabledTx.wait()
+  console.log(
+    `Deposit initiated: waiting for L2 retryable (takes 10-15 minutes; current time: ${new Date().toTimeString()}) `
+  )
+  const l2FinalResult = await depositEnabledRec.waitForL2(l2Provider)
+
+  /**
+   * The `complete` boolean tells us if the l1 to l2 message was successful
+   */
+  l2FinalResult.complete
+    ? console.log(
+        `L2 message successful: status: ${
+          L1ToL2MessageStatus[l2FinalResult.status]
+        }`
+      )
+    : console.log(
+        `L2 message failed: status ${L1ToL2MessageStatus[l2FinalResult.status]}`
+      )
 }
 
 main()

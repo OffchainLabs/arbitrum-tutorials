@@ -20,10 +20,9 @@ contract L2CustomGateway is IL2CustomGateway, L2CrosschainMessenger, Ownable {
     address public l2CustomToken;
     address public l1Gateway;
     address public router;
-    bool private tokenBridgeInformationSet = false;
 
     // Custom functionality
-    bool public allowsWithdrawals = false;
+    bool public allowsWithdrawals;
 
     /**
      * Contract constructor, sets the L2 router to be used in the contract's functions
@@ -31,6 +30,7 @@ contract L2CustomGateway is IL2CustomGateway, L2CrosschainMessenger, Ownable {
      */
     constructor(address router_) {
         router = router_;
+        allowsWithdrawals = false;
     }
 
     /**
@@ -45,13 +45,12 @@ contract L2CustomGateway is IL2CustomGateway, L2CrosschainMessenger, Ownable {
         address l2CustomToken_,
         address l1Gateway_
     ) public onlyOwner {
-        require(tokenBridgeInformationSet == false, "Token bridge information already set");
-        tokenBridgeInformationSet = true;
+        require(l1CustomToken == address(0), "Token bridge information already set");
         l1CustomToken = l1CustomToken_;
         l2CustomToken = l2CustomToken_;
         l1Gateway = l1Gateway_;
 
-        // Allows deposits after the information has been set
+        // Allows withdrawals after the information has been set
         allowsWithdrawals = true;
     }
 
@@ -92,8 +91,9 @@ contract L2CustomGateway is IL2CustomGateway, L2CrosschainMessenger, Ownable {
         // Burns L2 tokens in order to release escrowed L1 tokens
         IArbToken(l2CustomToken).bridgeBurn(from, amount);
 
-        // Current exit number for this operation
-        uint256 currExitNum = exitNum;
+        // Current exit number for this operation, after
+        // incrementing the exit number for future withdrawals
+        uint256 currExitNum = ++exitNum;
 
         // We override the res field to save on the stack
         res = getOutboundCalldata(l1Token, from, to, amount, extraData);
@@ -104,9 +104,6 @@ contract L2CustomGateway is IL2CustomGateway, L2CrosschainMessenger, Ownable {
             l1Gateway,
             res
         );
-
-        // Increment the exit number for future withdrawals
-        exitNum++;
 
         emit WithdrawalInitiated(l1Token, from, to, id, currExitNum, amount);
         return abi.encode(id);
@@ -130,7 +127,7 @@ contract L2CustomGateway is IL2CustomGateway, L2CrosschainMessenger, Ownable {
             callHookData = bytes("");
         }
 
-        // Minst L2 tokens
+        // Mints L2 tokens
         IArbToken(l2CustomToken).bridgeMint(to, amount);
 
         emit DepositFinalized(l1Token, from, to, amount);
@@ -157,8 +154,12 @@ contract L2CustomGateway is IL2CustomGateway, L2CrosschainMessenger, Ownable {
     }
 
     /// @dev See {ICustomGateway-calculateL2TokenAddress}
-    function calculateL2TokenAddress(address) public view override returns (address) {
-        return l2CustomToken;
+    function calculateL2TokenAddress(address l1Token) public view override returns (address) {
+        if (l1Token == l1CustomToken) {
+            return l2CustomToken;
+        }
+        
+        return address(0);
     }
 
     /// @dev See {ICustomGateway-counterpartGateway}
@@ -195,15 +196,15 @@ contract L2CustomGateway is IL2CustomGateway, L2CrosschainMessenger, Ownable {
     /**
      * Disables the ability to deposit funds
      */
-    function disableWithdrawals() public onlyOwner {
+    function disableWithdrawals() external onlyOwner {
         allowsWithdrawals = false;
     }
 
     /**
      * Enables the ability to deposit funds
      */
-    function enableWithdrawals() public onlyOwner {
-        require(tokenBridgeInformationSet == true, "Token bridge information has not been set yet");
+    function enableWithdrawals() external onlyOwner {
+        require(l1CustomToken != address(0), "Token bridge information has not been set yet");
         allowsWithdrawals = true;
     }
 }

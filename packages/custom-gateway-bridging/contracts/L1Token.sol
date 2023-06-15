@@ -36,8 +36,8 @@ interface IL1GatewayRouter {
  * @title Example implementation of a custom ERC20 token to be deployed on L1
  */
 contract L1Token is Ownable, ICustomToken, ERC20 {
-    address private l1GatewayAddress;
-    address private routerAddress;
+    address public l1GatewayAddress;
+    address public routerAddress;
     bool private shouldRegisterGateway;
 
     /**

@@ -18,10 +18,9 @@ contract L1CustomGateway is IL1CustomGateway, L1CrosschainMessenger, Ownable {
     address public l2CustomToken;
     address public l2Gateway;
     address public router;
-    bool private tokenBridgeInformationSet = false;
 
     // Custom functionality
-    bool public allowsDeposits = false;
+    bool public allowsDeposits;
 
     /**
      * Contract constructor, sets the L1 router to be used in the contract's functions and calls L1CrosschainMessenger's constructor
@@ -33,6 +32,7 @@ contract L1CustomGateway is IL1CustomGateway, L1CrosschainMessenger, Ownable {
         address inbox_
     ) L1CrosschainMessenger(inbox_) {
         router = router_;
+        allowsDeposits = false;
     }
 
     /**
@@ -47,8 +47,7 @@ contract L1CustomGateway is IL1CustomGateway, L1CrosschainMessenger, Ownable {
         address l2CustomToken_,
         address l2Gateway_
     ) public onlyOwner {
-        require(tokenBridgeInformationSet == false, "Token bridge information already set");
-        tokenBridgeInformationSet = true;
+        require(l1CustomToken == address(0), "Token bridge information already set");
         l1CustomToken = l1CustomToken_;
         l2CustomToken = l2CustomToken_;
         l2Gateway = l2Gateway_;
@@ -90,8 +89,8 @@ contract L1CustomGateway is IL1CustomGateway, L1CrosschainMessenger, Ownable {
 
         address from;
         uint256 seqNum;
-        bytes memory extraData;
         {
+            bytes memory extraData;
             uint256 maxSubmissionCost;
             (from, maxSubmissionCost, extraData) = _parseOutboundData(data);
 
@@ -119,7 +118,7 @@ contract L1CustomGateway is IL1CustomGateway, L1CrosschainMessenger, Ownable {
         }
 
         emit DepositInitiated(l1Token, from, to, seqNum, amount);
-        return abi.encode(seqNum);
+        res = abi.encode(seqNum);
     }
 
     /// @dev See {ICustomGateway-finalizeInboundTransfer}
@@ -137,7 +136,7 @@ contract L1CustomGateway is IL1CustomGateway, L1CrosschainMessenger, Ownable {
         (uint256 exitNum, ) = abi.decode(data, (uint256, bytes));
 
         // Releasing the tokens in the gateway
-        IERC20(l1Token).transferFrom(address(this), to, amount);
+        IERC20(l1Token).transfer(to, amount);
 
         emit WithdrawalFinalized(l1Token, from, to, exitNum, amount);
     }
@@ -165,8 +164,12 @@ contract L1CustomGateway is IL1CustomGateway, L1CrosschainMessenger, Ownable {
     }
 
     /// @dev See {ICustomGateway-calculateL2TokenAddress}
-    function calculateL2TokenAddress(address) public view override returns (address) {
-        return l2CustomToken;
+    function calculateL2TokenAddress(address l1Token) public view override returns (address) {
+        if (l1Token == l1CustomToken) {
+            return l2CustomToken;
+        }
+
+        return address(0);
     }
 
     /// @dev See {ICustomGateway-counterpartGateway}
@@ -183,20 +186,15 @@ contract L1CustomGateway is IL1CustomGateway, L1CrosschainMessenger, Ownable {
      */
     function _parseOutboundData(bytes memory data)
     internal
-    view
+    pure
     returns (
         address from,
         uint256 maxSubmissionCost,
         bytes memory extraData
     )
     {
-        if (msg.sender == router) {
-            // Router encoded
-            (from, extraData) = abi.decode(data, (address, bytes));
-        } else {
-            from = msg.sender;
-            extraData = data;
-        }
+        // Router encoded
+        (from, extraData) = abi.decode(data, (address, bytes));
 
         // User encoded
         (maxSubmissionCost, extraData) = abi.decode(extraData, (uint256, bytes));
@@ -208,15 +206,15 @@ contract L1CustomGateway is IL1CustomGateway, L1CrosschainMessenger, Ownable {
     /**
      * Disables the ability to deposit funds
      */
-    function disableDeposits() public onlyOwner {
+    function disableDeposits() external onlyOwner {
         allowsDeposits = false;
     }
 
     /**
      * Enables the ability to deposit funds
      */
-    function enableDeposits() public onlyOwner {
-        require(tokenBridgeInformationSet == true, "Token bridge information has not been set yet");
+    function enableDeposits() external onlyOwner {
+        require(l1CustomToken != address(0), "Token bridge information has not been set yet");
         allowsDeposits = true;
     }
 }
