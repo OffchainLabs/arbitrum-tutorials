@@ -15,7 +15,7 @@ contract GreeterL1 is Greeter {
         string memory _greeting,
         address _l2Target,
         address _inbox
-    ) public Greeter(_greeting) {
+    ) Greeter(_greeting) {
         l2Target = _l2Target;
         inbox = IInbox(_inbox);
     }
