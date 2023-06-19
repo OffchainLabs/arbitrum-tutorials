@@ -91,8 +91,7 @@ contract L2CustomGateway is IL2CustomGateway, L2CrosschainMessenger, Ownable {
         // Burns L2 tokens in order to release escrowed L1 tokens
         IArbToken(l2CustomToken).bridgeBurn(from, amount);
 
-        // Current exit number for this operation, after
-        // incrementing the exit number for future withdrawals
+        // Current exit number for this operation
         uint256 currExitNum = exitNum++;
 
         // We override the res field to save on the stack
