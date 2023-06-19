@@ -93,7 +93,7 @@ contract L2CustomGateway is IL2CustomGateway, L2CrosschainMessenger, Ownable {
 
         // Current exit number for this operation, after
         // incrementing the exit number for future withdrawals
-        uint256 currExitNum = ++exitNum;
+        uint256 currExitNum = exitNum++;
 
         // We override the res field to save on the stack
         res = getOutboundCalldata(l1Token, from, to, amount, extraData);
