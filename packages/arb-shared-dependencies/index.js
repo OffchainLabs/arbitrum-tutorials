@@ -35,6 +35,12 @@ const arbLog = async text => {
   console.log('')
 }
 
+const arbLogTitle = text => {
+  console.log('\n###################')
+  console.log(text)
+  console.log('###################')
+}
+
 const requireEnvVariables = envVars => {
   for (const envVar of envVars) {
     if (!process.env[envVar]) {
@@ -45,6 +51,7 @@ const requireEnvVariables = envVars => {
 }
 module.exports = {
   arbLog,
+  arbLogTitle,
   hardhatConfig,
   requireEnvVariables,
 }

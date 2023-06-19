@@ -2,7 +2,7 @@
 
 There are some tokens with requirements beyond what are offered via our StandardERC20 gateway. `custom-token-bridging` demonstrates how to get these custom tokens set up to use our Generic-Custom gateway.
 
-For more info on bridging assets on Arbitrum, see our [token bridging docs](https://developer.offchainlabs.com/docs/bridging_assets).
+For more info on bridging assets on Arbitrum, see our [token bridging docs](https://developer.arbitrum.io/asset-bridging).
 
 #### **Custom Token Bridging Using the Generic-Custom Gateway**
 
