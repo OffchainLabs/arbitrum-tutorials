@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity >=0.6.11;
 
-import "arbos-precompiles/arbos/builtin/ArbSys.sol";
+import "@arbitrum/nitro-contracts/src/precompiles/ArbSys.sol";
 import "@arbitrum/nitro-contracts/src/libraries/AddressAliasHelper.sol";
 import "../Greeter.sol";
 
@@ -11,7 +11,7 @@ contract GreeterL2 is Greeter {
 
     event L2ToL1TxCreated(uint256 indexed withdrawalId);
 
-    constructor(string memory _greeting, address _l1Target) public Greeter(_greeting) {
+    constructor(string memory _greeting, address _l1Target) Greeter(_greeting) {
         l1Target = _l1Target;
     }
 

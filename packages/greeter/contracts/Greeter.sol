@@ -4,7 +4,7 @@ pragma solidity >=0.6.11;
 contract Greeter {
     string greeting;
 
-    constructor(string memory _greeting) public {
+    constructor(string memory _greeting) {
         greeting = _greeting;
     }
 

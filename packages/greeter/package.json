@@ -12,10 +12,8 @@
     "hardhat": "^2.2.0"
   },
   "dependencies": {
-    "arb-bridge-eth": "^0.7.5",
     "@arbitrum/sdk": "^v3.1.2",
-    "@arbitrum/nitro-contracts": "1.0.0-beta.8",
-    "arbos-precompiles": "^1.0.2",
+    "@arbitrum/nitro-contracts": "v1.0.2",
     "dotenv": "^8.2.0"
   }
 }

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity >=0.6.11;
 
-import "arb-bridge-eth/contracts/bridge/Inbox.sol";
-import "arb-bridge-eth/contracts/bridge/Outbox.sol";
+import "@arbitrum/nitro-contracts/src/bridge/Inbox.sol";
+import "@arbitrum/nitro-contracts/src/bridge/Outbox.sol";
 import "../Greeter.sol";
 
 contract GreeterL1 is Greeter {
@@ -15,7 +15,7 @@ contract GreeterL1 is Greeter {
         string memory _greeting,
         address _l2Target,
         address _inbox
-    ) public Greeter(_greeting) {
+    ) Greeter(_greeting) {
         l2Target = _l2Target;
         inbox = IInbox(_inbox);
     }

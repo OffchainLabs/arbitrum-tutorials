@@ -27,7 +27,7 @@ module.exports = async txnHash => {
   addDefaultLocalNetwork()
 
   /**
-   * We start with an L1 txn hash; this is transaction that triggers craeting a retryable ticket
+   * We start with an L1 txn hash; this is a transaction that triggers creating a retryable ticket
    */
   if (!txnHash)
     throw new Error('Provide a transaction hash of an L1 transaction')
@@ -35,7 +35,7 @@ module.exports = async txnHash => {
     throw new Error(`Hmm, ${txnHash} doesn't look like a txn hash...`)
 
   /**
-   * First, we check if our L1 to L2 message is redeemed on L2
+   * First, we check if our L1 to L2 message is already redeemed on L2
    */
   const receipt = await l1Provider.getTransactionReceipt(txnHash)
   const l1Receipt = new L1TransactionReceipt(receipt)

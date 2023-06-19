@@ -3,7 +3,6 @@ const {
   EthBridger,
   getL2Network,
   addDefaultLocalNetwork,
-  L2ToL1Message,
 } = require('@arbitrum/sdk')
 const { parseEther } = utils
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
@@ -74,7 +73,7 @@ const main = async () => {
   const withdrawEventsData = await withdrawRec.getL2ToL1Events()
   console.log('Withdrawal data:', withdrawEventsData)
   console.log(
-    `To to claim funds (after dispute period), see outbox-execute repo 🫡`
+    `To claim funds (after dispute period), see outbox-execute repo 🫡`
   )
 }
 

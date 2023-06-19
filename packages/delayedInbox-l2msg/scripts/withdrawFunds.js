@@ -69,7 +69,7 @@ const main = async () => {
   console.log(`Withdraw txn initiated on L1! 🙌 ${inboxRec.transactionHash}`)
 
   /**
-   * Now we successfully send the tx to l1 delayed inbox, then we need to wait the tx executed on l2
+   * Now we successfully send the tx to l1 delayed inbox, then we need to wait the tx to be executed on l2
    */
   console.log(
     `Now we need to wait tx: ${l2Txhash} to be included on l2 (may take 15 minutes, if longer than 1 day, you can use sdk to force include) ....... `
@@ -80,7 +80,7 @@ const main = async () => {
   const status = l2TxReceipt.status
   if (status == true) {
     console.log(
-      `L2 txn executed!!! 🥳 , you can go to https://bridge.arbitrum.io/ to withdraw your funds after challenge period!`
+      `L2 txn executed!!! 🥳 , you can go to https://bridge.arbitrum.io/ to execute your withdrawal and recieve your funds after challenge period!`
     )
   } else {
     console.log(`L2 txn failed, see if your gas is enough?`)
