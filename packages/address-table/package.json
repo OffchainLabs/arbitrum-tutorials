@@ -14,6 +14,6 @@
     "hardhat": "^2.5.0"
   },
   "dependencies": {
-    "@arbitrum/sdk": "^v3.1.2"
+    "@arbitrum/sdk": "^v3.1.9"
   }
 }

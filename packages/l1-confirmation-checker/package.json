@@ -9,7 +9,7 @@
     "findSubmissionTx": "yarn ts-node scripts/exec.ts --action findSubmissionTx"
   },
   "dependencies": {
-    "@arbitrum/sdk": "^v3.1.2",
+    "@arbitrum/sdk": "^v3.1.9",
     "@types/yargs": "^17.0.17",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.3",
