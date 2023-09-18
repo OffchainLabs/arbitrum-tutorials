@@ -18,6 +18,6 @@
   },
   "dependencies": {
     "hardhat": "^2.10.1",
-    "@arbitrum/sdk": "^v3.1.2"
+    "@arbitrum/sdk": "^v3.1.9"
   }
 }
