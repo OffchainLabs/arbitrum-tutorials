@@ -11,6 +11,10 @@ const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 require('dotenv').config()
 requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
 
+const partition1_short =
+  "6973737565640000000000000000000000000000000000000000000000000000"; // issued in hex
+const partition1 = "0x".concat(partition1_short);
+
 /**
  * Set up: instantiate L1 / L2 wallets connected to providers
  */
@@ -36,17 +40,21 @@ const main = async () => {
    */
   addDefaultLocalNetwork()
 
+  if (await l1Wallet.provider.getCode('0x1820a4b7618bde71dce8cdc73aab6c95905fad24') === '0x') {
+    throw new Error("ERC1820REGISTRY not deployed")
+  }
+
   /**
-   * For the purpose of our tests, here we deploy an standard ERC20 token (DappToken) to L1
+   * For the purpose of our tests, here we deploy an standard ERC20 token (ERC1400Token) to L1
    * It sends its deployer (us) the initial supply of 1000
    */
-  console.log('Deploying the test DappToken to L1:')
-  const L1DappToken = await (
-    await ethers.getContractFactory('DappToken')
+  console.log('Deploying the test ERC1400Token to L1:')
+  const L1ERC1400Token = await (
+    await ethers.getContractFactory('ERC1400Token')
   ).connect(l1Wallet)
-  const l1DappToken = await L1DappToken.deploy(1000)
-  await l1DappToken.deployed()
-  console.log(`DappToken is deployed to L1 at ${l1DappToken.address}`)
+  const l1ERC1400Token = await L1ERC1400Token.deploy(1000, [l1Wallet.address], [partition1])
+  await l1ERC1400Token.deployed()
+  console.log(`ERC1400Token is deployed to L1 at ${l1ERC1400Token.address}`)
 
   /**
    * Use l2Network to create an Arbitrum SDK Erc20Bridger instance
@@ -56,21 +64,21 @@ const main = async () => {
   const erc20Bridger = new Erc20Bridger(l2Network)
 
   /**
-   * We get the address of L1 Gateway for our DappToken, which later helps us to get the initial token balance of Bridge (before deposit)
+   * We get the address of L1 Gateway for our ERC1400Token, which later helps us to get the initial token balance of Bridge (before deposit)
    */
-  const l1Erc20Address = l1DappToken.address
+  const l1Erc20Address = l1ERC1400Token.address
   const expectedL1GatewayAddress = await erc20Bridger.getL1GatewayAddress(
     l1Erc20Address,
     l1Provider
   )
-  const initialBridgeTokenBalance = await l1DappToken.balanceOf(
+  const initialBridgeTokenBalance = await l1ERC1400Token.balanceOf(
     expectedL1GatewayAddress
   )
 
   /**
    * Because the token might have decimals, we update the amount to deposit taking into account those decimals
    */
-  const tokenDecimals = await l1DappToken.decimals()
+  const tokenDecimals = await l1ERC1400Token.decimals()
   const tokenDepositAmount = tokenAmount.mul(
     BigNumber.from(10).pow(tokenDecimals)
   )
@@ -90,20 +98,20 @@ const main = async () => {
 
   const approveRec = await approveTx.wait()
   console.log(
-    `You successfully allowed the Arbitrum Bridge to spend DappToken ${approveRec.transactionHash}`
+    `You successfully allowed the Arbitrum Bridge to spend ERC1400Token ${approveRec.transactionHash}`
   )
 
   /**
-   * Deposit DappToken to L2 using erc20Bridger. This will escrow funds in the Gateway contract on L1, and send a message to mint tokens on L2.
+   * Deposit ERC1400Token to L2 using erc20Bridger. This will escrow funds in the Gateway contract on L1, and send a message to mint tokens on L2.
    * The erc20Bridge.deposit method handles computing the necessary fees for automatic-execution of retryable tickets — maxSubmission cost & l2 gas price * gas — and will automatically forward the fees to L2 as callvalue
-   * Also note that since this is the first DappToken deposit onto L2, a standard Arb ERC20 contract will automatically be deployed.
+   * Also note that since this is the first ERC1400Token deposit onto L2, a standard Arb ERC20 contract will automatically be deployed.
    * Arguments required are:
    * (1) amount: The amount of tokens to be transferred to L2
    * (2) erc20L1Address: L1 address of the ERC20 token to be depositted to L2
    * (2) l1Signer: The L1 address transferring token to L2
    * (3) l2Provider: An l2 provider
    */
-  console.log('Transferring DappToken to L2:')
+  console.log('Transferring ERC1400Token to L2:')
   const depositTx = await erc20Bridger.deposit({
     amount: tokenDepositAmount,
     erc20L1Address: l1Erc20Address,
@@ -134,7 +142,7 @@ const main = async () => {
   /**
    * Get the Bridge token balance
    */
-  const finalBridgeTokenBalance = await l1DappToken.balanceOf(
+  const finalBridgeTokenBalance = await l1ERC1400Token.balanceOf(
     expectedL1GatewayAddress
   )
 
@@ -149,7 +157,7 @@ const main = async () => {
   ).to.be.true
 
   /**
-   * Check if our l2Wallet DappToken balance has been updated correctly
+   * Check if our l2Wallet ERC1400Token balance has been updated correctly
    * To do so, we use erc20Bridge to get the l2Token address and contract
    */
   const l2TokenAddress = await erc20Bridger.getL2ERC20Address(
