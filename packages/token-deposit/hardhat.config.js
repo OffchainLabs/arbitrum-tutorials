@@ -1,4 +1,5 @@
 require('@nomiclabs/hardhat-ethers')
+require("@nomicfoundation/hardhat-verify");
 const { hardhatConfig } = require('arb-shared-dependencies')
 
 hardhatConfig.solidity.compilers[0] = {
@@ -10,5 +11,6 @@ hardhatConfig.solidity.compilers[0] = {
         },
     },
 }
+hardhatConfig.etherscan = {apiKey: 'ZWX4D9JI7AXVNWP2Y9A7J1GZI7TX684W8Q'}
 
 module.exports = hardhatConfig

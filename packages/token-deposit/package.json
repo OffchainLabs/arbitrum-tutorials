@@ -7,6 +7,7 @@
     "token-deposit": "hardhat run scripts/exec.js"
   },
   "devDependencies": {
+    "@nomicfoundation/hardhat-verify": "^2.0.0",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@openzeppelin/contracts": "4.2.0",
     "chai": "^4.3.4",

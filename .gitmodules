@@ -1,3 +1,6 @@
 [submodule "packages/token-deposit/contracts/UniversalToken"]
 	path = packages/token-deposit/contracts/UniversalToken
 	url = git@github.com:Consensys/UniversalToken.git
+[submodule "packages/token-withdraw/contracts/UniversalToken"]
+	path = packages/token-withdraw/contracts/UniversalToken
+	url = git@github.com:Consensys/UniversalToken.git

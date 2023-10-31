@@ -31,6 +31,7 @@ cp .env-sample .env
 ### Run
 
 ```
+git submodule update --init --recursive
 yarn withdraw-token
 ```
 
