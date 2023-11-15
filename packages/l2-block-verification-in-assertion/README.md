@@ -2,7 +2,7 @@
 
 This tutorial shows how to verify whether an L2 block has been processed as part of an RBlock assertion on L1.
 
-It uses the `Rollup` contract to find the latest confirmed (or created if configured in the script) RBlock/node, find the event that created that RBlock/node and get the latest processed L2 block hash as part of that assertion.
+It uses the `Rollup` contract to find the latest confirmed (or created if configured in the script) RBlock/node, find the event that created it, and get the latest processed L2 block hash that's part of the assertion of that RBlock/node.
 
 Then it checks whether the block number passed as argument was created before the latest L2 block hash processed.
 
