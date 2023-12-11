@@ -97,7 +97,14 @@ const gasEstimator = async () => {
     // NOTE: This one might be a bit confusing, but l1GasEstimated (B in the formula) is calculated based on l2 gas fees
     const l1Cost = l1GasEstimated.mul(l2EstimatedPrice);
     // NOTE: This is similar to 140 + utils.hexDataLength(txData);
-    const l1Size = l1Cost.div(l1EstimatedPrice);
+    
+    let l1Size;
+    if(l1EstimatedPrice.eq(0)) {
+        // If the L1 price is 0, we set the size to 0
+        l1Size = 0;
+    }else{
+        l1Size = l1Cost.div(l1EstimatedPrice).add(140);
+    }
 
     // Getting the result of the formula
     // ---------------------------------
