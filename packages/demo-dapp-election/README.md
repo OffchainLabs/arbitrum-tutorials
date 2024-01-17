@@ -22,7 +22,7 @@ yarn run exec
 
 ## Curious to see the output on the Arbitrum chain?
 
-Once the script is successfully executed, you can go to the [Arbitrum block explorer](https://goerli-rollup-explorer.arbitrum.io/), enter your L2 address, and see the corresponding transactions on the Arbitrum chain!
+Once the script is successfully executed, you can go to the [Arbitrum block explorer](https://sepolia.arbiscan.io), enter your L2 address, and see the corresponding transactions on the Arbitrum chain!
 
 <p align="left">
   <img width="350" height="150" src= "../../assets/logo.svg" />
