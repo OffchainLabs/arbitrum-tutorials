@@ -11,11 +11,7 @@ contract GreeterL1 is Greeter {
 
     event RetryableTicketCreated(uint256 indexed ticketId);
 
-    constructor(
-        string memory _greeting,
-        address _l2Target,
-        address _inbox
-    ) Greeter(_greeting) {
+    constructor(string memory _greeting, address _l2Target, address _inbox) Greeter(_greeting) {
         l2Target = _l2Target;
         inbox = IInbox(_inbox);
     }

@@ -184,7 +184,9 @@ const main = async () => {
    */
   const messages = await l1TxReceipt.getL1ToL2Messages(l2Wallet)
   const message = messages[0]
-  console.log('Waiting for the L2 execution of the transaction. This may take up to 10-15 minutes ⏰')
+  console.log(
+    'Waiting for the L2 execution of the transaction. This may take up to 10-15 minutes ⏰'
+  )
   const messageResult = await message.waitForStatus()
   const status = messageResult.status
   if (status === L1ToL2MessageStatus.REDEEMED) {

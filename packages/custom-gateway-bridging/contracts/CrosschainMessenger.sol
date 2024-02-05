@@ -49,12 +49,7 @@ abstract contract L1CrosschainMessenger {
      * @param seqNum id for the retryable ticket
      * @param data data of the retryable ticket
      */
-    event TxToL2(
-        address indexed from,
-        address indexed to,
-        uint256 indexed seqNum,
-        bytes data
-    );
+    event TxToL2(address indexed from, address indexed to, uint256 indexed seqNum, bytes data);
 
     constructor(address inbox_) {
         inbox = IInbox(inbox_);
@@ -125,12 +120,7 @@ abstract contract L2CrosschainMessenger {
      * @param id id for the L2-to-L1 message
      * @param data data of the L2-to-L1 message
      */
-    event TxToL1(
-        address indexed from,
-        address indexed to,
-        uint256 indexed id,
-        bytes data
-    );
+    event TxToL1(address indexed from, address indexed to, uint256 indexed id, bytes data);
 
     modifier onlyCounterpartGateway(address l1Counterpart) {
         require(
@@ -148,11 +138,7 @@ abstract contract L2CrosschainMessenger {
      * @param data encoded data for the L2-to-L1 message
      * @return id id for the L2-to-L1 message
      */
-    function _sendTxToL1(
-        address from,
-        address to,
-        bytes memory data
-    ) internal returns (uint256) {
+    function _sendTxToL1(address from, address to, bytes memory data) internal returns (uint256) {
         uint256 id = ArbSys(ARB_SYS_ADDRESS).sendTxToL1(to, data);
 
         emit TxToL1(from, to, id, data);

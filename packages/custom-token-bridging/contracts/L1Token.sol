@@ -41,7 +41,11 @@ contract L1Token is Ownable, ICustomToken, ERC20 {
      *
      * An initial supply amount is passed, which is preminted to the deployer.
      */
-    constructor(address _customGatewayAddress, address _routerAddress, uint256 _initialSupply) ERC20("L1CustomToken", "LCT") {
+    constructor(
+        address _customGatewayAddress,
+        address _routerAddress,
+        uint256 _initialSupply
+    ) ERC20("L1CustomToken", "LCT") {
         customGatewayAddress = _customGatewayAddress;
         routerAddress = _routerAddress;
         _mint(msg.sender, _initialSupply * 10 ** decimals());
@@ -64,7 +68,7 @@ contract L1Token is Ownable, ICustomToken, ERC20 {
         uint256 valueForGateway,
         uint256 valueForRouter,
         address creditBackAddress
-    ) public override payable onlyOwner {
+    ) public payable override onlyOwner {
         // we temporarily set `shouldRegisterGateway` to true for the callback in registerTokenToL2 to succeed
         bool prev = shouldRegisterGateway;
         shouldRegisterGateway = true;
@@ -98,7 +102,9 @@ contract L1Token is Ownable, ICustomToken, ERC20 {
     }
 
     /// @dev See {ERC20-balanceOf}
-    function balanceOf(address account) public view override(ICustomToken, ERC20) returns (uint256) {
+    function balanceOf(
+        address account
+    ) public view override(ICustomToken, ERC20) returns (uint256) {
         return super.balanceOf(account);
     }
 }

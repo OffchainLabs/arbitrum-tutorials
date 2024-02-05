@@ -374,7 +374,7 @@ const main = async () => {
   })
   const depositEnabledRec = await depositEnabledTx.wait()
   console.log(
-    `Deposit initiated: waiting for L2 retryable (takes 10-15 minutes; current time: ${new Date().toTimeString()}) `
+    `Deposit initiated: waiting for L2 retryable (takes 10-15 minutes; current time: ${new Date().toTimeString()}`
   )
   const l2FinalResult = await depositEnabledRec.waitForL2(l2Provider)
 
