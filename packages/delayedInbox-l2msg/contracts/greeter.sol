@@ -11,7 +11,7 @@ contract Greeter {
         _;
     }
 
-    constructor(string memory _greeting) public {
+    constructor(string memory _greeting){
         greeting = _greeting;
         deployer = msg.sender;
     }

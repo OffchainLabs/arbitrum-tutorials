@@ -93,7 +93,7 @@ const main = async () => {
 
   const registerTokenRec = await registerTokenTx.wait()
   console.log(
-    `Registering token txn confirmed on L1! 🙌 L1 receipt is: ${registerTokenRec.transactionHash}`
+    `Registering token txn confirmed on L1! 🙌 L1 receipt is: ${registerTokenRec.transactionHash}\nWe now have to wait for the L2 side to be executed!`
   )
 
   /**
