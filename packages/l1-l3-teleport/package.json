@@ -4,10 +4,13 @@
   "license": "Apache-2.0",
   "description": "This tutorial shows how to bridge tokens from L1 to an L3",
   "scripts": {
-    "initiate-deposit": "ts-node scripts/initiate-deposit.ts"
+    "initiate-deposit": "ts-node scripts/initiate-deposit.ts",
+    "initiate-eth-deposit": "ts-node scripts/initiate-eth-deposit.ts",
+    "monitor-deposit-status": "ts-node scripts/monitor-deposit-status.ts",
+    "monitor-eth-deposit-status": "ts-node scripts/monitor-eth-deposit-status.ts"
   },
   "dependencies": {
-    "godzillaba-arbitrum-sdk": "^3.3.2-teleport",
+    "godzillaba-arbitrum-sdk": "^3.3.3-teleport",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
     "yargs": "^17.7.2"

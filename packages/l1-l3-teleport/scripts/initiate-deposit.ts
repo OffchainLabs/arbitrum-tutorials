@@ -64,7 +64,12 @@ const main = async (params: {
     l2Provider,
     l3Provider,
     to: params.l3Recipient, // optional, defaults to signer's address
-    skipFeeToken: params.skipFeeToken // optional, defaults to false. set to true if you want to skip paying for L2->L3 fee.
+    /**
+     * Optional, defaults to false.
+     * Skip paying the L2->L3 fee if the L3 doesn't use ETH for fees
+     * This has no effect if the L3 uses ETH for fees.
+     */
+    skipFeeToken: params.skipFeeToken
   })
   console.log('Done')
 
@@ -124,9 +129,11 @@ const args = yargs(hideBin(process.argv))
     },
     skipFeeToken: {
       type: 'boolean',
-      description: 'Skip paying the L2->L3 fee if the L3 doesn\'t use ETH for fees'
+      description: 'Skip paying the L2->L3 fee if the L3 doesn\'t use ETH for fees.\nThis has no effect if the L3 uses ETH for fees.',
+      default: false
     }
   })
+  .usage('Initiate a deposit of ERC20 tokens from L1 to L3')
   .parseSync()
 
 main({
