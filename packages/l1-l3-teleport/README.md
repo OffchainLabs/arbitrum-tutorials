@@ -23,7 +23,7 @@ If the L3 uses ETH for fees, by default, the L2 to L3 retryable will be paid for
 
 If the L3 uses a custom fee token that is available on L1, by default, the L2 to L3 retryable will be paid for in the fee token when the deposit is initiated. This requires an extra approval transaction.
 
-If [the L3 uses a custom fee token] AND [it is unavailable on L1 OR `skipFeeToken` is passed to `getDepositRequest`], the L2 to L3 retryable will NOT be paid for when the deposit is initiated. If the L2 to L3 retryable is not paid for up front, it must be eventually manually redeemed on L3. Redeeming retryables is permissionless. 
+If [the L3 uses a custom fee token] AND [it is unavailable on L1 OR `skipFeeToken` is passed to `getDepositRequest`], the L2 to L3 retryable will NOT be paid for when the deposit is initiated. If the L2 to L3 retryable is not paid for up front, it must be eventually manually redeemed on L3. Manually redeeming retryables is permissionless. 
 
 ### Run script:
 
