@@ -31,11 +31,12 @@ const main = async (params: {
    * Information about the configuration of the bridger
    * 
    * Note that if the L3's fee token is not ETH you must pay for the L2->L3 fee in the L3's fee token.
-   * You may either:
-   * - Pay the fee in the L3's fee token when initiating the deposit on L1. 
-   *   This can only be done if the fee token is available and held on L1.
-   * - Manually redeem the retryable on L3 to pay the fee (this can be done by anyone, not just the sender of the deposit). 
-   *   If the fee token is unavailable on L1 or skipFeeToken is set to true, manual redemption is required.
+   * In this case you may either:
+   * A) Pay the fee in the L3's fee token when initiating the deposit on L1. 
+   *    This can only be done if the fee token is available and held on L1.
+   *    This is the default behavior, and no additional steps are required besides approving the fee token.
+   * B) Manually redeem the retryable on L3 to pay the fee (this can be done by anyone, not just the sender of the deposit). 
+   *    If the fee token is unavailable on L1 or skipFeeToken is set to true, manual redemption is required.
    */
   const l1ChainId = (await l1Provider.getNetwork()).chainId
   const l2ChainId = (await l2Provider.getNetwork()).chainId
