@@ -37,6 +37,8 @@ const main = async (params: {
    *    This is the default behavior, and no additional steps are required besides approving the fee token.
    * B) Manually redeem the retryable on L3 to pay the fee (this can be done by anyone, not just the sender of the deposit). 
    *    If the fee token is unavailable on L1 or skipFeeToken is set to true, manual redemption is required.
+   * 
+   * If the L3 uses ETH for fees, all retryables are paid for when initiating the deposit by default and no additional steps are required.
    */
   const l1ChainId = (await l1Provider.getNetwork()).chainId
   const l2ChainId = (await l2Provider.getNetwork()).chainId
@@ -75,7 +77,8 @@ const main = async (params: {
   console.log('Done')
 
   /**
-   * If the deposit request has nonzero feeTokenAmount, we must approve the fee token on L1
+   * If the deposit request has nonzero feeTokenAmount, we are paying for the L2->L3 retryable when initiating the deposit.
+   * We must approve the fee token on L1.
    */
   if (depositRequest.feeTokenAmount.gt(0)) {
     console.log('Approving fee token on L1...')

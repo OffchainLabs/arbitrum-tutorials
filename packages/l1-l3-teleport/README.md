@@ -14,6 +14,17 @@ See [`monitor-deposit-status.ts`](./scripts/monitor-deposit-status.ts) for monit
 
 See [`monitor-eth-deposit-status.ts`](./scripts//monitor-eth-deposit-status.ts) for monitoring ETH deposits.
 
+### Paying for retryables
+When initiating an ERC20 deposit, there are multiple ways retryable fees can be paid.
+
+There are 2 (or 3) L1 to L2 retryables and 1 L2 to L3 retryable created during a deposit. By default, the L1 to L2 retryables will be paid for in ETH when the deposit is initiated. 
+
+If the L3 uses ETH for fees, by default, the L2 to L3 retryable will be paid for in ETH when the deposit is initiated.
+
+If the L3 uses a custom fee token that is available on L1, by default, the L2 to L3 retryable will be paid for in the fee token when the deposit is initiated. This requires an extra approval transaction.
+
+If [the L3 uses a custom fee token] AND [it is unavailable on L1 OR `skipFeeToken` is passed to `getDepositRequest`], the L2 to L3 retryable will NOT be paid for when the deposit is initiated. If the L2 to L3 retryable is not paid for up front, it must be eventually manually redeemed on L3. Redeeming retryables is permissionless. 
+
 ### Run script:
 
 ```shell
