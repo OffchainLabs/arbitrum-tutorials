@@ -19,7 +19,7 @@ const l1Signer = new Wallet(process.env.L1PRIVKEY!, l1Provider)
 const main = async (params: {
   amount: BigNumber, l3Recipient?: string
 }) => {
-  await arbLog(`Bridging tokens from L1 to L3`)
+  await arbLog(`Bridging ETH from L1 to L3`)
 
   /**
    * Use L3 Network to initialize a bridger
@@ -53,7 +53,7 @@ const main = async (params: {
   })
   console.log('Done')
   /**
-   * Deposit the token
+   * Deposit ETH
    */
   console.log('Depositing ETH...')
   const depositTx = await bridger.deposit({
@@ -70,7 +70,7 @@ const args = yargs(hideBin(process.argv))
   .options({
     amount: {
       type: 'number',
-      description: 'Amount of tokens to bridge',
+      description: 'Amount of ETH to bridge',
       demandOption: true
     },
     l3Recipient: {
@@ -78,7 +78,7 @@ const args = yargs(hideBin(process.argv))
       description: 'L3 recipient address'
     }
   })
-  .usage('Initiate a deposit of ERC20 tokens from L1 to L3')
+  .usage('Initiate a deposit of ETH from L1 to L3')
   .parseSync()
 
 main({
