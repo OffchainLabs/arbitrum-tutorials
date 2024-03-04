@@ -1,0 +1,15 @@
+{
+  "name": "l1-l3-teleport",
+  "version": "1.0.0",
+  "license": "Apache-2.0",
+  "description": "This tutorial shows how to bridge tokens from L1 to an L3",
+  "scripts": {
+    "initiate-deposit": "ts-node scripts/initiate-deposit.ts"
+  },
+  "dependencies": {
+    "godzillaba-arbitrum-sdk": "^3.3.2-teleport",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "yargs": "^17.7.2"
+  }
+}
