@@ -1,4 +1,4 @@
-# L2 block verification in assertion
+# L1 to L3 Bridging
 
 This tutorial shows how to bridge tokens from L1 to an Arbitrum L3.
 
