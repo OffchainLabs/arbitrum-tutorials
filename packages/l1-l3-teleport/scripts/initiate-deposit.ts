@@ -106,7 +106,7 @@ const main = async (params: {
    */
   console.log('Depositing token...')
   const depositTx = await bridger.deposit({
-    ...depositRequest,
+    txRequest: depositRequest.txRequest,
     l1Signer
   })
   await depositTx.wait()
