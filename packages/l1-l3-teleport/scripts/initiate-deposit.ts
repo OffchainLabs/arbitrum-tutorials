@@ -48,8 +48,8 @@ const main = async (params: {
   const feeTokenSymbol = bridger.l2FeeTokenAddress ? await ERC20__factory.connect(bridger.l2FeeTokenAddress, l2Provider).symbol() : 'ETH'
   console.log('L1 Token:', params.l1Token)
   console.log('L3 Fee Token:', feeTokenSymbol || 'ETH')
-  console.log('L3 Fee Token Address on L2:', bridger.l2FeeTokenAddress || ethers.constants.AddressZero)
-  console.log('L3 Fee Token Address on L1:', l3FeeTokenL1Address || ethers.constants.AddressZero)
+  console.log('L3 Fee Token Address on L2:', bridger.l2FeeTokenAddress || 'ETH')
+  console.log('L3 Fee Token Address on L1:', l3FeeTokenL1Address)
   console.log('Recipient:', params.l3Recipient || signerAddress)
   console.log('Amount:', params.amount.toString())
   console.log('L1 chain id:', l1ChainId)
