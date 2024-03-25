@@ -63,7 +63,9 @@ const main = async (params: {
   await depositTx.wait()
   console.log('Done')
 
-  console.log('Initiated deposit:', depositTx.hash)
+  console.log('Initiated deposit! An L1 to L2 retryable will be created, which will create an L2 to L3 retryable to deposit ETH.')
+  console.log('Transaction hash:', depositTx.hash)
+  console.log(`To monitor your deposit, use:\n\nyarn monitor-eth-deposit-status ${depositTx.hash}`)
 };
 
 const args = yargs(hideBin(process.argv))
