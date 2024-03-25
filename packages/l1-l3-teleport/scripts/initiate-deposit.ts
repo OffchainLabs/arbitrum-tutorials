@@ -7,14 +7,14 @@ import { hideBin } from "yargs/helpers"
 
 // Importing configuration //
 require('dotenv').config()
-requireEnvVariables(['L1RPC', 'L2RPC', 'L3RPC', 'L1PRIVKEY'])
+requireEnvVariables(['L1RPC', 'L2RPC', 'L3RPC', 'DEVNET_PRIVKEY'])
 
 // Initial setup //
 const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
 const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
 const l3Provider = new providers.JsonRpcProvider(process.env.L3RPC)
 
-const l1Signer = new Wallet(process.env.L1PRIVKEY!, l1Provider)
+const l1Signer = new Wallet(process.env.DEVNET_PRIVKEY!, l1Provider)
 
 const main = async (params: {
   l1Token: string, amount: BigNumber, l3Recipient?: string, skipFeeToken?: boolean
