@@ -22,6 +22,9 @@
     "prettier": "^2.3.2",
     "prettier-plugin-solidity": "^1.0.0-beta.17"
   },
+  "dependencies": {
+    "@arbitrum/sdk": "^3.4.1"
+  },
   "workspaces": {
     "packages": [
       "packages/*"

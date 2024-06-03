@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
 
-import "./interfaces/IArbToken.sol";
+import "@arbitrum/token-bridge-contracts/contracts/tokenbridge/arbitrum/IArbToken.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract L2Token is ERC20, IArbToken {
