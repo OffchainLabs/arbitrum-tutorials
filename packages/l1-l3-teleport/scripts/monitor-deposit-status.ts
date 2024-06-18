@@ -34,17 +34,12 @@ const main = async (txHash: string) => {
    */
   console.log('Getting deposit status...')
   const depositStatus = await bridger.getDepositStatus({ txHash, l1Provider, l2Provider, l3Provider })
-  
-  /**
-   * If any of these retryables fail (i.e. FUNDS_DEPOSITED_ON_L2), manually redeem them in the order displayed below
-   * Note that anyone can manually redeem these retryables, not just the sender of the deposit
-   * If the user opts to skip payment for the L2->L3 retryable, depositStatus.l2l3TokenBridge MUST be redeemed manually
-   */
   console.log(`L1 to L2 Fee Token Bridge: ${statusToText[await depositStatus.l1l2FeeTokenBridgeRetryable?.status() || 'NA']}`)
   console.log(`L1 to L2 Token Bridge: ${statusToText[await depositStatus.l1l2TokenBridgeRetryable.status()]}`)
   console.log(`L2 Forwarder Factory Call: ${statusToText[await depositStatus.l2ForwarderFactoryRetryable.status()]}`)
   console.log(`L2 to L3 Token Bridge: ${statusToText[await depositStatus.l2l3TokenBridgeRetryable?.status() || L1ToL2MessageStatus.NOT_YET_CREATED]}`)
   console.log(`Completed: ${depositStatus.completed}`)
+  console.log(`L2 Forwarder Factory Call Frontran: ${depositStatus.l2ForwarderFactoryRetryableFrontRan}`)
 }
 
 if (!process.argv[2]) {
