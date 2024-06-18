@@ -1,6 +1,6 @@
 import { providers } from "ethers"
 import { arbLog, requireEnvVariables } from 'arb-shared-dependencies'
-import { Erc20L1L3Bridger, EthL1L3Bridger, L1ToL2MessageStatus, getL2Network } from "godzillaba-arbitrum-sdk"
+import { EthL1L3Bridger, L1ToL2MessageStatus, getL2Network } from "@arbitrum/sdk"
 
 // Importing configuration //
 require('dotenv').config()
@@ -33,9 +33,7 @@ const main = async (txHash: string) => {
    * Get deposit status
    */
   console.log('Getting deposit status...')
-  const depositStatus = await bridger.getDepositMessages({ txHash, l1Provider, l2Provider, l3Provider })
-  
-  
+  const depositStatus = await bridger.getDepositStatus({ txHash, l1Provider, l2Provider, l3Provider })
   
   /**
    * If any of these retryables fail (i.e. FUNDS_DEPOSITED_ON_L2), manually redeem them in the order displayed below

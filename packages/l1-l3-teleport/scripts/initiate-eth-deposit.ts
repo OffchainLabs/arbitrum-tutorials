@@ -1,7 +1,6 @@
 import { providers, Wallet, BigNumber } from "ethers"
 import { arbLog, requireEnvVariables } from 'arb-shared-dependencies'
-import { Erc20L1L3Bridger, EthL1L3Bridger, getL2Network } from "godzillaba-arbitrum-sdk"
-import { ERC20__factory } from "godzillaba-arbitrum-sdk/dist/lib/abi/factories/ERC20__factory"
+import { EthL1L3Bridger, getL2Network } from "@arbitrum/sdk"
 import yargs from 'yargs/yargs'
 import { hideBin } from "yargs/helpers"
 
@@ -49,7 +48,7 @@ const main = async (params: {
     amount: params.amount,
     l2Provider,
     l3Provider,
-    to: params.l3Recipient, // optional, defaults to signer's address
+    destinationAddress: params.l3Recipient, // optional, defaults to signer's address
   })
   console.log('Done')
   /**
