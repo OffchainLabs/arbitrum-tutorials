@@ -10,7 +10,7 @@
     "monitor-eth-deposit-status": "ts-node scripts/monitor-eth-deposit-status.ts"
   },
   "dependencies": {
-    "godzillaba-arbitrum-sdk": "^3.3.3-teleport",
+    "@arbitrum/sdk": "3.5.1-teleporter.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
     "yargs": "^17.7.2"

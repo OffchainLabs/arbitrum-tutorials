@@ -14,6 +14,10 @@ See [`monitor-deposit-status.ts`](./scripts/monitor-deposit-status.ts) for monit
 
 See [`monitor-eth-deposit-status.ts`](./scripts//monitor-eth-deposit-status.ts) for monitoring ETH deposits.
 
+See [`recover-deposit.ts](./scripts/recover-deposit.ts) for recovering a failed ERC20 deposit. (Assumes `DEVNET_PRIVATE_KEY` is funded on L2 and L3)
+
+See [`recover-eth-deposit.ts`](./scripts/recover-eth-deposit.ts) for recovering a failed ETH deposit. (Assumes `DEVNET_PRIVATE_KEY` is funded on L2 and L3)
+
 ### Paying for retryables
 When initiating an ERC20 deposit, there are multiple ways retryable fees can be paid.
 
@@ -35,6 +39,10 @@ yarn initiate-eth-deposit --help
 yarn monitor-deposit-status <txHash>
 
 yarn monitor-eth-deposit-status <txHash>
+
+yarn recover-deposit <txHash>
+
+yarn recover-eth-deposit <txHash>
 ```
 
 ## Configure environment variables

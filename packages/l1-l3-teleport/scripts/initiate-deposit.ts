@@ -1,7 +1,7 @@
-import { providers, Wallet, BigNumber, ethers } from "ethers"
+import { providers, Wallet, BigNumber } from "ethers"
 import { arbLog, requireEnvVariables } from 'arb-shared-dependencies'
-import { Erc20L1L3Bridger, getL2Network } from "godzillaba-arbitrum-sdk"
-import { ERC20__factory } from "godzillaba-arbitrum-sdk/dist/lib/abi/factories/ERC20__factory"
+import { Erc20L1L3Bridger, getL2Network } from "@arbitrum/sdk"
+import { ERC20__factory } from "@arbitrum/sdk/dist/lib/abi/factories/ERC20__factory"
 import yargs from 'yargs/yargs'
 import { hideBin } from "yargs/helpers"
 
@@ -17,7 +17,7 @@ const l3Provider = new providers.JsonRpcProvider(process.env.L3RPC)
 const l1Signer = new Wallet(process.env.DEVNET_PRIVKEY!, l1Provider)
 
 const main = async (params: {
-  l1Token: string, amount: BigNumber, l3Recipient?: string, skipFeeToken?: boolean
+  l1Token: string, amount: BigNumber, l3Recipient?: string, skipGasToken?: boolean
 }) => {
   await arbLog(`Bridging tokens from L1 to L3`)
 
@@ -44,12 +44,12 @@ const main = async (params: {
   const l2ChainId = (await l2Provider.getNetwork()).chainId
   const l3ChainId = (await l3Provider.getNetwork()).chainId
   const signerAddress = await l1Signer.getAddress()
-  const l3FeeTokenL1Address = await bridger.l1FeeTokenAddress(l1Provider, l2Provider)
+  const l3GasTokenL1Addr = await bridger.getGasTokenOnL1(l1Provider, l2Provider)
   const feeTokenSymbol = bridger.l2FeeTokenAddress ? await ERC20__factory.connect(bridger.l2FeeTokenAddress, l2Provider).symbol() : 'ETH'
   console.log('L1 Token:', params.l1Token)
-  console.log('L3 Fee Token:', feeTokenSymbol || 'ETH')
-  console.log('L3 Fee Token Address on L2:', bridger.l2FeeTokenAddress || 'ETH')
-  console.log('L3 Fee Token Address on L1:', l3FeeTokenL1Address)
+  console.log('L3 Gas Token:', feeTokenSymbol || 'ETH')
+  console.log('L3 Gas Token Address on L2:', bridger.l2FeeTokenAddress || 'ETH')
+  console.log('L3 Gas Token Address on L1:', l3GasTokenL1Addr)
   console.log('Recipient:', params.l3Recipient || signerAddress)
   console.log('Amount:', params.amount.toString())
   console.log('L1 chain id:', l1ChainId)
@@ -66,13 +66,13 @@ const main = async (params: {
     amount: params.amount,
     l2Provider,
     l3Provider,
-    to: params.l3Recipient, // optional, defaults to signer's address
+    destinationAddress: params.l3Recipient, // optional, defaults to signer's address
     /**
      * Optional, defaults to false.
      * Skip paying the L2->L3 fee if the L3 doesn't use ETH for fees
      * This has no effect if the L3 uses ETH for fees.
      */
-    skipFeeToken: params.skipFeeToken
+    skipGasToken: params.skipGasToken
   })
   console.log('Done')
 
@@ -132,7 +132,7 @@ const args = yargs(hideBin(process.argv))
       type: 'string',
       description: 'L3 recipient address'
     },
-    skipFeeToken: {
+    skipGasToken: {
       type: 'boolean',
       description: 'Skip paying the L2->L3 fee if the L3 doesn\'t use ETH for fees.\nThis has no effect if the L3 uses ETH for fees.',
       default: false
@@ -145,7 +145,7 @@ main({
   l1Token: args.l1Token,
   amount: BigNumber.from(args.amount),
   l3Recipient: args.l3Recipient,
-  skipFeeToken: args.skipFeeToken
+  skipGasToken: args.skipGasToken
 }).then(() => process.exit(0)).catch(error => {
   console.error(error)
   process.exit(1)

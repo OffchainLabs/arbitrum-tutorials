@@ -18,6 +18,17 @@
   optionalDependencies:
     sol2uml "2.2.0"
 
+"@arbitrum/sdk@3.5.1-teleporter.0":
+  version "3.5.1-teleporter.0"
+  resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-3.5.1-teleporter.0.tgz#68e2612cdaec43b173ee4dbb928871cca067c50f"
+  integrity sha512-0lJrUgQr/nTEbMzOKgl70m/1vnvVWE8WTOG+UFBN3iSMugcxGsJcNHh96xQV3qyYbo4XcWLwrRkwGg2WVuN25w==
+  dependencies:
+    "@ethersproject/address" "^5.0.8"
+    "@ethersproject/bignumber" "^5.1.1"
+    "@ethersproject/bytes" "^5.0.8"
+    async-mutex "^0.4.0"
+    ethers "^5.1.0"
+
 "@arbitrum/sdk@^v3.1.9":
   version "3.1.11"
   resolved "https://registry.yarnpkg.com/@arbitrum/sdk/-/sdk-3.1.11.tgz#14fa67daceef7568b949e4a2695d561dd47eec5b"
@@ -4822,17 +4833,6 @@ globalthis@^1.0.3:
   integrity sha512-sFdI5LyBiNTHjRd7cGPWapiHWMOXKyuBNX/cWJ3NfzrZQVa8GI/8cofCl74AOVqq9W5kNmguTIzJ/1s2gyI9wA==
   dependencies:
     define-properties "^1.1.3"
-
-godzillaba-arbitrum-sdk@^3.3.3-teleport:
-  version "3.3.3-teleport"
-  resolved "https://registry.yarnpkg.com/godzillaba-arbitrum-sdk/-/godzillaba-arbitrum-sdk-3.3.3-teleport.tgz#40786631068327231633738bfdf8e6a4a8c08281"
-  integrity sha512-gmzKsey8Kumfx7zieFbDZIXAndVQX4HxNq9/qXthVPx9pXy7E1rKIqEtDcaID74ixGUkKTjkHqeszJ6bWk6uJQ==
-  dependencies:
-    "@ethersproject/address" "^5.0.8"
-    "@ethersproject/bignumber" "^5.1.1"
-    "@ethersproject/bytes" "^5.0.8"
-    async-mutex "^0.4.0"
-    ethers "^5.1.0"
 
 gopd@^1.0.1:
   version "1.0.1"
