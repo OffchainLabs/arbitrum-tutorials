@@ -13,7 +13,7 @@
     "hardhat": "^2.6.6"
   },
   "dependencies": {
-    "@arbitrum/sdk": "^v3.1.9",
+    "@arbitrum/token-bridge-contracts": "^1.2.1",
     "dotenv": "^8.2.0"
   }
 }

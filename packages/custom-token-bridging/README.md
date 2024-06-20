@@ -14,6 +14,10 @@ We use our [Arbitrum SDK](https://github.com/OffchainLabs/arbitrum-sdk) library 
 
 See [./exec.js](./scripts/exec.js) for inline explanation.
 
+### Note for custom-gas-token chains
+
+This script also works on custom-gas-token chains. In that case, you'll have to add the information of the orbit chain in the exec file, in the existing constants `customL1Network` and `customL2Network`. The script then will register that network in the Arbitrum SDK and perform the extra operation needed for custom-gas-token chains.
+
 ### Config Environment Variables
 
 Set the values shown in `.env-sample` as environmental variables. To copy it into a `.env` file:
