@@ -21,7 +21,10 @@ contract L2Token is ERC20, IArbToken {
      * @param l2GatewayAddress_ address of the L2 custom gateway
      * @param l1TokenAddress_ address of the custom token deployed on L1
      */
-    constructor(address l2GatewayAddress_, address l1TokenAddress_) ERC20("L2CustomToken", "LCT") {
+    constructor(
+        address l2GatewayAddress_,
+        address l1TokenAddress_
+    ) ERC20("NoCustomGatewayRegOOPS", "OOPS") {
         l2GatewayAddress = l2GatewayAddress_;
         l1Address = l1TokenAddress_;
     }

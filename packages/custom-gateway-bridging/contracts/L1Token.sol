@@ -47,7 +47,11 @@ contract L1Token is Ownable, ICustomToken, ERC20 {
      * @param routerAddress_ address of the L1GatewayRouter
      * @param initialSupply initial supply amount to be minted to the deployer
      */
-    constructor(address l1GatewayAddress_, address routerAddress_, uint256 initialSupply) ERC20("L1CustomToken", "LCT") {
+    constructor(
+        address l1GatewayAddress_,
+        address routerAddress_,
+        uint256 initialSupply
+    ) ERC20("NoCustomGatewayRegOOPS", "OOPS") {
         l1GatewayAddress = l1GatewayAddress_;
         routerAddress = routerAddress_;
         _mint(msg.sender, initialSupply * 10 ** decimals());
@@ -65,16 +69,16 @@ contract L1Token is Ownable, ICustomToken, ERC20 {
      * custom gateway works for a single token it already knows.
      */
     function registerTokenOnL2(
-        address, /* l2CustomTokenAddress */
-        uint256, /* maxSubmissionCostForCustomGateway */
+        address /* l2CustomTokenAddress */,
+        uint256 /* maxSubmissionCostForCustomGateway */,
         uint256 maxSubmissionCostForRouter,
-        uint256, /*  maxGasForCustomGateway */
+        uint256 /*  maxGasForCustomGateway */,
         uint256 maxGasForRouter,
         uint256 gasPriceBid,
-        uint256, /* valueForGateway */
+        uint256 /* valueForGateway */,
         uint256 valueForRouter,
         address creditBackAddress
-    ) public override payable onlyOwner {
+    ) public payable override onlyOwner {
         // we temporarily set `shouldRegisterGateway` to true for the callback in registerTokenToL2 to succeed
         bool prev = shouldRegisterGateway;
         shouldRegisterGateway = true;
@@ -100,7 +104,9 @@ contract L1Token is Ownable, ICustomToken, ERC20 {
     }
 
     /// @dev See {ERC20-balanceOf}
-    function balanceOf(address account) public view override(ICustomToken, ERC20) returns (uint256) {
+    function balanceOf(
+        address account
+    ) public view override(ICustomToken, ERC20) returns (uint256) {
         return super.balanceOf(account);
     }
 }

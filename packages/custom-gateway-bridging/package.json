@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "build": "hardhat compile",
-    "exec": "hardhat run scripts/exec.js"
+    "exec": "hardhat run scripts/exec.js",
+    "reg": "hardhat run scripts/reg.js"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
