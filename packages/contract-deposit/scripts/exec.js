@@ -102,7 +102,9 @@ const main = async () => {
     )
     const beforeAliasBalance = await l2Provider.getBalance(contractAliasAddress)
     console.log(
-      `The balance on l2 alias before transfer: "${ethers.utils.formatEther(beforeAliasBalance)} ethers"`
+      `The balance on l2 alias before transfer: "${ethers.utils.formatEther(
+        beforeAliasBalance
+      )} ethers"`
     )
   } else {
     throw new Error(
@@ -198,7 +200,7 @@ const main = async () => {
    */
   const setTransferTx =
     await l1DepositContract.moveFundsFromL2AliasToAnotherAddress(
-      transferTo, // string memory _greeting,
+      transferTo,
       ethers.utils.parseEther('0.01'), // because we deposited 0.01 ether, so we also transfer 0.01 ether out here.
       L1ToL2MessageGasParams.maxSubmissionCost,
       L1ToL2MessageGasParams.gasLimit,
