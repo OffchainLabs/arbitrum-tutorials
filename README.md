@@ -25,6 +25,7 @@ yarn install
 - ⤵️ 🔹 [Withdraw Ether](./packages/eth-withdraw/)
 - ⤴️ 💸 [Deposit Token](./packages/token-deposit/)
 - ⤵️ 💸 [Withdraw token](./packages/token-withdraw/)
+- ⤴️ 🔹 [Contract deposit](./packages/contract-deposit/)
 
 #### :white_check_mark: General Interop
 
