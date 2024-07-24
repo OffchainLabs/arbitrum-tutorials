@@ -19,7 +19,7 @@ See [./exec.js](./scripts/exec.js) for inline explanations.
 yarn start
 ```
 
-## Config Environment Variables
+## Config environment variables
 
 Set the values shown in `.env-sample` as environmental variables. To copy it into a `.env` file:
 
