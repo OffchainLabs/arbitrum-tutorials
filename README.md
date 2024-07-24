@@ -27,7 +27,7 @@ yarn install
 - ⤵️ 💸 [Withdraw token](./packages/token-withdraw/)
 - ⤴️ 🔹 [L2 Alias Control and Fund Transfer Guide](./packages/contract-deposit/)
 
-#### :white_check_mark: General Interop
+#### :white_check_mark: General interop
 
 - 🤝 [Greeter](./packages/greeter/) (L1 to L2)
 - 📤 [Outbox](./packages/outbox-execute/) (L2 to L1)
