@@ -13,7 +13,7 @@ See [./exec.js](./scripts/exec.js) for inline explanations.
 
 [Click here](https://developer.offchainlabs.com/docs/l1_l2_messages) for more info on retryable tickets.
 
-### Run Demo:
+### Run demo:
 
 ```
 yarn start
