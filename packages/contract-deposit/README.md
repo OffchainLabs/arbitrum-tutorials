@@ -1,4 +1,4 @@
-# L2 Alias Control and Fund Transfer Guide
+# L2 alias control and fund transfer guide
 
 `L2 Alias Control and Fund Transfer Guide` is a simple demonstration of how Arbitrum facilitates sending deposits from an L1 contract to L2.
 
