@@ -16,7 +16,7 @@ contract ArbitrumVIP {
     }
 
     function addVIPPoints(uint256 addressIndex) external {
-        // retreive address from address table
+        // retrieve address from address table
         address addressFromTable = arbAddressTable.lookupIndex(addressIndex);
 
         arbitrumVIPPoints[addressFromTable]++;

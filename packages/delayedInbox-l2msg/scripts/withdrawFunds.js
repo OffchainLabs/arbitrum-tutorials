@@ -80,7 +80,7 @@ const main = async () => {
   const status = l2TxReceipt.status
   if (status == true) {
     console.log(
-      `L2 txn executed!!! 🥳 , you can go to https://bridge.arbitrum.io/ to execute your withdrawal and recieve your funds after challenge period!`
+      `L2 txn executed!!! 🥳 , you can go to https://bridge.arbitrum.io/ to execute your withdrawal and receive your funds after challenge period!`
     )
   } else {
     console.log(`L2 txn failed, see if your gas is enough?`)

@@ -114,7 +114,7 @@ const main = async () => {
   const l2Result = await depositRec.waitForL2(l2Provider)
   console.log(`Setup complete`)
   /**
-   * The `complete` boolean tells us if the l1 to l2 message was successul
+   * The `complete` boolean tells us if the l1 to l2 message was successful
    */
   l2Result.complete
     ? console.log(
