@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity >=0.6.11;
+pragma solidity ^0.8.0;
 
 import "@arbitrum/nitro-contracts/src/bridge/Inbox.sol";
 
@@ -13,14 +13,14 @@ contract EthDeposit {
         inbox = IInbox(_inbox);
     }
 
-    function depositToL2() public payable returns (uint256) {
+    function depositToChildChain() public payable returns (uint256) {
         uint256 ticketID = inbox.depositEth{ value: msg.value }();
 
         emit EthDeposited(ticketID);
         return ticketID;
     }
 
-    function moveFundsFromL2AliasToAnotherAddress(
+    function moveFundsFromChildChainAliasToAnotherAddress(
         address to,
         uint256 l2callvalue,
         uint256 maxSubmissionCost,
@@ -29,8 +29,8 @@ contract EthDeposit {
     ) public payable returns (uint256) {
         /**
          * We are using unsafeCreateRetryableTicket because the safe one will check if
-         * the msg.value can be used to pay for the l2 callvalue while we will use l2's
-         * balance to pay for the l2 callvalue rather than l1 msg.value.
+         * the parent chain's msg.value can be used to pay for the child chain's callvalue, while in this case
+         * we'll use child chain's balance to pay for the callvalue rather than parent chain's msg.value
          */
         uint256 ticketID = inbox.unsafeCreateRetryableTicket{ value: msg.value }(
             to,

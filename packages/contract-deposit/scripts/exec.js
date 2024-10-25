@@ -3,38 +3,40 @@ const { BigNumber } = require('@ethersproject/bignumber')
 const hre = require('hardhat')
 const ethers = require('ethers')
 const {
-  L1ToL2MessageGasEstimator,
-} = require('@arbitrum/sdk/dist/lib/message/L1ToL2MessageGasEstimator')
-const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
+  arbLog,
+  requireEnvVariables,
+  addNetworkFromFile,
+} = require('arb-shared-dependencies')
 const {
-  L1TransactionReceipt,
-  L1ToL2MessageStatus,
   EthBridger,
-  getL2Network,
-  addDefaultLocalNetwork,
   Address,
   EthDepositStatus,
+  ParentToChildMessageGasEstimator,
+  ParentTransactionReceipt,
+  ParentToChildMessageStatus,
+  getArbitrumNetwork,
+  ParentEthDepositTransactionReceipt,
 } = require('@arbitrum/sdk')
-const {
-  L1EthDepositTransactionReceipt,
-} = require('@arbitrum/sdk/dist/lib/message/L1Transaction')
 const { getBaseFee } = require('@arbitrum/sdk/dist/lib/utils/lib')
-requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
+requireEnvVariables([
+  'PRIVATE_KEY',
+  'CHAIN_RPC',
+  'PARENT_CHAIN_RPC',
+  'TransferTo',
+])
 
 /**
- * Set up: instantiate L1 / L2 wallets connected to providers
+ * Set up: instantiate wallets connected to providers
  */
 const walletPrivateKey = process.env.DEVNET_PRIVKEY
 
-const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
-const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
+const parentChainProvider = new providers.JsonRpcProvider(
+  process.env.PARENT_CHAIN_RPC
+)
+const childChainProvider = new providers.JsonRpcProvider(process.env.CHAIN_RPC)
 
-const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
-const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
-
-if (!process.env.TransferTo) {
-  throw new Error('Please set TransferTo in .env')
-}
+const parentChainWallet = new Wallet(walletPrivateKey, parentChainProvider)
+const childChainWallet = new Wallet(walletPrivateKey, childChainProvider)
 
 const transferTo = process.env.TransferTo
 
@@ -45,86 +47,95 @@ const main = async () => {
    * Add the default local network configuration to the SDK
    * to allow this script to run on a local node
    */
-  addDefaultLocalNetwork()
+  addNetworkFromFile()
 
   /**
-   * Use l2Network to create an Arbitrum SDK EthBridger instance
+   * Use childChainNetwork to create an Arbitrum SDK EthBridger instance
    * We'll use EthBridger to retrieve the Inbox address
    */
-
-  const l2Network = await getL2Network(l2Provider)
-  const ethBridger = new EthBridger(l2Network)
-  const inboxAddress = ethBridger.l2Network.ethBridge.inbox
+  const childChainNetwork = await getArbitrumNetwork(childChainProvider)
+  const ethBridger = new EthBridger(childChainNetwork)
+  const inboxAddress = ethBridger.childNetwork.ethBridge.inbox
 
   /**
-   * We deploy EthDeposit contract to L1 first and send eth to l2 via this contract,
-   * the funds will deposit to the contract's alias address first.
+   * We deploy EthDeposit contract to the parent chain first and send eth to
+   * the child chain via this contract.
+   * Funds will deposit to the contract's alias address first.
    */
-  const L1DepositContract = await (
+  const DepositContract = await (
     await hre.ethers.getContractFactory('EthDeposit')
-  ).connect(l1Wallet)
+  ).connect(parentChainWallet)
   console.log('Deploying EthDeposit contract...')
-  const l1DepositContract = await L1DepositContract.deploy(inboxAddress)
-  await l1DepositContract.deployed()
-  console.log(`deployed to ${l1DepositContract.address}`)
+  const depositContract = await DepositContract.deploy(inboxAddress)
+  await depositContract.deployed()
+  console.log(`deployed to ${depositContract.address}`)
 
   /**
    * This sdk class will help we to get the alias address of the contract
    */
-  const contractAddress = new Address(l1DepositContract.address)
+  const contractAddress = new Address(depositContract.address)
   const contractAliasAddress = contractAddress.applyAlias().value
 
   console.log(`Sending deposit transaction...`)
 
-  const ethDepositTx = await l1DepositContract.depositToL2({
+  const ethDepositTx = await depositContract.depositToChildChain({
     value: ethers.utils.parseEther('0.01'),
   })
   const ethDepositRec = await ethDepositTx.wait()
 
   console.log(
-    `Deposit txn confirmed on L1! 🙌 ${ethDepositRec.transactionHash}`
+    `Deposit txn confirmed on the parent chain! 🙌 ${ethDepositRec.transactionHash}`
   )
 
   console.log(
-    'Waiting for the L2 execution of the deposit. This may take up to 10-15 minutes ⏰'
+    'Waiting for the execution of the deposit in the child chain. This may take up to 10-15 minutes ⏰'
   )
 
-  const l1DepositTxReceipt = new L1EthDepositTransactionReceipt(ethDepositRec)
-  const l2DepositResult = await l1DepositTxReceipt.waitForL2(l2Provider)
+  const parentChainDepositTxReceipt = new ParentEthDepositTransactionReceipt(
+    ethDepositRec
+  )
+  const childChainDepositResult =
+    await parentChainDepositTxReceipt.waitForChildTransactionReceipt(
+      childChainProvider
+    )
 
   /**
    * If deposit success, check the alias address' balance.
    * If deposit failed, throw an error.
    */
-  if (l2DepositResult.complete) {
+  if (childChainDepositResult.complete) {
     console.log(
-      `Deposit to L2 is complete, the L2 tx hash is ${l2DepositResult.l2TxReceipt.transactionHash}`
+      `Deposit to the child chain is complete, the tx hash (in the child chain) is ${childChainDepositResult.childTxReceipt.transactionHash}`
     )
-    const beforeAliasBalance = await l2Provider.getBalance(contractAliasAddress)
+    const beforeAliasBalance = await childChainProvider.getBalance(
+      contractAliasAddress
+    )
     console.log(
-      `The balance on l2 alias before transfer: "${ethers.utils.formatEther(
+      `The balance on the alias address in the child chain before transfer: "${ethers.utils.formatEther(
         beforeAliasBalance
       )} ethers"`
     )
   } else {
     throw new Error(
-      `Deposit to L2 failed, EthDepositStatus is ${
-        EthDepositStatus[l2DepositResult.message.status]
+      `Deposit to the child chain failed, EthDepositStatus is ${
+        EthDepositStatus[childChainDepositResult.message.status]
       }`
     )
   }
 
   console.log(
-    'Creating retryable ticket to send txn on l2 to transfer funds...'
+    'Creating retryable ticket to send txn to the child chain to transfer funds...'
   )
 
   /**
    * Now we can query the required gas params using the estimateAll method in Arbitrum SDK
    */
-  const l1ToL2MessageGasEstimate = new L1ToL2MessageGasEstimator(l2Provider)
+  const parentToChildMessageGasEstimate = new ParentToChildMessageGasEstimator(
+    childChainProvider
+  )
 
   /**
-   * Users can override the estimated gas params when sending an L1-L2 message
+   * Users can override the estimated gas params when sending a parent-to-child message
    * Note that this is totally optional
    * Here we include and example for how to provide these overriding values
    */
@@ -145,65 +156,66 @@ const main = async () => {
   }
 
   /**
-   * The estimateAll method gives us the following values for sending an L1->L2 message
+   * The estimateAll method gives us the following values for sending a ParentToChild message
    * (1) maxSubmissionCost: The maximum cost to be paid for submitting the transaction
-   * (2) gasLimit: The L2 gas limit
-   * (3) deposit: The total amount to deposit on L1 to cover L2 gas and L2 call value
+   * (2) gasLimit: The gas limit for execution in the child chain
+   * (3) deposit: The total amount to deposit on the parent chain to cover gas and call value on the child chain
    */
-  const L1ToL2MessageGasParams = await l1ToL2MessageGasEstimate.estimateAll(
-    {
-      from: contractAliasAddress,
-      to: transferTo,
-      l2CallValue: ethers.utils.parseEther('0.01'), // because we deposited 0.01 ether, so we also transfer 0.01 ether out here.
-      excessFeeRefundAddress: l1DepositContract.address,
-      callValueRefundAddress: l1DepositContract.address,
-      data: [],
-    },
-    await getBaseFee(l1Provider),
-    l1Provider,
-    RetryablesGasOverrides //if provided, it will override the estimated values. Note that providing "RetryablesGasOverrides" is totally optional.
-  )
+  const parentToChildMessageGasParams =
+    await parentToChildMessageGasEstimate.estimateAll(
+      {
+        from: contractAliasAddress,
+        to: transferTo,
+        l2CallValue: ethers.utils.parseEther('0.01'), // because we deposited 0.01 ether, so we also transfer 0.01 ether out here.
+        excessFeeRefundAddress: depositContract.address,
+        callValueRefundAddress: depositContract.address,
+        data: [],
+      },
+      await getBaseFee(parentChainProvider),
+      parentChainProvider,
+      RetryablesGasOverrides //if provided, it will override the estimated values. Note that providing "RetryablesGasOverrides" is totally optional.
+    )
   console.log(
     `Current retryable base submission price is: ${ethers.utils.formatEther(
-      L1ToL2MessageGasParams.maxSubmissionCost.toString()
+      parentToChildMessageGasParams.maxSubmissionCost.toString()
     )} ethers`
   )
 
   /**
-   * For the L2 gas price, we simply query it from the L2 provider, as we would when using L1.
+   * For the gas price in the child chain, we simply query it from the child chain's provider, as we would when using the parent chain
    */
-  const gasPriceBid = await l2Provider.getGasPrice()
+  const gasPriceBid = await childChainProvider.getGasPrice()
   console.log(
-    `L2 gas price: ${ethers.utils.formatUnits(
+    `Child chain's gas price: ${ethers.utils.formatUnits(
       gasPriceBid.toString(),
       'gwei'
     )} gwei`
   )
 
   /**
-   * Because L1ToL2MessageGasParams.deposit add the l2 callvalue to estimate,
-   * we need to sub it here so l1 tx won't pay l2callvalue and it will use the
-   * alias balance on l2 directly.
+   * Because parentToChildMessageGasParams.deposit adds the l2callvalue to the estimate,
+   * we need to subtract it here so the transaction in the parent chain doesn't pay l2callvalue
+   * and instead uses the alias balance on the child chain directly.
    */
-  const depositAmount = L1ToL2MessageGasParams.deposit.sub(
+  const depositAmount = parentToChildMessageGasParams.deposit.sub(
     ethers.utils.parseEther('0.01')
   )
 
   console.log(
     `Transfer funds txn needs ${ethers.utils.formatEther(
       depositAmount
-    )} ethers callValue for L2 fees`
+    )} ethers callValue for fees in the child chain`
   )
 
   /**
    * Call the contract's method to transfer the funds from the alias to the address you set
    */
   const setTransferTx =
-    await l1DepositContract.moveFundsFromL2AliasToAnotherAddress(
+    await depositContract.moveFundsFromChildChainAliasToAnotherAddress(
       transferTo,
       ethers.utils.parseEther('0.01'), // because we deposited 0.01 ether, so we also transfer 0.01 ether out here.
-      L1ToL2MessageGasParams.maxSubmissionCost,
-      L1ToL2MessageGasParams.gasLimit,
+      parentToChildMessageGasParams.maxSubmissionCost,
+      parentToChildMessageGasParams.gasLimit,
       gasPriceBid,
       {
         value: depositAmount,
@@ -212,45 +224,49 @@ const main = async () => {
   const setTransferRec = await setTransferTx.wait()
 
   console.log(
-    `Transfer funds txn confirmed on L1! 🙌 ${setTransferRec.transactionHash}`
+    `Transfer funds txn confirmed on the parent chain! 🙌 ${setTransferRec.transactionHash}`
   )
 
-  const l1TransferTxReceipt = new L1TransactionReceipt(setTransferRec)
+  const parentTransferTxReceipt = new ParentTransactionReceipt(setTransferRec)
 
   /**
-   * In principle, a single L1 txn can trigger any number of L1-to-L2 messages (each with its own sequencer number).
-   * In this case, we know our txn triggered only one
-   * Here, We check if our L1 to L2 message is redeemed on L2
+   * In principle, a single txn on the parent chain can trigger any number of ParentToChild messages
+   * (each with its own sequencer number). In this case, we know our txn triggered only one
+   * Here, We check if our ParentToChild message is redeemed on the child chain
    */
-  const messages = await l1TransferTxReceipt.getL1ToL2Messages(l2Wallet)
+  const messages = await parentTransferTxReceipt.getParentToChildMessages(
+    childChainWallet
+  )
   const message = messages[0]
   console.log(
-    'Waiting for the L2 execution of the transaction. This may take up to 10-15 minutes ⏰'
+    'Waiting for the execution of the transaction on the child chain. This may take up to 10-15 minutes ⏰'
   )
   const messageResult = await message.waitForStatus()
   const status = messageResult.status
-  if (status === L1ToL2MessageStatus.REDEEMED) {
+  if (status === ParentToChildMessageStatus.REDEEMED) {
     console.log(
-      `L2 retryable ticket is executed 🥳 ${messageResult.l2TxReceipt.transactionHash}`
+      `Retryable ticket is executed in the child chain 🥳 ${messageResult.childTxReceipt.transactionHash}`
     )
   } else {
     throw new Error(
-      `L2 retryable ticket is failed with status ${L1ToL2MessageStatus[status]}`
+      `Retryable ticket execution failed in the child chain with status ${ParentToChildMessageStatus[status]}`
     )
   }
 
   /**
    * Now when we get the balance again, we should see the funds transferred to the address you set
    */
-  const afterAliasBalance = await l2Provider.getBalance(contractAliasAddress)
-  const balanceOnTransferTo = await l2Provider.getBalance(transferTo)
+  const afterAliasBalance = await childChainProvider.getBalance(
+    contractAliasAddress
+  )
+  const balanceOnTransferTo = await childChainProvider.getBalance(transferTo)
   console.log(
-    `The current balance on l2 alias: "${ethers.utils.formatEther(
+    `The current balance on the alias of the address in the child chain: "${ethers.utils.formatEther(
       afterAliasBalance
     )} ethers"`
   )
   console.log(
-    `The current balance on l2 address you set: "${ethers.utils.formatEther(
+    `The current balance on the address you set in the child chain: "${ethers.utils.formatEther(
       balanceOnTransferTo
     )} ethers"`
   )

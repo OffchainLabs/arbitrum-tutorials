@@ -20,11 +20,11 @@ Set the values shown in `.env-sample` as environmental variables. To copy it int
 cp .env-sample .env
 ```
 
-(you'll still need to edit some variables, i.e., `DEVNET_PRIVKEY`)
+(you'll still need to edit some variables, i.e., `PRIVATE_KEY` and `CHAIN_RPC`)
 
 ### More info
 
-See our [developer documentation for more info](https://developer.offchainlabs.com/docs/special_features).
+See our [developer documentation for more info](https://docs.arbitrum.io/).
 
 <p align="left">
   <img width="350" height="150" src= "../../assets/logo.svg" />

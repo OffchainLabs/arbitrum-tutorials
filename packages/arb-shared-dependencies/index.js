@@ -1,5 +1,7 @@
 const hardhatConfig = require('./hardhat.config.js')
 const path = require('path')
+const fs = require('fs')
+const { registerCustomArbitrumNetwork } = require('@arbitrum/sdk')
 require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') })
 
 const wait = (ms = 0) => {
@@ -49,9 +51,30 @@ const requireEnvVariables = envVars => {
   }
   console.log('Environmental variables properly set 👍')
 }
+
+const addNetworkFromFile = () => {
+  const pathToLocalNetworkFile = path.join(
+    __dirname,
+    '..',
+    '..',
+    'localNetwork.json'
+  )
+  if (!fs.existsSync(pathToLocalNetworkFile)) {
+    return
+  }
+
+  const localNetworksFile = fs.readFileSync(pathToLocalNetworkFile, 'utf8')
+  const localL2 = JSON.parse(localNetworksFile).l2Network
+  const localL3 = JSON.parse(localNetworksFile).l3Network
+
+  const childChain = localL3 ? localL3 : localL2
+  registerCustomArbitrumNetwork(childChain)
+}
+
 module.exports = {
   arbLog,
   arbLogTitle,
   hardhatConfig,
   requireEnvVariables,
+  addNetworkFromFile,
 }
