@@ -1,12 +1,12 @@
 # Custom token bridging tutorial
 
-There are some tokens with requirements beyond what are offered via our starndard ERC20 gateway. `custom-token-bridging` demonstrates how to get these custom tokens set up to use our Generic-custom gateway.
+There are some tokens with requirements beyond what are offered via our starndard ERC20 gateway. `custom-token-bridging` demonstrates how to get these custom tokens set up to use our generic-custom gateway.
 
 For more info on bridging assets on Arbitrum, see our [token bridging docs](https://docs.arbitrum.io/build-decentralized-apps/token-bridging/token-bridge-erc20).
 
-#### Custom token bridging using the Generic-custom gateway
+#### Custom token bridging using the generic-custom gateway
 
-Bridging a custom token to the Arbitrum chain is done via the Arbitrum Generic-custom gateway. Our Generic-custom gateway is designed to be flexible enough to be suitable for most (but not necessarily all) custom fungible token needs.
+Bridging a custom token to the Arbitrum chain is done via the Arbitrum generic-custom gateway. Our generic-custom gateway is designed to be flexible enough to be suitable for most (but not necessarily all) custom fungible token needs.
 
 Here, we deploy a [demo custom token](./contracts/ParentChainToken.sol) to the parent chain and a [demo custom token](./contracts/ChildChainToken.sol) to the child chain. We then use the Arbitrum custom gateway contract to register our parent chain custom token to our child chain custom token. Once done with token's registration to the custom gateway, we register our token to the Arbitrum gateway router on the parent chain.
 

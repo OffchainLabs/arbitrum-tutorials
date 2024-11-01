@@ -1,6 +1,6 @@
 # Custom gateway bridging tutorial
 
-When neither the standard ERC20 gateway, nor the Generic-custom gateway are enough to fulfill the bridging requirements of a token, there is the possibility of creating and registering a custom gateway. `custom-gateway-bridging` demonstrates how to create and register a custom gateway in the Arbitrum's Token Bridge.
+When neither the standard ERC20 gateway, nor the generic-custom gateway are enough to fulfill the bridging requirements of a token, there is the possibility of creating and registering a custom gateway. `custom-gateway-bridging` demonstrates how to create and register a custom gateway in the Arbitrum's Token Bridge.
 
 For more info on bridging assets on Arbitrum, see our [token bridging docs](https://docs.arbitrum.io/build-decentralized-apps/token-bridging/token-bridge-erc20).
 
