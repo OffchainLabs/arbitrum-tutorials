@@ -1,14 +1,14 @@
 const { ethers } = require('hardhat')
 const { providers, Wallet, BigNumber } = require('ethers')
 const {
-  getL2Network,
-  addDefaultLocalNetwork,
-  L1ToL2MessageStatus,
+  getArbitrumNetwork,
+  ParentToChildMessageStatus,
 } = require('@arbitrum/sdk')
 const {
   arbLog,
   arbLogTitle,
   requireEnvVariables,
+  addCustomNetworkFromFile,
 } = require('arb-shared-dependencies')
 const {
   AdminErc20Bridger,
@@ -16,21 +16,23 @@ const {
 } = require('@arbitrum/sdk/dist/lib/assetBridger/erc20Bridger')
 const { expect } = require('chai')
 require('dotenv').config()
-requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
+requireEnvVariables(['PRIVATE_KEY', 'CHAIN_RPC', 'PARENT_CHAIN_RPC'])
 
 /**
- * Set up: instantiate L1 / L2 wallets connected to providers
+ * Set up: instantiate wallets connected to providers
  */
-const walletPrivateKey = process.env.DEVNET_PRIVKEY
+const walletPrivateKey = process.env.PRIVATE_KEY
 
-const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
-const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
+const parentChainProvider = new providers.JsonRpcProvider(
+  process.env.PARENT_CHAIN_RPC
+)
+const childChainProvider = new providers.JsonRpcProvider(process.env.CHAIN_RPC)
 
-const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
-const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
+const parentChainWallet = new Wallet(walletPrivateKey, parentChainProvider)
+const childChainWallet = new Wallet(walletPrivateKey, childChainProvider)
 
 /**
- * Set the initial supply of L1 token that we want to bridge
+ * Set the initial supply of the token that we want to bridge
  * Note that you can change the value.
  * We also set the amount we want to send in the test deposit and withdraw
  */
@@ -44,82 +46,98 @@ const main = async () => {
   )
 
   /**
-   * Add the default local network configuration to the SDK
-   * to allow this script to run on a local node
+   * Add the custom network configuration to the SDK if present
    */
-  addDefaultLocalNetwork()
+  addCustomNetworkFromFile()
 
   /**
-   * Use l2Network to create an Arbitrum SDK AdminErc20Bridger instance
+   * Use childChainNetwork to create an Arbitrum SDK AdminErc20Bridger instance
    * We'll use AdminErc20Bridger for its convenience methods around registering tokens to a custom gateway
    */
-  const l2Network = await getL2Network(l2Provider)
-  const erc20Bridger = new Erc20Bridger(l2Network)
-  const adminTokenBridger = new AdminErc20Bridger(l2Network)
-  const l1Router = l2Network.tokenBridge.l1GatewayRouter
-  const l2Router = l2Network.tokenBridge.l2GatewayRouter
-  const inbox = l2Network.ethBridge.inbox
+  const childChainNetwork = await getArbitrumNetwork(childChainProvider)
+  const erc20Bridger = new Erc20Bridger(childChainNetwork)
+  const adminTokenBridger = new AdminErc20Bridger(childChainNetwork)
+  const parentChainGatewayRouter =
+    childChainNetwork.tokenBridge.parentGatewayRouter
+  const childChainGatewayRouter =
+    childChainNetwork.tokenBridge.childGatewayRouter
+  const inbox = childChainNetwork.ethBridge.inbox
 
   arbLogTitle('Deployment of custom gateways and tokens')
 
   /**
-   * Deploy our custom gateway to L1
+   * Deploy our custom gateway to the parent chain
    */
-  const L1CustomGateway = await await ethers.getContractFactory(
-    'L1CustomGateway',
-    l1Wallet
+  const ParentChainCustomGateway = await ethers.getContractFactory(
+    'ParentChainCustomGateway',
+    parentChainWallet
   )
-  console.log('Deploying custom gateway to L1')
-  const l1CustomGateway = await L1CustomGateway.deploy(l1Router, inbox)
-  await l1CustomGateway.deployed()
-  console.log(`Custom gateway is deployed to L1 at ${l1CustomGateway.address}`)
-  const l1CustomGatewayAddress = l1CustomGateway.address
+  console.log('Deploying custom gateway to the parent chain')
+  const parentChainCustomGateway = await ParentChainCustomGateway.deploy(
+    parentChainGatewayRouter,
+    inbox
+  )
+  await parentChainCustomGateway.deployed()
+  console.log(
+    `Custom gateway is deployed to the parent chain at ${parentChainCustomGateway.address}`
+  )
+  const parentChainCustomGatewayAddress = parentChainCustomGateway.address
 
   /**
-   * Deploy our custom gateway to L2
+   * Deploy our custom gateway to the child chain
    */
-  const L2CustomGateway = await await ethers.getContractFactory(
-    'L2CustomGateway',
-    l2Wallet
+  const ChildChainCustomGateway = await ethers.getContractFactory(
+    'ChildChainCustomGateway',
+    childChainWallet
   )
-  console.log('Deploying custom gateway to L2')
-  const l2CustomGateway = await L2CustomGateway.deploy(l2Router)
-  await l2CustomGateway.deployed()
-  console.log(`Custom gateway is deployed to L2 at ${l2CustomGateway.address}`)
-  const l2CustomGatewayAddress = l2CustomGateway.address
+  console.log('Deploying custom gateway to the child chain')
+  const childChainCustomGateway = await ChildChainCustomGateway.deploy(
+    childChainGatewayRouter
+  )
+  await childChainCustomGateway.deployed()
+  console.log(
+    `Custom gateway is deployed to the child chain at ${childChainCustomGateway.address}`
+  )
+  const childChainCustomGatewayAddress = childChainCustomGateway.address
 
   /**
-   * Deploy our custom token smart contract to L1
-   * We give the custom token contract the address of l1CustomGateway and l1GatewayRouter as well as the initial supply (premint)
+   * Deploy our custom token smart contract to the parent chain
+   * We give the custom token contract the address of parentChainCustomGateway
+   * and parentChainGatewayRouter as well as the initial supply (premint)
    */
-  const L1CustomToken = await await ethers.getContractFactory(
-    'L1Token',
-    l1Wallet
+  const ParentChainCustomToken = await ethers.getContractFactory(
+    'ParentChainToken',
+    parentChainWallet
   )
-  console.log('Deploying custom token to L1')
-  const l1CustomToken = await L1CustomToken.deploy(
-    l1CustomGatewayAddress,
-    l1Router,
+  console.log('Deploying custom token to the parent chain')
+  const parentChainCustomToken = await ParentChainCustomToken.deploy(
+    parentChainCustomGatewayAddress,
+    parentChainGatewayRouter,
     premint
   )
-  await l1CustomToken.deployed()
-  console.log(`custom token is deployed to L1 at ${l1CustomToken.address}`)
+  await parentChainCustomToken.deployed()
+  console.log(
+    `custom token is deployed to the parent chain at ${parentChainCustomToken.address}`
+  )
 
   /**
-   * Deploy our custom token smart contract to L2
-   * We give the custom token contract the address of l2CustomGateway and our l1CustomToken
+   * Deploy our custom token smart contract to the child chain
+   * We give the custom token contract the address of childChainCustomGateway
+   * and our parentChainCustomToken
    */
-  const L2CustomToken = await await ethers.getContractFactory(
-    'L2Token',
-    l2Wallet
+  const ChildChainCustomToken = await ethers.getContractFactory(
+    'ChildChainToken',
+    childChainWallet
   )
-  console.log('Deploying custom token to L2')
-  const l2CustomToken = await L2CustomToken.deploy(
-    l2CustomGatewayAddress,
-    l1CustomToken.address
+  console.log('Deploying custom token to the child chain')
+  const childChainCustomToken = await ChildChainCustomToken.deploy(
+    childChainCustomGatewayAddress,
+    parentChainCustomToken.address
   )
-  await l2CustomToken.deployed()
-  console.log(`custom token is deployed to L2 at ${l2CustomToken.address}`)
+  await childChainCustomToken.deployed()
+  console.log(
+    `custom token is deployed to the child chain at ${childChainCustomToken.address}`
+  )
 
   /**
    * Set the token bridge information on the custom gateways
@@ -127,67 +145,73 @@ const main = async () => {
    * functions on the custom gateways to set the token bridge addresses in a second step. This could be
    * avoided if you are using proxies or the opcode CREATE2 for example)
    */
-  console.log('Setting token bridge information on L1CustomGateway:')
-  const setTokenBridgeInfoOnL1 =
-    await l1CustomGateway.setTokenBridgeInformation(
-      l1CustomToken.address,
-      l2CustomToken.address,
-      l2CustomGatewayAddress
+  console.log('Setting token bridge information on ParentChainCustomGateway:')
+  const setTokenBridgeInfoOnParentChain =
+    await parentChainCustomGateway.setTokenBridgeInformation(
+      parentChainCustomToken.address,
+      childChainCustomToken.address,
+      childChainCustomGatewayAddress
     )
 
-  const setTokenBridgeInfoOnL1Rec = await setTokenBridgeInfoOnL1.wait()
+  const setTokenBridgeInfoOnParentChainReceipt =
+    await setTokenBridgeInfoOnParentChain.wait()
   console.log(
-    `Token bridge information set on L1CustomGateway! L1 receipt is: ${setTokenBridgeInfoOnL1Rec.transactionHash}`
+    `Token bridge information set on ParentChainCustomGateway! Transaction receipt in the parent chain is: ${setTokenBridgeInfoOnParentChainReceipt.transactionHash}`
   )
 
-  console.log('Setting token bridge information on L2CustomGateway:')
-  const setTokenBridgeInfoOnL2 =
-    await l2CustomGateway.setTokenBridgeInformation(
-      l1CustomToken.address,
-      l2CustomToken.address,
-      l1CustomGatewayAddress
+  console.log('Setting token bridge information on ChildChainCustomGateway:')
+  const setTokenBridgeInfoOnChildChainTransaction =
+    await childChainCustomGateway.setTokenBridgeInformation(
+      parentChainCustomToken.address,
+      childChainCustomToken.address,
+      parentChainCustomGatewayAddress
     )
 
-  const setTokenBridgeInfoOnL2Rec = await setTokenBridgeInfoOnL2.wait()
+  const setTokenBridgeInfoOnChildChainTransactionReceipt =
+    await setTokenBridgeInfoOnChildChainTransaction.wait()
   console.log(
-    `Token bridge information set on L2CustomGateway! L2 receipt is: ${setTokenBridgeInfoOnL2Rec.transactionHash}`
+    `Token bridge information set on ChildChainCustomGateway! Transaction receipt in the child chain is: ${setTokenBridgeInfoOnChildChainTransactionReceipt.transactionHash}`
   )
 
   /**
    * Register the custom gateway as the gateway of our custom token
    */
-  console.log('Registering custom token on L2:')
-  const registerTokenTx = await adminTokenBridger.registerCustomToken(
-    l1CustomToken.address,
-    l2CustomToken.address,
-    l1Wallet,
-    l2Provider
+  console.log('Registering custom token on the child chain:')
+  const registerTokenTransaction = await adminTokenBridger.registerCustomToken(
+    parentChainCustomToken.address,
+    childChainCustomToken.address,
+    parentChainWallet,
+    childChainProvider
   )
 
-  const registerTokenRec = await registerTokenTx.wait()
+  const registerTokenTransactionReceipt = await registerTokenTransaction.wait()
   console.log(
-    `Registering token txn confirmed on L1! 🙌 L1 receipt is: ${registerTokenRec.transactionHash}.`
+    `Registering token txn confirmed on the parent chain! 🙌 Receipt is: ${registerTokenTransactionReceipt.transactionHash}.`
   )
   console.log(
-    `Waiting for L2 retryable (takes 10-15 minutes); current time: ${new Date().toTimeString()})`
+    `Waiting for the retryable to be executed on the child chain (takes 10-15 minutes); current time: ${new Date().toTimeString()})`
   )
 
   /**
-   * The L1 side is confirmed; now we listen and wait for the L2 side to be executed; we can do this by computing the expected txn hash of the L2 transaction.
-   * To compute this txn hash, we need our message's "sequence numbers", unique identifiers of each L1 to L2 message.
+   * The parent chain side is confirmed; now we listen and wait for the child chain side to be executed;
+   * we can do this by computing the expected txn hash of the transaction in the child chain.
+   * To compute this txn hash, we need our message's "sequence numbers", unique identifiers of each cross-chain message.
    * We'll fetch them from the event logs with a helper method.
    */
-  const l1ToL2Msgs = await registerTokenRec.getL1ToL2Messages(l2Provider)
+  const messages =
+    await registerTokenTransactionReceipt.getParentToChildMessages(
+      childChainProvider
+    )
 
   /**
-   * In this case, the registerTokenOnL2 method creates 1 L1-to-L2 messages to set the L1 token to the Custom Gateway via the Router
-   * Here, We check if that message is redeemed on L2
+   * In this case, the registerTokenOnChildChain method creates 1 cross-chain message to set the parent chain token
+   * to the Custom Gateway via the Router. Here, We check if that message was executed on the child chain
    */
-  expect(l1ToL2Msgs.length, 'Should be 1 message.').to.eq(1)
+  expect(messages.length, 'Should be 1 message.').to.eq(1)
 
-  const setGateways = await l1ToL2Msgs[0].waitForStatus()
+  const setGateways = await messages[0].waitForStatus()
   expect(setGateways.status, 'Set gateways not redeemed.').to.eq(
-    L1ToL2MessageStatus.REDEEMED
+    ParentToChildMessageStatus.REDEEMED
   )
 
   console.log(
@@ -199,77 +223,87 @@ const main = async () => {
    */
   arbLogTitle('Test deposit')
 
-  const expectedL1GatewayAddress = await erc20Bridger.getL1GatewayAddress(
-    l1CustomToken.address,
-    l1Provider
-  )
+  const expectedParentChainGatewayAddress =
+    await erc20Bridger.getParentGatewayAddress(
+      parentChainCustomToken.address,
+      parentChainProvider
+    )
   expect(
-    expectedL1GatewayAddress,
-    `Expected L1 gateway address is not right: ${expectedL1GatewayAddress} but expected ${l1CustomGatewayAddress}`
-  ).to.eq(l1CustomGatewayAddress)
+    expectedParentChainGatewayAddress,
+    `Expected gateway address in the parent chain is not right: ${expectedParentChainGatewayAddress} but expected ${parentChainCustomGatewayAddress}`
+  ).to.eq(parentChainCustomGatewayAddress)
 
-  const initialBridgeTokenBalance = await l1CustomToken.balanceOf(
-    expectedL1GatewayAddress
+  const initialBridgeTokenBalance = await parentChainCustomToken.balanceOf(
+    expectedParentChainGatewayAddress
   )
 
   /**
    * Because the token might have decimals, we update the amount to deposit taking into account those decimals
    */
-  const tokenDecimals = await l1CustomToken.decimals()
+  const tokenDecimals = await parentChainCustomToken.decimals()
   const tokenDepositAmount = tokenAmountToDeposit.mul(
     BigNumber.from(10).pow(tokenDecimals)
   )
 
   /**
-   * Approving the l1CustomGateway to transfer the tokens being deposited
+   * Approving the parentChainCustomGateway to transfer the tokens being deposited
    */
-  console.log('Approving L1CustomGateway:')
-  const approveTx = await erc20Bridger.approveToken({
-    l1Signer: l1Wallet,
-    erc20L1Address: l1CustomToken.address,
+  console.log('Approving ParentChainCustomGateway:')
+  const approveTransaction = await erc20Bridger.approveToken({
+    parentSigner: parentChainWallet,
+    erc20ParentAddress: parentChainCustomToken.address,
   })
 
-  const approveRec = await approveTx.wait()
+  const approveTransactionReceipt = await approveTransaction.wait()
   console.log(
-    `You successfully allowed the Arbitrum Bridge to spend L1Token. Tx hash: ${approveRec.transactionHash}`
+    `You successfully allowed the Arbitrum Bridge to spend ParentChainToken. Tx hash: ${approveTransactionReceipt.transactionHash}`
   )
 
   /**
-   * Deposit L1Token to L2 using erc20Bridger. This will escrow funds in the custom gateway contract on L1, and send a message to mint tokens on L2
+   * Deposit ParentChainToken to the child chain using erc20Bridger.
+   * This will escrow funds in the custom gateway contract on the parent chain,
+   * and send a message to mint tokens on the child chain
    */
-  console.log('Transferring L1Token to L2:')
-  const depositTx = await erc20Bridger.deposit({
+  console.log('Transferring ParentChainToken to the child chain:')
+  const depositTransaction = await erc20Bridger.deposit({
     amount: tokenDepositAmount,
-    erc20L1Address: l1CustomToken.address,
-    l1Signer: l1Wallet,
-    l2Provider: l2Provider,
+    erc20ParentAddress: parentChainCustomToken.address,
+    parentSigner: parentChainWallet,
+    childProvider: childChainProvider,
   })
 
   /**
-   * Now we wait for L1 and L2 side of transactions to be confirmed
+   * Now we wait for both the transaction and the cross-chain message to be confirmed and executed
    */
   console.log(
-    `Deposit initiated: waiting for L2 retryable (takes 10-15 minutes; current time: ${new Date().toTimeString()}) `
+    `Deposit initiated: waiting for the retryable to be executed on the child chain (takes 10-15 minutes; current time: ${new Date().toTimeString()}) `
   )
-  const depositRec = await depositTx.wait()
-  const l2Result = await depositRec.waitForL2(l2Provider)
+  const depositTransactionReceipt = await depositTransaction.wait()
+  const childChainDepositResult =
+    await depositTransactionReceipt.waitForChildTransactionReceipt(
+      childChainProvider
+    )
 
   /**
-   * The `complete` boolean tells us if the l1 to l2 message was successful
+   * The `complete` boolean tells us if the cross-chain message was successful
    */
-  l2Result.complete
+  childChainDepositResult.complete
     ? console.log(
-        `L2 message successful: status: ${L1ToL2MessageStatus[l2Result.status]}`
+        `Deposit to the child chain complete. Status: ${
+          ParentToChildMessageStatus[childChainDepositResult.status]
+        }`
       )
     : console.log(
-        `L2 message failed: status ${L1ToL2MessageStatus[l2Result.status]}`
+        `Deposit to the child chain failed. Status ${
+          ParentToChildMessageStatus[childChainDepositResult.status]
+        }`
       )
 
   /**
    * Get the Bridge token balance
    */
-  const finalBridgeTokenBalance = await l1CustomToken.balanceOf(
-    expectedL1GatewayAddress
+  const finalBridgeTokenBalance = await parentChainCustomToken.balanceOf(
+    expectedParentChainGatewayAddress
   )
 
   /**
@@ -279,30 +313,32 @@ const main = async () => {
     initialBridgeTokenBalance
       .add(tokenDepositAmount)
       .eq(finalBridgeTokenBalance),
-    'bridge balance not updated after L1 token deposit txn'
+    'bridge balance not updated after token deposit from parent chain'
   ).to.be.true
 
   /**
-   * Check if our l2Wallet DappToken balance has been updated correctly
-   * To do so, we use erc20Bridger to get the l2Token address and contract
+   * Check if our childChainWallet token balance has been updated correctly
+   * To do so, we use erc20Bridger to get the childChainToken address and contract
    */
-  const l2TokenAddress = await erc20Bridger.getL2ERC20Address(
-    l1CustomToken.address,
-    l1Provider
+  const childChainTokenAddress = await erc20Bridger.getChildErc20Address(
+    parentChainCustomToken.address,
+    parentChainProvider
   )
   expect(
-    l2TokenAddress,
-    `Expected L2 token address is not right: ${l2TokenAddress} but expected ${l2CustomToken.address}`
-  ).to.eq(l2CustomToken.address)
+    childChainTokenAddress,
+    `Expected token address in the child chain is not right: ${childChainTokenAddress} but expected ${childChainCustomToken.address}`
+  ).to.eq(childChainCustomToken.address)
 
-  const testWalletL2Balance = await l2CustomToken.balanceOf(l2Wallet.address)
+  const testWalletChildChainBalance = await childChainCustomToken.balanceOf(
+    childChainWallet.address
+  )
   expect(
-    testWalletL2Balance.eq(tokenDepositAmount),
-    'l2 wallet not updated after deposit'
+    testWalletChildChainBalance.eq(tokenDepositAmount),
+    'token balance on child chain not updated after deposit'
   ).to.be.true
 
   /**
-   * We finally test a withdrawal to verify the L2 gateway is also working as intended
+   * We finally test a withdrawal to verify that the child chain gateway is also working as intended
    */
   arbLogTitle('Test withdrawal')
 
@@ -314,81 +350,93 @@ const main = async () => {
   )
 
   /**
-   * Withdraw L2Token to L1 using erc20Bridger. This will burn tokens on L2 and release funds in the custom gateway contract on L1
+   * Withdraw ChildChainToken to the parent chain using erc20Bridger.
+   * This will burn tokens on the child chain and release funds in the custom gateway contract on the parent chain
    */
-  console.log('Withdrawing L2Token to L1:')
-  const withdrawTx = await erc20Bridger.withdraw({
+  console.log('Withdrawing ChildChainToken to the parent chain:')
+  const withdrawTransaction = await erc20Bridger.withdraw({
     amount: tokenWithdrawAmount,
-    destinationAddress: l1Wallet.address,
-    erc20l1Address: l1CustomToken.address,
-    l2Signer: l2Wallet,
+    destinationAddress: parentChainWallet.address,
+    erc20ParentAddress: parentChainCustomToken.address,
+    childSigner: childChainWallet,
   })
-  const withdrawRec = await withdrawTx.wait()
-  console.log(`Token withdrawal initiated! 🥳 ${withdrawRec.transactionHash}`)
+  const withdrawTransactionReceipt = await withdrawTransaction.wait()
+  console.log(
+    `Token withdrawal initiated! 🥳 ${withdrawTransactionReceipt.transactionHash}`
+  )
 
   /**
    * And with that, our withdrawal is initiated.
-   * Any time after the transaction's assertion is confirmed (around 7 days), funds can be transferred out of the bridge via the outbox contract
-   * We'll check our l2Wallet L2CustomToken balance here:
+   * Any time after the transaction's assertion is confirmed (around 7 days by default),
+   * funds can be transferred out of the bridge via the outbox contract
+   * We'll check our childChainWallet balance of the ChildChainCustomToken here:
    */
-  const l2WalletBalance = await l2CustomToken.balanceOf(l2Wallet.address)
+  const childChainWalletBalance = await childChainCustomToken.balanceOf(
+    childChainWallet.address
+  )
 
   expect(
-    l2WalletBalance.add(tokenWithdrawAmount).eq(tokenDepositAmount),
+    childChainWalletBalance.add(tokenWithdrawAmount).eq(tokenDepositAmount),
     'token withdraw balance not deducted'
   ).to.be.true
 
   console.log(
-    `To to claim funds (after dispute period), see outbox-execute repo 🤞🏻`
+    `To claim funds (after dispute period), see outbox-execute repo 🤞🏻`
   )
 
   /**
    * As a final test, we remove the ability to do deposits and test the reverting call
    */
   arbLogTitle('Test custom functionality (Disable deposits)')
-  const disableTx = await l1CustomGateway.disableDeposits()
-  await disableTx.wait()
+  const disableTransaction = await parentChainCustomGateway.disableDeposits()
+  await disableTransaction.wait()
 
   console.log('Trying to deposit tokens after disabling deposits')
   try {
     await erc20Bridger.deposit({
       amount: tokenDepositAmount,
-      erc20L1Address: l1CustomToken.address,
-      l1Signer: l1Wallet,
-      l2Provider: l2Provider,
+      erc20ParentAddress: parentChainCustomToken.address,
+      parentSigner: parentChainWallet,
+      childProvider: childChainProvider,
     })
     return
   } catch (error) {
     console.log('Transaction failed as expected')
   }
 
-  const enableTx = await l1CustomGateway.enableDeposits()
-  await enableTx.wait()
+  const enableTransaction = await parentChainCustomGateway.enableDeposits()
+  await enableTransaction.wait()
 
   console.log('Trying to deposit after enabling deposits back:')
-  const depositEnabledTx = await erc20Bridger.deposit({
+  const depositEnabledTransaction = await erc20Bridger.deposit({
     amount: tokenDepositAmount,
-    erc20L1Address: l1CustomToken.address,
-    l1Signer: l1Wallet,
-    l2Provider: l2Provider,
+    erc20ParentAddress: parentChainCustomToken.address,
+    parentSigner: parentChainWallet,
+    childProvider: childChainProvider,
   })
-  const depositEnabledRec = await depositEnabledTx.wait()
+  const depositEnabledTransactionReceipt =
+    await depositEnabledTransaction.wait()
   console.log(
-    `Deposit initiated: waiting for L2 retryable (takes 10-15 minutes; current time: ${new Date().toTimeString()}) `
+    `Deposit initiated: waiting for execution of the retryable on the child chain (takes 10-15 minutes; current time: ${new Date().toTimeString()}) `
   )
-  const l2FinalResult = await depositEnabledRec.waitForL2(l2Provider)
+  const childChainFinalResult =
+    await depositEnabledTransactionReceipt.waitForChildTransactionReceipt(
+      childChainProvider
+    )
 
   /**
-   * The `complete` boolean tells us if the l1 to l2 message was successful
+   * The `complete` boolean tells us if the cross-chain message was successful
    */
-  l2FinalResult.complete
+  childChainFinalResult.complete
     ? console.log(
-        `L2 message successful: status: ${
-          L1ToL2MessageStatus[l2FinalResult.status]
+        `Deposit on child chain successful. Status: ${
+          ParentToChildMessageStatus[childChainFinalResult.status]
         }`
       )
     : console.log(
-        `L2 message failed: status ${L1ToL2MessageStatus[l2FinalResult.status]}`
+        `Deposit on child chain failed. Status: ${
+          ParentToChildMessageStatus[childChainFinalResult.status]
+        }`
       )
 }
 
