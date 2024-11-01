@@ -52,23 +52,23 @@ const requireEnvVariables = envVars => {
   console.log('Environmental variables properly set 👍')
 }
 
-const addNetworkFromFile = () => {
-  const pathToLocalNetworkFile = path.join(
+const addCustomNetworkFromFile = () => {
+  const pathToCustomNetworkFile = path.join(
     __dirname,
     '..',
     '..',
-    'localNetwork.json'
+    'customNetwork.json'
   )
-  if (!fs.existsSync(pathToLocalNetworkFile)) {
+  if (!fs.existsSync(pathToCustomNetworkFile)) {
     return
   }
 
-  const localNetworksFile = fs.readFileSync(pathToLocalNetworkFile, 'utf8')
-  const localL2 = JSON.parse(localNetworksFile).l2Network
-  const localL3 = JSON.parse(localNetworksFile).l3Network
-
-  const childChain = localL3 ? localL3 : localL2
-  registerCustomArbitrumNetwork(childChain)
+  const customNetworkFileContents = fs.readFileSync(
+    pathToCustomNetworkFile,
+    'utf8'
+  )
+  const customNetworkInformation = JSON.parse(customNetworkFileContents)
+  registerCustomArbitrumNetwork(customNetworkInformation)
 }
 
 module.exports = {
@@ -76,5 +76,5 @@ module.exports = {
   arbLogTitle,
   hardhatConfig,
   requireEnvVariables,
-  addNetworkFromFile,
+  addCustomNetworkFromFile,
 }

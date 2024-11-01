@@ -5,7 +5,7 @@ const ethers = require('ethers')
 const {
   arbLog,
   requireEnvVariables,
-  addNetworkFromFile,
+  addCustomNetworkFromFile,
 } = require('arb-shared-dependencies')
 const {
   EthBridger,
@@ -28,7 +28,7 @@ requireEnvVariables([
 /**
  * Set up: instantiate wallets connected to providers
  */
-const walletPrivateKey = process.env.DEVNET_PRIVKEY
+const walletPrivateKey = process.env.PRIVATE_KEY
 
 const parentChainProvider = new providers.JsonRpcProvider(
   process.env.PARENT_CHAIN_RPC
@@ -44,10 +44,9 @@ const main = async () => {
   await arbLog('Contract Cross-chain depositer')
 
   /**
-   * Add the default local network configuration to the SDK
-   * to allow this script to run on a local node
+   * Add the custom network configuration to the SDK if present
    */
-  addNetworkFromFile()
+  addCustomNetworkFromFile()
 
   /**
    * Use childChainNetwork to create an Arbitrum SDK EthBridger instance
