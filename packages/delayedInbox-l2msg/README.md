@@ -1,14 +1,17 @@
-# delayedInbox-l2msg Tutorial
+# Tutorial: send a message from the parent chain
 
-(Note this can only be done in nitro stack, not in Arbitrum classic.)
+`delayedInbox-l2msg` shows how to send a message to your chain (also referred to as an L2Message) only using an RPC of the parent chain. This demo has 2 parts:
 
-delayedInbox-l2msg is a simple sample example that allows you to send a l2 msg without using sequencer way, this can be used when a sequencer censors your tx or when a sequencer is down.
+1. how to send a normal transaction using the delayed inbox ([./scripts/normalTx.js](./scripts/normalTx.js))
+2. how to withdraw your funds back without sending a transaction directly to the sequencer ([./scripts/withdrawFunds.js](./scripts/withdrawFunds.js))
 
-The demo allows you to send an L2 message without having to use the L2 RPC (only using the L1 RPC). This demo has 2 parts; (1) one part will show how to send a normal L2 transaction using the delayed inbox, (2) another will show how to withdraw your funds back without the sequencer.
+## Bypassing the sequencer
 
-If the sequencer goes down when running the `Withdraw Funds`, you need to use our [Arbitrum SDK](https://github.com/OffchainLabs/arbitrum-sdk/blob/master/src/lib/inbox/inbox.ts#L256) to force include your tx to continue. (example [here](https://github.com/OffchainLabs/arbitrum-sdk/blob/401fa424bb4c21b54b77d95fbc95faec15787fe2/fork_test/inbox.test.ts#L131))
+This tutorial also shows the initial step to take if the [sequencer is misbehaving](https://docs.arbitrum.io/how-arbitrum-works/sequencer#unhappyuncommon-case-sequencer-isnt-doing-its-job). In that case, after 24 hours have passed from the moment the message was sent from the parent chain, you can use the SequencerInbox's `forceInclusion` method to move it from the delayed inbox into the core inbox, at which point it's considered finalized.
 
-## Config Environment Variables
+You can also use the [Arbitrum SDK](https://github.com/OffchainLabs/arbitrum-sdk/blob/v4.0.1/src/lib/inbox/inbox.ts#L349-L355) to force include your transaction. See an example [here](https://github.com/OffchainLabs/arbitrum-sdk/blob/v4.0.1/tests/fork/inbox.test.ts#L112).
+
+## Set environment variables
 
 Set the values shown in `.env-sample` as environmental variables. To copy it into a `.env` file:
 
@@ -16,25 +19,23 @@ Set the values shown in `.env-sample` as environmental variables. To copy it int
 cp .env-sample .env
 ```
 
-(you'll still need to edit some variables, i.e., `DEVNET_PRIVKEY`)
+You'll still need to edit some variables, i.e., `PRIVATE_KEY`, `CHAIN_RPC` and `PARENT_CHAIN_RPC`.
 
-### Run Demo
+Note that you can also set the environment variables in an `.env` file in the root of the monorepo, which will be available in all tutorials.
 
-Normal Transaction:
+## Run
+
+Normal transaction:
 
 ```bash
 yarn normalTx
 ```
 
-Withdraw Funds:
+Withdraw funds:
 
 ```bash
 yarn withdrawFunds
 ```
-
-## Curious to see the output on the Arbitrum chain?
-
-Once the script is successfully executed, you can go to the [Arbitrum nitro block explorer](https://sepolia.arbiscan.io), enter your L2 address, and see the corresponding transactions on the Arbitrum chain!
 
 <p align="left">
   <img width="350" height="150" src= "../../assets/logo.svg" />
