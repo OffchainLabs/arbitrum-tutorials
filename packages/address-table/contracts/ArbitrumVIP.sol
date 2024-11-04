@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: Unlicense
-pragma solidity ^0.7.2;
+pragma solidity ^0.8.0;
 
 import "@arbitrum/nitro-contracts/src/precompiles/ArbAddressTable.sol";
 import "hardhat/console.sol";
@@ -10,9 +10,9 @@ contract ArbitrumVIP {
 
     ArbAddressTable arbAddressTable;
 
-    constructor() public {
+    constructor() {
         // connect to precomiled address table contract
-        arbAddressTable = ArbAddressTable(102);
+        arbAddressTable = ArbAddressTable(address(102));
     }
 
     function addVIPPoints(uint256 addressIndex) external {
