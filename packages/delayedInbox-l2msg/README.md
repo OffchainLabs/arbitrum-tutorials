@@ -1,8 +1,8 @@
-# Tutorial: send a message from the parent chain
+# Tutorial: send a signed transaction from the parent chain
 
-`delayedInbox-l2msg` shows how to send a message to your chain (also referred to as an L2Message) only using an RPC of the parent chain. This demo has 2 parts:
+`delayedInbox-l2msg` shows how to send a signed transaction to your chain (also referred to as an L2Message) only using an RPC of the parent chain. This demo has 2 parts:
 
-1. how to send a normal transaction using the delayed inbox ([./scripts/normalTx.js](./scripts/normalTx.js))
+1. how to send a normal signed transaction using the delayed inbox ([./scripts/normalTx.js](./scripts/normalTx.js))
 2. how to withdraw your funds back without sending a transaction directly to the sequencer ([./scripts/withdrawFunds.js](./scripts/withdrawFunds.js))
 
 ## Bypassing the sequencer

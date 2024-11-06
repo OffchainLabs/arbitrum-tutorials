@@ -55,6 +55,7 @@ const main = async () => {
   /**
    * Transfer ether from parent chain to a different address on child chain
    * This convenience method automatically queries for the retryable's max submission cost and forwards the appropriate amount to the specified address on the child chain
+   * by using a retryable ticket instead of a regular deposit.
    * Arguments required are:
    * (1) amount: The amount of ETH to be transferred
    * (2) parentSigner: The address on the parent chain of the account transferring ETH to the child chain
