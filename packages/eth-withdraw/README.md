@@ -1,16 +1,16 @@
-# eth-withdraw tutorial
+# Tutorial: withdraw Ether or native token
 
-`eth-withdraw` shows how to move Ether from an Arbitrum or Orbit chain into its parent chain.
+`eth-withdraw` shows how to move Ether (or your chain's native token if you're using a custom gas token) from an Arbitrum or Orbit chain into its parent chain.
 
-Note that this repo covers initiating an Ether withdrawal. For a demo on releasing the funds from the Outbox, see [outbox-execute](../outbox-execute/README.md)
+Note that this repo covers initiating a withdrawal. For a demo on releasing the funds from the Outbox, see [outbox-execute](../outbox-execute/README.md)
 
 ## How it works (under the hood)
 
-To withdraw Ether from an Arbitrum chain, a client creates an outgoing / child to parent message using the `ArbSys` precompile that later lets them release Ether from its escrow in the parent chain's Bridge contract. For more info, see [this page of the Arbitrum documentation](https://docs.arbitrum.io/how-arbitrum-works/arbos/l2-l1-messaging).
+To withdraw Ether (or your chain's native token) from an Arbitrum chain, a client creates an outgoing / child to parent message using the `ArbSys` precompile that later lets them release the asset from its escrow in the parent chain's Bridge contract. For more info, see [this page of the Arbitrum documentation](https://docs.arbitrum.io/how-arbitrum-works/arbos/l2-l1-messaging).
 
 ## Using the Arbitrum SDK
 
-Our [Arbitrum SDK](https://github.com/OffchainLabs/arbitrum-sdk) provides a simply convenience method for withdrawing Ether, abstracting away the need for the client to connect to any contracts manually.
+Our [Arbitrum SDK](https://github.com/OffchainLabs/arbitrum-sdk) provides a simply convenience method for withdrawing Ether (or your chain's native token), abstracting away the need for the client to connect to any contracts manually.
 
 See [./exec.js](./scripts/exec.js) for inline explanation.
 

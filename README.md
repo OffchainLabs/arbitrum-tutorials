@@ -21,9 +21,9 @@ yarn install
 
 #### :white_check_mark: Moving stuff around
 
-- ⤴️ 🔹 [Deposit Ether](./packages/eth-deposit/)
-- ⤴️ 🔹 [Deposit Ether to a different address](./packages/eth-deposit-to-different-address/)
-- ⤵️ 🔹 [Withdraw Ether](./packages/eth-withdraw/)
+- ⤴️ 🔹 [Deposit Ether or native token](./packages/eth-deposit/)
+- ⤴️ 🔹 [Deposit Ether or native token to a different address](./packages/eth-deposit-to-different-address/)
+- ⤵️ 🔹 [Withdraw Ether or native token](./packages/eth-withdraw/)
 - ⤴️ 💸 [Deposit Token](./packages/token-deposit/)
 - ⤵️ 💸 [Withdraw token](./packages/token-withdraw/)
 - ⤴️ 🔹 [Contract alias control in the child chain, and fund-transfer guide](./packages/contract-deposit/)

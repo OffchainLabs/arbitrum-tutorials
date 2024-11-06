@@ -1,9 +1,5 @@
 const { utils, providers, Wallet } = require('ethers')
-const {
-  getArbitrumNetwork,
-  EthBridger,
-  EthDepositMessageStatus,
-} = require('@arbitrum/sdk')
+const { getArbitrumNetwork, EthBridger } = require('@arbitrum/sdk')
 const {
   arbLog,
   requireEnvVariables,
@@ -34,26 +30,26 @@ const main = async () => {
 
   /**
    * Use childChainNetwork to create an Arbitrum SDK EthBridger instance
-   * We'll use EthBridger for its convenience methods around transferring ETH to the parent chain
+   * We'll use EthBridger for its convenience methods around transferring the native asset to the parent chain
    */
   const childChainNetwork = await getArbitrumNetwork(childChainProvider)
   const ethBridger = new EthBridger(childChainNetwork)
 
   /**
-   * First, let's check our wallet's initial ETH balance in the child chain and ensure there's some ETH to withdraw
+   * First, let's check our wallet's initial balance in the child chain and ensure there's some native asset to withdraw
    */
   const initialEthBalance = await childChainWallet.getBalance()
 
   if (initialEthBalance.lt(withdrawAmount)) {
     console.log(
-      `Oops - not enough ether; fund your wallet on the child chain ${childChainWallet.address} with at least 0.000001 ether`
+      `Oops - not enough balance; fund your wallet on the child chain ${childChainWallet.address} with at least 0.000001 ether (or your chain's gas token)`
     )
     process.exit(1)
   }
   console.log('Wallet properly funded: initiating withdrawal now')
 
   /**
-   * We're ready to withdraw ETH using the ethBridger instance from Arbitrum SDK
+   * We're ready to withdraw the native asset using the ethBridger instance from Arbitrum SDK
    * It will use our current wallet's address as the default destination
    */
   const withdrawTransaction = await ethBridger.withdraw({

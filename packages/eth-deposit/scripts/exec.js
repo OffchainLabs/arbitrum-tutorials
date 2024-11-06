@@ -31,7 +31,7 @@ const childChainWallet = new Wallet(walletPrivateKey, childChainProvider)
 const depositAmount = utils.parseEther('0.0001')
 
 const main = async () => {
-  await arbLog('Deposit Eth via Arbitrum SDK')
+  await arbLog('Deposit native token (e.g. Ether) via Arbitrum SDK')
 
   /**
    * Add the custom network configuration to the SDK if present
@@ -40,22 +40,22 @@ const main = async () => {
 
   /**
    * Use childChainNetwork to create an Arbitrum SDK EthBridger instance
-   * We'll use EthBridger for its convenience methods around transferring ETH to the child chain
+   * We'll use EthBridger for its convenience methods around transferring the native asset to the child chain
    */
   const childChainNetwork = await getArbitrumNetwork(childChainProvider)
   const ethBridger = new EthBridger(childChainNetwork)
 
   /**
-   * First, let's check the wallet's initial ETH balance in the child chain
+   * First, let's check the wallet's initial balance in the child chain
    */
   const initialEthBalance = await childChainWallet.getBalance()
 
   /**
-   * Transfer ether from parent to child chain
+   * Transfer ether (or native token) from parent to child chain
    * This convenience method automatically queries for the retryable's max submission cost and forwards the appropriate amount to the child chain
    * Arguments required are:
-   * (1) amount: The amount of ETH to be transferred
-   * (2) parentSigner: The address on the parent chain of the account transferring ETH to the child chain
+   * (1) amount: The amount of ETH (or native token) to be transferred
+   * (2) parentSigner: The address on the parent chain of the account transferring ETH (or native token) to the child chain
    * (3) childProvider: A provider of the child chain
    */
   const depositTransaction = await ethBridger.deposit({
@@ -98,11 +98,11 @@ const main = async () => {
       )
 
   /**
-   * Our wallet's ETH balance on the child chain should be updated now
+   * Our wallet's balance on the child chain should be updated now
    */
   const updatedEthBalance = await childChainWallet.getBalance()
   console.log(
-    `Your ETH balance in the child chain is updated from ${initialEthBalance.toString()} to ${updatedEthBalance.toString()}`
+    `Your balance in the child chain is updated from ${initialEthBalance.toString()} to ${updatedEthBalance.toString()}`
   )
 }
 main()

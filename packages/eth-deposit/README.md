@@ -1,14 +1,14 @@
-# eth-deposit Tutorial
+# Tutorial: deposit Ether or native token
 
-`eth-deposit` shows how to move Ether from the parent chain into an Arbitrum or Orbit chain.
+`eth-deposit` shows how to move Ether (or your chain's native token if you're using a custom gas token) from the parent chain into an Arbitrum or Orbit chain.
 
 ## How it works (under the hood)
 
-A user deposits Ether onto an Arbitrum chain using Arbitrum's general Parent-to-child message passing system, and simply passing the desired Ether as callvalue and no additional data. For more info, see [this page of the Arbitrum documentation](https://docs.arbitrum.io/how-arbitrum-works/arbos/l1-l2-messaging#eth-deposits).
+A user deposits the chain's native token (e.g. Ether) onto an Arbitrum chain using Arbitrum's general Parent-to-child message passing system, and simply passing the desired Ether as callvalue and no additional data. For more info, see [this page of the Arbitrum documentation](https://docs.arbitrum.io/how-arbitrum-works/arbos/l1-l2-messaging#eth-deposits).
 
 ## Using the Arbitrum SDK
 
-Our [Arbitrum SDK](https://github.com/OffchainLabs/arbitrum-sdk) provides a simply convenience method for depositing Ether, abstracting away the need for the client to connect to any contracts manually.
+Our [Arbitrum SDK](https://github.com/OffchainLabs/arbitrum-sdk) provides a simply convenience method for depositing Ether (or your chain's native token), abstracting away the need for the client to connect to any contracts manually.
 
 See [./exec.js](./scripts/exec.js) for inline explanation.
 

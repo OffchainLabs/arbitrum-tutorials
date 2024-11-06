@@ -1,16 +1,16 @@
-# eth-deposit-to-different-address tutorial
+# Tutorial: deposit Ether or native token to a different address
 
-`eth-deposit-to-different-address` shows how to move Ether from the parent chain into an Arbitrum or Orbit chain, to an address different than the depositor.
+`eth-deposit-to-different-address` shows how to move Ether (or your chain's native token if you're using a custom gas token) from the parent chain into an Arbitrum or Orbit chain, to an address different than the depositor.
 
 ## How it works (under the hood)
 
-For the common case of depositing ETH to the same account on the child chain, use the tutorial [eth-deposit](../eth-deposit/README.md).
+For the common case of depositing Ether (or your chain's native token) to the same account on the child chain, use the tutorial [eth-deposit](../eth-deposit/README.md).
 
-In this specific case, we will use a retryable ticket (Arbitrum's canonical method for creating cross-chain messages) to deposit ETH into a different address. We will use the parameter `l2CallValue` of the retryable ticket to specify the amount of ETH to deposit, and `callValueRefundAddress` to specify the destination address. For more info on retryable tickets, see [this page of the Arbitrum documentation](https://docs.arbitrum.io/how-arbitrum-works/arbos/l1-l2-messaging#eth-deposits).
+In this specific case, we will use a retryable ticket (Arbitrum's canonical method for creating cross-chain messages) to deposit the chain's native token (e.g. Ether) into a different address. We will use the parameter `l2CallValue` of the retryable ticket to specify the amount of assets to deposit, and `callValueRefundAddress` to specify the destination address. For more info on retryable tickets, see [this page of the Arbitrum documentation](https://docs.arbitrum.io/how-arbitrum-works/arbos/l1-l2-messaging#eth-deposits).
 
 ## Using the Arbitrum SDK
 
-Our [Arbitrum SDK](https://github.com/OffchainLabs/arbitrum-sdk) provides a simply convenience method for depositing Ether, abstracting away the need for the client to connect to any contracts manually.
+Our [Arbitrum SDK](https://github.com/OffchainLabs/arbitrum-sdk) provides a simply convenience method for depositing Ether (or your chain's native token), abstracting away the need for the client to connect to any contracts manually.
 
 See [./exec.js](./scripts/exec.js) for inline explanation.
 

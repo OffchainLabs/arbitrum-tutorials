@@ -23,7 +23,6 @@ const parentChainProvider = new providers.JsonRpcProvider(
 const childChainProvider = new providers.JsonRpcProvider(process.env.CHAIN_RPC)
 
 const parentChainWallet = new Wallet(walletPrivateKey, parentChainProvider)
-const childChainWallet = new Wallet(walletPrivateKey, childChainProvider)
 
 /**
  * Set the destination address and amount to be deposited in the child chain (in wei)
@@ -32,7 +31,9 @@ const destAddress = '0x2D98cBc6f944c4bD36EdfE9f98cd7CB57faEC8d6'
 const depositAmount = utils.parseEther('0.0001')
 
 const main = async () => {
-  await arbLog('Deposit Eth via Arbitrum SDK on a different address')
+  await arbLog(
+    'Deposit native token (e.g. Ether) via Arbitrum SDK to a different address'
+  )
 
   /**
    * Add the custom network configuration to the SDK if present
@@ -41,24 +42,24 @@ const main = async () => {
 
   /**
    * Use childChainNetwork to create an Arbitrum SDK EthBridger instance
-   * We'll use EthBridger for its convenience methods around transferring ETH to the child chain
+   * We'll use EthBridger for its convenience methods around transferring the native asset to the child chain
    */
   const childChainNetwork = await getArbitrumNetwork(childChainProvider)
   const ethBridger = new EthBridger(childChainNetwork)
 
   /**
-   * First, let's check the ETH balance of the destination address
+   * First, let's check the balance of the destination address
    */
   const destinationAddressInitialEthBalance =
     await childChainProvider.getBalance(destAddress)
 
   /**
-   * Transfer ether from parent chain to a different address on child chain
+   * Transfer ether (or native token) from parent chain to a different address on child chain
    * This convenience method automatically queries for the retryable's max submission cost and forwards the appropriate amount to the specified address on the child chain
    * by using a retryable ticket instead of a regular deposit.
    * Arguments required are:
-   * (1) amount: The amount of ETH to be transferred
-   * (2) parentSigner: The address on the parent chain of the account transferring ETH to the child chain
+   * (1) amount: The amount of ETH (or native token) to be transferred
+   * (2) parentSigner: The address on the parent chain of the account transferring ETH (or native token) to the child chain
    * (3) childProvider: A provider of the child chain
    * (4) destinationAddress: The address where the ETH will be sent to
    */
@@ -102,12 +103,12 @@ const main = async () => {
       )
 
   /**
-   * Our destination address ETH balance should be updated now
+   * Our destination address balance should be updated now
    */
   const destinationAddressUpdatedEthBalance =
     await childChainProvider.getBalance(destAddress)
   console.log(
-    `ETH balance of the destination address has been updated from ${destinationAddressInitialEthBalance.toString()} to ${destinationAddressUpdatedEthBalance.toString()}`
+    `Balance of the destination address has been updated from ${destinationAddressInitialEthBalance.toString()} to ${destinationAddressUpdatedEthBalance.toString()}`
   )
 }
 main()
