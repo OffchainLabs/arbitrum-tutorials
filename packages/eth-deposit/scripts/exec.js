@@ -1,97 +1,108 @@
 const { utils, providers, Wallet } = require('ethers')
 const {
+  getArbitrumNetwork,
   EthBridger,
-  getL2Network,
-  EthDepositStatus,
-  addDefaultLocalNetwork,
+  EthDepositMessageStatus,
 } = require('@arbitrum/sdk')
-const { parseEther } = utils
-const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
+const {
+  arbLog,
+  requireEnvVariables,
+  addCustomNetworkFromFile,
+} = require('arb-shared-dependencies')
 require('dotenv').config()
-requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
+requireEnvVariables(['PRIVATE_KEY', 'CHAIN_RPC', 'PARENT_CHAIN_RPC'])
 
 /**
- * Set up: instantiate L1 / L2 wallets connected to providers
+ * Set up: instantiate wallets connected to providers
  */
-const walletPrivateKey = process.env.DEVNET_PRIVKEY
+const walletPrivateKey = process.env.PRIVATE_KEY
 
-const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
-const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
+const parentChainProvider = new providers.JsonRpcProvider(
+  process.env.PARENT_CHAIN_RPC
+)
+const childChainProvider = new providers.JsonRpcProvider(process.env.CHAIN_RPC)
 
-const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
-const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
+const parentChainWallet = new Wallet(walletPrivateKey, parentChainProvider)
+const childChainWallet = new Wallet(walletPrivateKey, childChainProvider)
 
 /**
- * Set the amount to be deposited in L2 (in wei)
+ * Set the amount to be deposited in the child chain (in wei)
  */
-const ethToL2DepositAmount = parseEther('0.0001')
+const depositAmount = utils.parseEther('0.0001')
 
 const main = async () => {
-  await arbLog('Deposit Eth via Arbitrum SDK')
+  await arbLog('Deposit native token (e.g. Ether) via Arbitrum SDK')
 
   /**
-   * Add the default local network configuration to the SDK
-   * to allow this script to run on a local node
+   * Add the custom network configuration to the SDK if present
    */
-  addDefaultLocalNetwork()
+  addCustomNetworkFromFile()
 
   /**
-   * Use l2Network to create an Arbitrum SDK EthBridger instance
-   * We'll use EthBridger for its convenience methods around transferring ETH to L2
+   * Use childChainNetwork to create an Arbitrum SDK EthBridger instance
+   * We'll use EthBridger for its convenience methods around transferring the native asset to the child chain
    */
-
-  const l2Network = await getL2Network(l2Provider)
-  const ethBridger = new EthBridger(l2Network)
+  const childChainNetwork = await getArbitrumNetwork(childChainProvider)
+  const ethBridger = new EthBridger(childChainNetwork)
 
   /**
-   * First, let's check the l2Wallet initial ETH balance
+   * First, let's check the wallet's initial balance in the child chain
    */
-  const l2WalletInitialEthBalance = await l2Wallet.getBalance()
+  const initialEthBalance = await childChainWallet.getBalance()
 
   /**
-   * transfer ether from L1 to L2
-   * This convenience method automatically queries for the retryable's max submission cost and forwards the appropriate amount to L2
+   * Transfer ether (or native token) from parent to child chain
+   * This convenience method automatically queries for the retryable's max submission cost and forwards the appropriate amount to the child chain
    * Arguments required are:
-   * (1) amount: The amount of ETH to be transferred to L2
-   * (2) l1Signer: The L1 address transferring ETH to L2
-   * (3) l2Provider: An l2 provider
+   * (1) amount: The amount of ETH (or native token) to be transferred
+   * (2) parentSigner: The address on the parent chain of the account transferring ETH (or native token) to the child chain
+   * (3) childProvider: A provider of the child chain
    */
-  const depositTx = await ethBridger.deposit({
-    amount: ethToL2DepositAmount,
-    l1Signer: l1Wallet,
-    l2Provider: l2Provider,
+  const depositTransaction = await ethBridger.deposit({
+    amount: depositAmount,
+    parentSigner: parentChainWallet,
+    childProvider: childChainProvider,
   })
 
-  const depositRec = await depositTx.wait()
-  console.warn('deposit L1 receipt is:', depositRec.transactionHash)
+  const depositTransactionReceipt = await depositTransaction.wait()
+  console.log(
+    'Deposit receipt on the parent chain is:',
+    depositTransactionReceipt.transactionHash
+  )
 
   /**
-   * With the transaction confirmed on L1, we now wait for the L2 side (i.e., balance credited to L2) to be confirmed as well.
-   * Here we're waiting for the Sequencer to include the L2 message in its off-chain queue. The Sequencer should include it in under 10 minutes.
+   * With the transaction confirmed on the parent chain, we now wait for the child chain's side (i.e., balance credited to the child chain) to be confirmed as well.
+   * Here we're waiting for the sequencer to include the message in its off-chain queue. The sequencer should include it in around 15 minutes.
    */
-  console.warn('Now we wait for L2 side of the transaction to be executed ⏳')
-  const l2Result = await depositRec.waitForL2(l2Provider)
+  console.log(
+    `Now we wait for child chain's side of the transaction to be executed ⏳`
+  )
+  const transactionResult =
+    await depositTransactionReceipt.waitForChildTransactionReceipt(
+      childChainProvider
+    )
+
   /**
-   * The `complete` boolean tells us if the l1 to l2 message was successful
+   * The `complete` boolean tells us if the cross-chain message was successful
    */
-  l2Result.complete
+  transactionResult.complete
     ? console.log(
-        `L2 message successful: status: ${
-          EthDepositStatus[await l2Result.message.status()]
+        `Message successfully executed on the child chain. Status: ${
+          EthDepositMessageStatus[await transactionResult.message.status()]
         }`
       )
     : console.log(
-        `L2 message failed: status ${
-          EthDepositStatus[await l2Result.message.status()]
+        `Message failed execution on the child chain . Status ${
+          EthDepositMessageStatus[await transactionResult.message.status()]
         }`
       )
 
   /**
-   * Our l2Wallet ETH balance should be updated now
+   * Our wallet's balance on the child chain should be updated now
    */
-  const l2WalletUpdatedEthBalance = await l2Wallet.getBalance()
+  const updatedEthBalance = await childChainWallet.getBalance()
   console.log(
-    `your L2 ETH balance is updated from ${l2WalletInitialEthBalance.toString()} to ${l2WalletUpdatedEthBalance.toString()}`
+    `Your balance in the child chain is updated from ${initialEthBalance.toString()} to ${updatedEthBalance.toString()}`
   )
 }
 main()

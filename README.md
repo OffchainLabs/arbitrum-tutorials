@@ -21,8 +21,9 @@ yarn install
 
 #### :white_check_mark: Moving stuff around
 
-- ⤴️ 🔹 [Deposit Ether](./packages/eth-deposit/)
-- ⤵️ 🔹 [Withdraw Ether](./packages/eth-withdraw/)
+- ⤴️ 🔹 [Deposit Ether or native token](./packages/eth-deposit/)
+- ⤴️ 🔹 [Deposit Ether or native token to a different address](./packages/eth-deposit-to-different-address/)
+- ⤵️ 🔹 [Withdraw Ether or native token](./packages/eth-withdraw/)
 - ⤴️ 💸 [Deposit Token](./packages/token-deposit/)
 - ⤵️ 💸 [Withdraw token](./packages/token-withdraw/)
 - ⤴️ 🔹 [Contract alias control in the child chain, and fund-transfer guide](./packages/contract-deposit/)
@@ -38,7 +39,7 @@ yarn install
 
 - ®️ [Arb Address Table](./packages/address-table/)
 - 🌉 [Bridging Custom Token](./packages/custom-token-bridging/)
-- ✈️ [Delayed inbox message(l2MSG)](./packages/delayedInbox-l2msg/)
+- ✈️ [Send a signed transaction from the parent chain](./packages/delayedInbox-l2msg/)
 - 🎁 [Redeem Retryable Ticket](./packages/redeem-failed-retryable/)
 - 🌀 [Deposit Ether or Tokens from L1 to L3](./packages/l1-l3-teleport/)
 
