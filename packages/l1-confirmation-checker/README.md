@@ -1,28 +1,17 @@
-# L1 Confirmation Checker Tutorial
+# Tutorial: Parent chain confirmation checker
 
-`l1 confirmation checker` is a simple demo of Arbitrum's transaction finality checker (used to check if transaction submitted to l1 or not).
+`l1-confirmation-checker` is a simple demo of Arbitrum's transaction finality checker (used to check if a transaction was already submitted to the parent chain or not).
 
-It calls precompile `NodeInterface` to find information about an L1 transaction that posted the L2 transaction in a batch.
+It calls the precompile `NodeInterface` to find information about a transaction on the parent chain that includes a batch containing the specified child chain's transaction.
 
-It has 2 functions; both functions will show you whether your L2 transaction has been posted in an L1 batch. 
-The first function, `checkConfirmation`, will output the number of L1 block confirmations the L1 batch-posting transaction has.
-The second is `findSubmissionTx`, which will output the L1 batch-posting transaction hash.
+This tutorial has 2 scripts; both will show you whether your transaction has been posted in a batch on the parent chain or not.
+
+- The first script, `checkConfirmation`, will output the number of block confirmations of the batch-posting transaction on the parent chain.
+- The second is `findSubmissionTx`, which will output the batch-posting transaction hash on the parent chain.
 
 See [./exec.js](./scripts/exec.js) for inline explanations.
 
-
-### Run Demo:
-
-Check if tx recorded in L1 or not:
-```
-yarn checkConfirmation --txHash {YOUR_TX_HASH}
-```
-Get submissiontx by a given L2 transaction status:
-```
-yarn findSubmissionTx --txHash {YOUR_TX_HASH}
-```
-
-## Config Environment Variables
+## Set environment variables
 
 Set the values shown in `.env-sample` as environmental variables. To copy it into a `.env` file:
 
@@ -30,7 +19,23 @@ Set the values shown in `.env-sample` as environmental variables. To copy it int
 cp .env-sample .env
 ```
 
-(you'll still need to edit some variables, i.e., `DEVNET_PRIVKEY`)
+You'll still need to edit some variables, i.e., `CHAIN_RPC` and `PARENT_CHAIN_RPC`.
+
+Note that you can also set the environment variables in an `.env` file in the root of the monorepo, which will be available in all tutorials.
+
+## Run
+
+Script 1: check if the transaction is already on a batch on the parent chain:
+
+```
+yarn checkConfirmation --txHash {YOUR_TX_HASH}
+```
+
+Script 2: get the transaction hash on the parent chain that includes a batch that contains a given transaction of the child chain:
+
+```
+yarn findSubmissionTx --txHash {YOUR_TX_HASH}
+```
 
 <p align="left">
   <img width="350" height="150" src= "../../assets/logo.svg" />

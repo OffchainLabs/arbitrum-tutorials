@@ -32,7 +32,7 @@ yarn install
 
 - 🤝 [Greeter](./packages/greeter/) (parent to child messages)
 - 📤 [Outbox](./packages/outbox-execute/) (child to parent messages)
-- ⏰ [L1 Confirmation Checker](./packages/l1-confirmation-checker/)
+- ⏰ [Parent chain confirmation checker](./packages/l1-confirmation-checker/)
 - ⏰ [L2 block verification in assertion](./packages/l2-block-verification-in-assertion/)
 
 #### :white_check_mark: Advanced features
@@ -41,6 +41,7 @@ yarn install
 - 🌉 [Bridging Custom Token](./packages/custom-token-bridging/)
 - ✈️ [Send a signed transaction from the parent chain](./packages/delayedInbox-l2msg/)
 - 🎁 [Redeem Retryable Ticket](./packages/redeem-failed-retryable/)
+- 🧮 [Gas estimation](./packages/gas-estimation/)
 - 🌀 [Deposit Ether or Tokens from L1 to L3](./packages/l1-l3-teleport/)
 
 ## How to run the tutorials against a custom network
