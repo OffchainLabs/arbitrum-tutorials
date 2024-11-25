@@ -59,7 +59,7 @@ async function main() {
   const addressIndex = await arbAddressTable.lookup(myAddress)
 
   /**
-   * From here on out we can use this index instead of our address as a paramter into any contract with affordances to look up out address in the address data.
+   * From here on out we can use this index instead of our address as a parameter into any contract with affordances to look up out address in the address data.
    */
 
   const txnRes = await arbitrumVIP.addVIPPoints(addressIndex)
