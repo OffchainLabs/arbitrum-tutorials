@@ -7,8 +7,8 @@ const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
 const {
   ARB_ADDRESS_TABLE_ADDRESS,
 } = require('@arbitrum/sdk/dist/lib/dataEntities/constants')
-requireEnvVariables(['PRIVATE_KEY', 'CHAIN_RPC'])
 require('dotenv').config()
+requireEnvVariables(['PRIVATE_KEY', 'CHAIN_RPC'])
 
 /**
  * Set up: instantiate wallets connected to providers

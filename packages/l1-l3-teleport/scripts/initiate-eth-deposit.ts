@@ -1,20 +1,21 @@
 import { providers, Wallet, BigNumber } from "ethers"
-import { arbLog, requireEnvVariables } from 'arb-shared-dependencies'
-import { Erc20L1L3Bridger, EthL1L3Bridger, getL2Network } from "godzillaba-arbitrum-sdk"
-import { ERC20__factory } from "godzillaba-arbitrum-sdk/dist/lib/abi/factories/ERC20__factory"
+import { arbLog, requireEnvVariables, addCustomNetworkFromFile } from 'arb-shared-dependencies'
+import { EthL1L3Bridger, getArbitrumNetwork } from "@arbitrum/sdk"
 import yargs from 'yargs/yargs'
 import { hideBin } from "yargs/helpers"
-
-// Importing configuration //
 require('dotenv').config()
-requireEnvVariables(['L1RPC', 'L2RPC', 'L3RPC', 'DEVNET_PRIVKEY'])
+requireEnvVariables(['PRIVATE_KEY', 'CHAIN_RPC', 'PARENT_CHAIN_RPC', 'L1_RPC'])
 
-// Initial setup //
-const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
-const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
-const l3Provider = new providers.JsonRpcProvider(process.env.L3RPC)
+/**
+ * Set up: instantiate wallets connected to providers
+ */
+const walletPrivateKey = process.env.PRIVATE_KEY!
 
-const l1Signer = new Wallet(process.env.DEVNET_PRIVKEY!, l1Provider)
+const l1Provider = new providers.JsonRpcProvider(process.env.L1_RPC)
+const l2Provider = new providers.JsonRpcProvider(process.env.PARENT_CHAIN_RPC)
+const l3Provider = new providers.JsonRpcProvider(process.env.CHAIN_RPC)
+
+const l1Signer = new Wallet(walletPrivateKey, l1Provider)
 
 const main = async (params: {
   amount: BigNumber, l3Recipient?: string
@@ -22,9 +23,14 @@ const main = async (params: {
   await arbLog(`Bridging ETH from L1 to L3`)
 
   /**
+   * Add the custom network configuration to the SDK if present
+   */
+  addCustomNetworkFromFile()
+
+  /**
    * Use L3 Network to initialize a bridger
    */
-  const l3Network = await getL2Network(l3Provider)
+  const l3Network = await getArbitrumNetwork(l3Provider)
   const bridger = new EthL1L3Bridger(l3Network)
 
   /**
@@ -34,11 +40,11 @@ const main = async (params: {
   const l2ChainId = (await l2Provider.getNetwork()).chainId
   const l3ChainId = (await l3Provider.getNetwork()).chainId
   const signerAddress = await l1Signer.getAddress()
-  console.log('Recipient:', params.l3Recipient || signerAddress)
-  console.log('Amount:', params.amount.toString())
   console.log('L1 chain id:', l1ChainId)
   console.log('L2 chain id:', l2ChainId)
   console.log('L3 chain id:', l3ChainId)
+  console.log('Recipient:', params.l3Recipient || signerAddress)
+  console.log('Amount:', params.amount.toString())
 
   /**
    * Get a deposit request
@@ -49,9 +55,10 @@ const main = async (params: {
     amount: params.amount,
     l2Provider,
     l3Provider,
-    to: params.l3Recipient, // optional, defaults to signer's address
+    destinationAddress: params.l3Recipient, // optional, defaults to signer's address
   })
   console.log('Done')
+
   /**
    * Deposit ETH
    */
@@ -63,9 +70,9 @@ const main = async (params: {
   await depositTx.wait()
   console.log('Done')
 
-  console.log('Initiated deposit! An L1 to L2 retryable will be created, which will create an L2 to L3 retryable to deposit ETH.')
+  console.log('Initiated deposit! An L1-to-L2 retryable will be created, which will create an L2-to-L3 retryable to deposit ETH.')
   console.log('Transaction hash:', depositTx.hash)
-  console.log(`To monitor your deposit, use:\n\nyarn monitor-eth-deposit-status ${depositTx.hash}`)
+  console.log(`To monitor your deposit, use:\nyarn monitor-eth-deposit-status ${depositTx.hash}`)
 };
 
 const args = yargs(hideBin(process.argv))

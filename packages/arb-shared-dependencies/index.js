@@ -68,7 +68,13 @@ const addCustomNetworkFromFile = () => {
     'utf8'
   )
   const customNetworkInformation = JSON.parse(customNetworkFileContents)
-  registerCustomArbitrumNetwork(customNetworkInformation)
+  if (customNetworkInformation instanceof Array) {
+    customNetworkInformation.map(customNetwork =>
+      registerCustomArbitrumNetwork(customNetwork)
+    )
+  } else {
+    registerCustomArbitrumNetwork(customNetworkInformation)
+  }
 }
 
 module.exports = {
