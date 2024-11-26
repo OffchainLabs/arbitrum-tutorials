@@ -32,7 +32,7 @@ yarn install
 
 - 🤝 [Greeter](./packages/greeter/) (parent to child messages)
 - 📤 [Outbox](./packages/outbox-execute/) (child to parent messages)
-- ⏰ [Parent chain confirmation checker](./packages/l1-confirmation-checker/)
+- ⏰ [Parent chain confirmation checker](./packages/parent-chain-confirmation-checker/)
 - ⏰ [L2 block verification in assertion](./packages/l2-block-verification-in-assertion/)
 
 #### :white_check_mark: Advanced features

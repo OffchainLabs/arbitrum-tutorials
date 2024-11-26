@@ -1,6 +1,6 @@
 # Tutorial: Parent chain confirmation checker
 
-`l1-confirmation-checker` is a simple demo of Arbitrum's transaction finality checker (used to check if a transaction was already submitted to the parent chain or not).
+`parent-chain-confirmation-checker` is a simple demo of Arbitrum's transaction finality checker (used to check if a transaction was already submitted to the parent chain or not).
 
 It calls the precompile `NodeInterface` to find information about a transaction on the parent chain that includes a batch containing the specified child chain's transaction.
 
