@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 /**
  * @title Example implementation of a custom ERC20 token to be deployed on L2
  */
-contract L2Token is ERC20, IArbToken {
+contract ChildChainToken is ERC20, IArbToken {
     address public l2GatewayAddress;
     address public override l1Address;
 

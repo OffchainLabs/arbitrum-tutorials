@@ -31,7 +31,7 @@ interface IL1GatewayRouter {
     ) external payable returns (uint256);
 }
 
-contract L1Token is Ownable, ICustomToken, ERC20 {
+contract ParentChainToken is Ownable, ICustomToken, ERC20 {
     address private customGatewayAddress;
     address private routerAddress;
     bool private shouldRegisterGateway;

@@ -1,112 +1,122 @@
-const { providers, Wallet, ethers } = require('ethers')
-const hre = require('hardhat')
-const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
+const { ethers } = require('hardhat')
+const { providers, Wallet } = require('ethers')
 const {
-  getL2Network,
-  addDefaultLocalNetwork,
-} = require('@arbitrum/sdk/dist/lib/dataEntities/networks')
-const { InboxTools } = require('@arbitrum/sdk')
-requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
+  arbLog,
+  requireEnvVariables,
+  addCustomNetworkFromFile,
+} = require('arb-shared-dependencies')
+const { getArbitrumNetwork, InboxTools } = require('@arbitrum/sdk')
+require('dotenv').config()
+requireEnvVariables(['PRIVATE_KEY', 'CHAIN_RPC', 'PARENT_CHAIN_RPC'])
 
 /**
- * Set up: instantiate L1 / L2 wallets connected to providers
+ * Set up: instantiate wallets connected to providers
  */
-const walletPrivateKey = process.env.DEVNET_PRIVKEY
+const walletPrivateKey = process.env.PRIVATE_KEY
 
-const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
-const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
+const parentChainProvider = new providers.JsonRpcProvider(
+  process.env.PARENT_CHAIN_RPC
+)
+const childChainProvider = new providers.JsonRpcProvider(process.env.CHAIN_RPC)
 
-const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
-const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
+const parentChainWallet = new Wallet(walletPrivateKey, parentChainProvider)
+const childChainWallet = new Wallet(walletPrivateKey, childChainProvider)
 
 const main = async () => {
   await arbLog('DelayedInbox normal contract call (L2MSG_signedTx)')
 
   /**
-   * Add the default local network configuration to the SDK
-   * to allow this script to run on a local node
+   * Add the custom network configuration to the SDK if present
    */
-  addDefaultLocalNetwork()
-
-  const l2Network = await getL2Network(await l2Wallet.getChainId())
-
-  const inboxSdk = new InboxTools(l1Wallet, l2Network)
+  addCustomNetworkFromFile()
 
   /**
-   * We deploy greeter to L2, to see if delayed inbox tx can be executed as we thought
+   * Use childChainNetwork to create an Arbitrum SDK InboxTools instance
    */
-  const L2Greeter = await (
-    await hre.ethers.getContractFactory('Greeter')
-  ).connect(l2Wallet)
-
-  console.log('Deploying Greeter on L2 👋👋')
-
-  const l2Greeter = await L2Greeter.deploy('Hello world')
-  await l2Greeter.deployed()
-  console.log(`deployed to ${l2Greeter.address}`)
+  const childChainNetwork = await getArbitrumNetwork(childChainProvider)
+  const inboxTools = new InboxTools(parentChainWallet, childChainNetwork)
 
   /**
-   * Let's log the L2 greeting string
+   * We deploy greeter to the child chain, to interact with it from the parent chain
    */
-  const currentL2Greeting = await l2Greeter.greet()
-  console.log(`Current L2 greeting: "${currentL2Greeting}"`)
+  console.log('Deploying Greeter to the child chain 👋👋')
 
-  console.log(
-    `Now we send a l2 tx through l1 delayed inbox (Please don't send any tx on l2 using ${l2Wallet.address} during this time):`
+  const Greeter = (await ethers.getContractFactory('Greeter')).connect(
+    childChainWallet
   )
+  const greeter = await Greeter.deploy('Hello world')
+  await greeter.deployed()
+  console.log(`Greeter deployed to ${greeter.address}`)
 
   /**
-   * Here we have a new greeting message that we want to set as the L2 greeting; we'll be setting it by sending it as a message from delayed inbox!!!
+   * Let's log the starting greeting string
    */
-  const newGreeting = 'Greeting from delayedInbox'
+  const currentGreeting = await greeter.greet()
+  console.log(`Current greeting: "${currentGreeting}"`)
 
-  const GreeterIface = l2Greeter.interface
-
-  const calldatal2 = GreeterIface.encodeFunctionData('setGreeting', [
-    newGreeting,
+  /**
+   * Here we have a new greeting message that we want to set in the contract;
+   * we'll be setting it by sending it as a message from the parent chain through the delayed inbox!!!
+   */
+  console.log(
+    `Now we send a message to be executed on the child chain, through the delayed inbox of the parent chain (make sure you don't send any transaction directly on the child chain using ${childChainWallet.address} during this time):`
+  )
+  const newGreetingToSet = 'Greeting from delayedInbox'
+  const GreeterIface = greeter.interface
+  const calldata = GreeterIface.encodeFunctionData('setGreeting', [
+    newGreetingToSet,
   ])
-
-  const transactionl2Request = {
-    data: calldatal2,
-    to: l2Greeter.address,
+  const transactionRequest = {
+    data: calldata,
+    to: greeter.address,
     value: 0,
   }
 
   /**
-   * We need extract l2's tx hash first so we can check if this tx executed on l2 later.
+   * We need to extract the transaction hash in the child chain first so we can check later if it was executed
    */
-  const l2SignedTx = await inboxSdk.signL2Tx(transactionl2Request, l2Wallet)
-
-  const l2Txhash = ethers.utils.parseTransaction(l2SignedTx).hash
-
-  const l1Tx = await inboxSdk.sendL2SignedTx(l2SignedTx)
-
-  const inboxRec = await l1Tx.wait()
-
-  console.log(`Greeting txn confirmed on L1! 🙌 ${inboxRec.transactionHash}`)
+  const signedTransaction = await inboxTools.signChildTx(
+    transactionRequest,
+    childChainWallet
+  )
+  const transactionHash = ethers.utils.parseTransaction(signedTransaction).hash
 
   /**
-   * Now we successfully send the tx to l1 delayed inbox, then we need to wait the tx executed on l2
+   * We now send the transaction through the Delayed Inbox on the parent chain
    */
+  const sendMessageParentChainTransactionRequest =
+    await inboxTools.sendChildSignedTx(signedTransaction)
+  const sendMessageParentChainTransactionReceipt =
+    await sendMessageParentChainTransactionRequest.wait()
   console.log(
-    `Now we need to wait tx: ${l2Txhash} to be included on l2 (may take 15 minutes) ....... `
+    `Greeting transaction confirmed on the parent chain! 🙌 ${sendMessageParentChainTransactionReceipt.transactionHash}`
   )
 
-  const l2TxReceipt = await l2Provider.waitForTransaction(l2Txhash)
-
-  const status = l2TxReceipt.status
+  /**
+   * Now we successfully send the transaction to the delayed inbox on the parent chain
+   * We wait for the transaction to be executed on the child chain
+   */
+  console.log(
+    `Now we need to wait tx: ${transactionHash} to be executed on the child chain (may take ~15 minutes) ... `
+  )
+  const transactionReceipt = await childChainProvider.waitForTransaction(
+    transactionHash
+  )
+  const status = transactionReceipt.status
   if (status == true) {
-    console.log(`L2 txn executed!!! 🥳 `)
+    console.log(`Transaction executed on the child chain!!! 🥳`)
   } else {
-    console.log(`L2 txn failed, see if your gas is enough?`)
+    console.log(
+      `The transaction failed to execute on the child chain. Please verify if the gas provided was enough`
+    )
     return
   }
 
   /**
-   * Now when we call greet again, we should see our new string on L2!
+   * Now when we call greet again, we should see our new string!
    */
-  const newGreetingL2 = await l2Greeter.greet()
-  console.log(`Updated L2 greeting: "${newGreetingL2}"`)
+  const newGreeting = await greeter.greet()
+  console.log(`Updated greeting: "${newGreeting}"`)
   console.log('✌️')
 }
 

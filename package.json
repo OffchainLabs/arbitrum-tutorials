@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "private": "true",
   "engines": {
-    "node": ">= 8.0.0 < 17.0.0",
+    "node": ">= 8.0.0",
     "npm": "^6.0.0",
     "yarn": "^1.0.0"
   },
@@ -23,7 +23,11 @@
     "prettier-plugin-solidity": "^1.0.0-beta.17"
   },
   "dependencies": {
-    "@arbitrum/sdk": "^3.4.1"
+    "@arbitrum/sdk": "^4.0.1",
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "ethers": "^5.4.1",
+    "hardhat": "^2.2.0",
+    "dotenv": "^16.4.5"
   },
   "workspaces": {
     "packages": [

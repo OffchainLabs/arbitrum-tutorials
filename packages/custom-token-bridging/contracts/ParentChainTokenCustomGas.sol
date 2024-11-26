@@ -55,7 +55,7 @@ interface IOrbitGatewayRouter {
     function inbox() external returns (address);
 }
 
-contract L1Token is Ownable, ERC20, ICustomToken {
+contract ParentChainToken is Ownable, ERC20, ICustomToken {
     using SafeERC20 for IERC20;
 
     address public gateway;

@@ -46,5 +46,15 @@ module.exports = {
         ? [process.env['DEVNET_PRIVKEY']]
         : [],
     },
+    parent_chain: {
+      gas: 2100000,
+      gasLimit: 0,
+      url: process.env['PARENT_CHAIN_RPC'] || '',
+      accounts: process.env['PRIVATE_KEY'] ? [process.env['PRIVATE_KEY']] : [],
+    },
+    chain: {
+      url: process.env['CHAIN_RPC'] || '',
+      accounts: process.env['PRIVATE_KEY'] ? [process.env['PRIVATE_KEY']] : [],
+    },
   },
 }

@@ -3,17 +3,9 @@
   "license": "Apache-2.0",
   "version": "1.0.0",
   "scripts": {
-    "exec": "hardhat run scripts/exec.js --network l2"
-  },
-  "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.2",
-    "@nomiclabs/hardhat-waffle": "^2.0.1",
-    "chai": "^4.3.4",
-    "ethereum-waffle": "^3.4.0",
-    "ethers": "^5.4.2",
-    "hardhat": "^2.5.0"
+    "exec": "hardhat run scripts/exec.js"
   },
   "dependencies": {
-    "@arbitrum/sdk": "^v3.1.9"
+    "@arbitrum/sdk": "^4.0.1"
   }
 }

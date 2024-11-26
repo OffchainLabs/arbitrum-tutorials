@@ -5,15 +5,8 @@
     "build": "hardhat compile",
     "exec": "hardhat run scripts/exec.js"
   },
-  "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.2",
-    "@openzeppelin/contracts": "^4.8.3",
-    "chai": "^4.3.4",
-    "ethers": "^5.1.2",
-    "hardhat": "^2.6.6"
-  },
   "dependencies": {
-    "@arbitrum/sdk": "^v3.1.9",
-    "dotenv": "^8.2.0"
+    "@arbitrum/sdk": "^4.0.1",
+    "@openzeppelin/contracts": "^4.8.3"
   }
 }

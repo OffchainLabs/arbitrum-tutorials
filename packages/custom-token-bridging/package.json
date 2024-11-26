@@ -5,15 +5,9 @@
     "build": "hardhat compile",
     "custom-token-bridging": "hardhat run scripts/exec.js"
   },
-  "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.2",
-    "@openzeppelin/contracts": "^4.8.3",
-    "chai": "^4.3.4",
-    "ethers": "^5.1.2",
-    "hardhat": "^2.6.6"
-  },
   "dependencies": {
-    "@arbitrum/token-bridge-contracts": "^1.2.1",
-    "dotenv": "^8.2.0"
+    "@arbitrum/sdk": "^4.0.1",
+    "@arbitrum/token-bridge-contracts": "^1.2.3",
+    "@openzeppelin/contracts": "^4.8.3"
   }
 }
