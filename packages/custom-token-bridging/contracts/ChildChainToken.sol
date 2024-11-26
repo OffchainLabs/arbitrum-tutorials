@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "@arbitrum/token-bridge-contracts/contracts/tokenbridge/arbitrum/IArbToken.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract L2Token is ERC20, IArbToken {
+contract ChildChainToken is ERC20, IArbToken {
     address public l2Gateway;
     address public override l1Address;
 

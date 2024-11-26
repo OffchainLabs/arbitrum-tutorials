@@ -60,12 +60,13 @@
     "@ethersproject/bytes" "^5.0.8"
     ethers "^5.1.0"
 
-"@arbitrum/token-bridge-contracts@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@arbitrum/token-bridge-contracts/-/token-bridge-contracts-1.2.1.tgz#4838d70182bc0d6b36adfd733d7b4650e596c979"
-  integrity sha512-ngKeay/0O91QyVLCbcd2pyJIWtzKi2KsPm+O9q3xCfPkjuCZ0+MK5OdhYKCbvGc0jf39R7izRsvmUHE0qA603A==
+"@arbitrum/token-bridge-contracts@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@arbitrum/token-bridge-contracts/-/token-bridge-contracts-1.2.3.tgz#b08b22b5dcac255149a10bd8b66b0b55be7f3329"
+  integrity sha512-Gpw0vGv7oS9tgPMb0JfWW6Ve7yOvcmTdfhuxCgvCOG6ntVoJVhB030RhhfIV9jSpDatQi0T1Jqq2RIMXJIxqyQ==
   dependencies:
     "@arbitrum/nitro-contracts" "1.1.1"
+    "@offchainlabs/stablecoin-evm" "1.0.0-orbit-alpha.2"
     "@offchainlabs/upgrade-executor" "1.1.0-beta.0"
     "@openzeppelin/contracts" "4.8.3"
     "@openzeppelin/contracts-upgradeable" "4.8.3"
@@ -772,6 +773,11 @@
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/@nomiclabs/hardhat-ethers/-/hardhat-ethers-2.2.3.tgz#b41053e360c31a32c2640c9a45ee981a7e603fe0"
   integrity sha512-YhzPdzb612X591FOe68q+qXVXGG2ANZRvDo0RRUtimev85rCrAlv/TLMEZw5c+kq9AbzocLTVX/h2jVIFPL9Xg==
+
+"@offchainlabs/stablecoin-evm@1.0.0-orbit-alpha.2":
+  version "1.0.0-orbit-alpha.2"
+  resolved "https://registry.yarnpkg.com/@offchainlabs/stablecoin-evm/-/stablecoin-evm-1.0.0-orbit-alpha.2.tgz#1156ab9436d0791739b56b355d7cff2e3aadaede"
+  integrity sha512-g9SO/KD4QoIA5Mvo+wE7GDe3PwNtQ0IK3b+RNRClHKH2if4emneQtEj/eD0Tc32BuYzPRK5cbd4/lBjARo9izQ==
 
 "@offchainlabs/upgrade-executor@1.1.0-beta.0":
   version "1.1.0-beta.0"
@@ -2638,7 +2644,7 @@ graphemer@^1.4.0:
   resolved "https://registry.yarnpkg.com/graphemer/-/graphemer-1.4.0.tgz#fb2f1d55e0e3a1849aeffc90c4fa0dd53a0e66c6"
   integrity sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==
 
-hardhat@^2.2.0, hardhat@^2.6.6, hardhat@^2.9.1:
+hardhat@^2.2.0, hardhat@^2.9.1:
   version "2.15.0"
   resolved "https://registry.yarnpkg.com/hardhat/-/hardhat-2.15.0.tgz#0cacb2b44c4c4651aa8ab649fef12804848b0267"
   integrity sha512-cC9tM/N10YaES04zPOp7yR13iX3YibqaNmi0//Ep40Nt9ELIJx3kFpQmucur0PAIfXYpGnw5RuXHNLkxpnVHEw==

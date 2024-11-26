@@ -37,8 +37,9 @@ yarn install
 
 #### :white_check_mark: Advanced features
 
-- ®️ [Arb Address Table](./packages/address-table/)
-- 🌉 [Bridging Custom Token](./packages/custom-token-bridging/)
+- ®️ [ArbAddress table](./packages/address-table/)
+- 🌉 [Bridging a custom token through the generic-custom gateway](./packages/custom-token-bridging/)
+- 🌉 [Bridging a custom token through a custom gateway](./packages/custom-gateway-bridging/)
 - ✈️ [Send a signed transaction from the parent chain](./packages/delayedInbox-l2msg/)
 - 🎁 [Redeem Retryable Ticket](./packages/redeem-failed-retryable/)
 - 🌀 [Deposit Ether or Tokens from L1 to L3](./packages/l1-l3-teleport/)

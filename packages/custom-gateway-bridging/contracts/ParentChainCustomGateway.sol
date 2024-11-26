@@ -11,7 +11,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * @dev Inheritance of Ownable is optional. In this case we use it to call the function setTokenBridgeInformation
  * and simplify the test
  */
-contract L1CustomGateway is IL1CustomGateway, L1CrosschainMessenger, Ownable {
+contract ParentChainCustomGateway is IL1CustomGateway, L1CrosschainMessenger, Ownable {
     
     // Token bridge state variables
     address public l1CustomToken;
