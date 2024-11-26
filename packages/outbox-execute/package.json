@@ -3,17 +3,9 @@
   "license": "Apache-2.0",
   "version": "1.0.0",
   "scripts": {
-    "build": "hardhat compile",
-    "outbox-exec": "hardhat outbox-exec"
-  },
-  "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.2",
-    "chai": "^4.3.4",
-    "ethers": "^5.1.2",
-    "hardhat": "^2.9.1"
+    "outbox-exec": "node scripts/exec.js"
   },
   "dependencies": {
-    "@arbitrum/sdk": "^v3.1.9",
-    "dotenv": "^8.2.0"
+    "@arbitrum/sdk": "^v4.0.1"
   }
 }

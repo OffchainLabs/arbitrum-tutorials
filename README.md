@@ -31,9 +31,9 @@ yarn install
 #### :white_check_mark: General interop
 
 - 🤝 [Greeter](./packages/greeter/) (parent to child messages)
-- 📤 [Outbox](./packages/outbox-execute/) (child to parent messages)
+- 📤 [Outbox tutorial: execute a child-to-parent message](./packages/outbox-execute/) (child to parent messages)
 - ⏰ [Parent chain confirmation checker](./packages/parent-chain-confirmation-checker/)
-- ⏰ [L2 block verification in assertion](./packages/l2-block-verification-in-assertion/)
+- ⏰ [Block verification in parent chain's assertion](./packages/block-verification-in-parent-chain-assertion/)
 
 #### :white_check_mark: Advanced features
 
@@ -52,5 +52,7 @@ As mentioned above, these tutorials use the [Arbitrum SDK](https://github.com/Of
 To do that, fill the information of your chain in the [`customNetwork.json`](./customNetwork.json) file, which is automatically loaded in all tutorials.
 
 To obtain the information of a specific chain, you can use the method [`prepareArbitrumNetwork`](https://github.com/OffchainLabs/arbitrum-orbit-sdk/blob/main/src/utils/registerNewNetwork.ts#L18) of the Orbit SDK.
+
+You can also register multiple chains if you need to (for example, for the `l1-l3-teleport` tutorial). In that case, create an array of chain information objects in the `customNetwork.json` file.
 
 <p align="center"><img src="assets/logo.svg" width="300"></p>

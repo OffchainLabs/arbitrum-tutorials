@@ -15,6 +15,7 @@ const {
   getArbitrumNetwork,
 } = require('@arbitrum/sdk')
 const { getBaseFee } = require('@arbitrum/sdk/dist/lib/utils/lib')
+require('dotenv').config()
 requireEnvVariables(['PRIVATE_KEY', 'CHAIN_RPC', 'PARENT_CHAIN_RPC'])
 
 /**

@@ -1,78 +1,122 @@
 const { providers, Wallet } = require('ethers')
 const {
-  addDefaultLocalNetwork,
-  L2TransactionReceipt,
-  L2ToL1MessageStatus,
+  ChildTransactionReceipt,
+  ChildToParentMessageStatus,
 } = require('@arbitrum/sdk')
-const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
+const {
+  arbLog,
+  requireEnvVariables,
+  addCustomNetworkFromFile,
+} = require('arb-shared-dependencies')
 require('dotenv').config()
-requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
+requireEnvVariables(['PRIVATE_KEY', 'CHAIN_RPC', 'PARENT_CHAIN_RPC'])
 
 /**
- * Set up: instantiate L1 wallet connected to provider
+ * Set up: instantiate wallets connected to providers
  */
+const walletPrivateKey = process.env.PRIVATE_KEY
 
-const walletPrivateKey = process.env.DEVNET_PRIVKEY
+const parentChainProvider = new providers.JsonRpcProvider(
+  process.env.PARENT_CHAIN_RPC
+)
+const childChainProvider = new providers.JsonRpcProvider(process.env.CHAIN_RPC)
 
-const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
-const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
-const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
+const parentChainWallet = new Wallet(walletPrivateKey, parentChainProvider)
 
-module.exports = async txnHash => {
-  await arbLog('Outbox Execution')
+const main = async transactionHash => {
+  await arbLog('Outbox execution of child-to-parent message')
 
   /**
-   * Add the default local network configuration to the SDK
-   * to allow this script to run on a local node
+   * Add the custom network configuration to the SDK if present
    */
-  addDefaultLocalNetwork()
+  addCustomNetworkFromFile()
 
   /**
-   / * We start with a txn hash; we assume this is transaction that triggered an L2 to L1 Message on L2 (i.e., ArbSys.sendTxToL1)
-  */
-  if (!txnHash)
-    throw new Error(
-      'Provide a transaction hash of an L2 transaction that sends an L2 to L1 message'
+   * We start with a transaction hash;
+   * we assume this is a transaction that triggered a child-to-parent message on the child chain (i.e., ArbSys.sendTxToL1)
+   */
+  if (!transactionHash) {
+    console.error(
+      'Provide a transaction hash of a transaction that sent a child-to-parent message'
     )
-  if (!txnHash.startsWith('0x') || txnHash.trim().length != 66)
-    throw new Error(`Hmm, ${txnHash} doesn't look like a txn hash...`)
+    return
+  }
+  if (
+    !transactionHash.startsWith('0x') ||
+    transactionHash.trim().length != 66
+  ) {
+    console.error(`Hmm, ${transactionHash} doesn't look like a txn hash...`)
+    return
+  }
 
   /**
-   * First, let's find the Arbitrum txn from the txn hash provided
+   * First, let's find the transaction from the transaction hash provided
    */
-  const receipt = await l2Provider.getTransactionReceipt(txnHash)
-  const l2Receipt = new L2TransactionReceipt(receipt)
+  const receipt = await childChainProvider.getTransactionReceipt(
+    transactionHash
+  )
+  const transactionReceipt = new ChildTransactionReceipt(receipt)
 
   /**
    * Note that in principle, a single transaction could trigger any number of outgoing messages; the common case will be there's only one.
-   * For the sake of this script, we assume there's only one / just grad the first one.
+   * For the sake of this script, we assume there's only one, so we just grab the first one.
    */
-  const messages = await l2Receipt.getL2ToL1Messages(l1Wallet)
-  const l2ToL1Msg = messages[0]
+  const messages = await transactionReceipt.getChildToParentMessages(
+    parentChainWallet
+  )
+  const childToParentMessage = messages[0]
 
   /**
    * Check if already executed
    */
-  if ((await l2ToL1Msg.status(l2Provider)) == L2ToL1MessageStatus.EXECUTED) {
+  if (
+    (await childToParentMessage.status(childChainProvider)) ==
+    ChildToParentMessageStatus.EXECUTED
+  ) {
     console.log(`Message already executed! Nothing else to do here`)
-    process.exit(1)
+    return
   }
 
   /**
-   * before we try to execute out message, we need to make sure the l2 block it's included in is confirmed! (It can only be confirmed after the dispute period; Arbitrum is an optimistic rollup after-all)
-   * waitUntilReadyToExecute() waits until the item outbox entry exists
+   * Before we try to execute our message, we need to make sure the child chain's block is included and confirmed!
+   * (it can only be confirmed after the dispute period)
+   * Method `waitUntilReadyToExecute()` waits until the item outbox entry exists
    */
   const timeToWaitMs = 1000 * 60
   console.log(
-    "Waiting for the outbox entry to be created. This only happens when the L2 block is confirmed on L1, ~1 week after it's creation."
+    "Waiting for the outbox entry to be created. This only happens when the child chain's block is confirmed on the parent chain, around ~1 week after it's creation (by default)."
   )
-  await l2ToL1Msg.waitUntilReadyToExecute(l2Provider, timeToWaitMs)
+  await childToParentMessage.waitUntilReadyToExecute(
+    childChainProvider,
+    timeToWaitMs
+  )
   console.log('Outbox entry exists! Trying to execute now')
 
   /**
    * Now that its confirmed and not executed, we can execute our message in its outbox entry.
    */
-  const res = await l2ToL1Msg.execute(l2Provider)
-  const rec = await res.wait()
-  console.log('Done! Your transaction is executed', rec)
+  const executeTransaction = await childToParentMessage.execute(
+    childChainProvider
+  )
+  const executeTransactionReceipt = await executeTransaction.wait()
+  console.log('Done! Your transaction is executed', executeTransactionReceipt)
 }
+
+// Getting the transaction hash from the command arguments
+if (process.argv.length < 3) {
+  console.log(
+    `Missing transaction hash of the child chain that sent a child-to-parent message`
+  )
+  console.log(`Usage: yarn run outbox-exec <transaction hash>`)
+  process.exit()
+}
+
+const transactionHash = process.argv[2]
+
+// Calling main
+main(transactionHash)
+  .then(() => process.exit(0))
+  .catch(error => {
+    console.error(error)
+    process.exit(1)
+  })
