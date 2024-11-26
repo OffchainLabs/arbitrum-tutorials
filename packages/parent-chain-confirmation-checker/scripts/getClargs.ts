@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-'use strict';
-import yargs from 'yargs/yargs';
+'use strict'
+import yargs from 'yargs/yargs'
 
 const argv = yargs(process.argv.slice(2))
   .options({
-    l2NetworkID: {
-      type: 'number',
-    },
     action: {
       type: 'string',
     },
     txHash: {
-      type: 'string'
-    }
+      type: 'string',
+    },
   })
   .demandOption('action')
   .demandOption('txHash')
-  .parseSync();
+  .parseSync()
 
-export default argv;
+export default argv
