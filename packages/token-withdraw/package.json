@@ -4,17 +4,10 @@
   "version": "1.0.0",
   "scripts": {
     "build": "hardhat compile",
-    "withdraw-token": "hardhat run scripts/exec.js"
-  },
-  "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.2",
-    "@openzeppelin/contracts": "^4.8.3",
-    "chai": "^4.3.4",
-    "ethers": "^5.1.2",
-    "hardhat": "^2.2.0"
+    "token-withdraw": "hardhat run scripts/exec.js"
   },
   "dependencies": {
-    "@arbitrum/sdk": "^v3.1.9",
-    "dotenv": "^8.2.0"
+    "@arbitrum/sdk": "^v4.0.1",
+    "@openzeppelin/contracts": "^4.8.3"
   }
 }
