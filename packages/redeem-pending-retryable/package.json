@@ -1,0 +1,14 @@
+{
+  "name": "redeem-failed-retryable",
+  "license": "Apache-2.0",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "hardhat compile",
+    "createFailedRetryable": "node scripts/exec-createFailedRetryable.js",
+    "redeemPendingRetryable": "node scripts/exec-redeem.js"
+  },
+  "dependencies": {
+    "@arbitrum/sdk": "^v4.0.1",
+    "@arbitrum/nitro-contracts": "v2.1.0"
+  }
+}

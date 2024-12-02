@@ -1,66 +1,72 @@
 const { ethers } = require('hardhat')
 const { BigNumber, providers, Wallet } = require('ethers')
-const { expect } = require('chai')
 const {
-  addDefaultLocalNetwork,
-  getL2Network,
+  getArbitrumNetwork,
+  ParentToChildMessageStatus,
   Erc20Bridger,
-  L1ToL2MessageStatus,
 } = require('@arbitrum/sdk')
-const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
+const {
+  arbLog,
+  requireEnvVariables,
+  addCustomNetworkFromFile,
+} = require('arb-shared-dependencies')
+const { expect } = require('chai')
 require('dotenv').config()
-requireEnvVariables(['DEVNET_PRIVKEY', 'L1RPC', 'L2RPC'])
+requireEnvVariables(['PRIVATE_KEY', 'CHAIN_RPC', 'PARENT_CHAIN_RPC'])
 
 /**
- * Set up: instantiate L1 / L2 wallets connected to providers
+ * Set up: instantiate wallets connected to providers
  */
-const walletPrivateKey = process.env.DEVNET_PRIVKEY
+const walletPrivateKey = process.env.PRIVATE_KEY
 
-const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
-const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
+const parentChainProvider = new providers.JsonRpcProvider(
+  process.env.PARENT_CHAIN_RPC
+)
+const childChainProvider = new providers.JsonRpcProvider(process.env.CHAIN_RPC)
 
-const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
-const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
+const parentChainWallet = new Wallet(walletPrivateKey, parentChainProvider)
+const childChainWallet = new Wallet(walletPrivateKey, childChainProvider)
 
 /**
- * Set the amount of token to be transferred to L2 and then withdrawn
+ * Set the amount of token to be transferred to the child chain and then withdrawn
  */
 const tokenAmount = BigNumber.from(50)
 const tokenAmountToWithdraw = BigNumber.from(20)
 
 const main = async () => {
-  await arbLog('Withdraw token using Arbitrum SDK')
+  await arbLog('Withdraw tokens using Arbitrum SDK')
 
   /**
-   * Add the default local network configuration to the SDK
-   * to allow this script to run on a local node
+   * Add the custom network configuration to the SDK if present
    */
-  addDefaultLocalNetwork()
+  addCustomNetworkFromFile()
 
   /**
-   * For the purpose of our tests, here we deploy an standard ERC20 token (DappToken) to L1
+   * For the purpose of our tests, here we deploy an standard ERC-20 token (DappToken) to the parent chain
    * It sends its deployer (us) the initial supply of 1000
    */
-  console.log('Deploying the test DappToken to L1:')
-  const L1DappToken = await (
-    await ethers.getContractFactory('DappToken')
-  ).connect(l1Wallet)
-  const l1DappToken = await L1DappToken.deploy(1000000000000000)
-  await l1DappToken.deployed()
-  console.log(`DappToken is deployed to L1 at ${l1DappToken.address}`)
-  const l1Erc20Address = l1DappToken.address
+  console.log('Deploying the test DappToken to the parent chain:')
+  const DappToken = (await ethers.getContractFactory('DappToken')).connect(
+    parentChainWallet
+  )
+  const dappToken = await DappToken.deploy(1000)
+  await dappToken.deployed()
+  console.log(
+    `DappToken is deployed to the parent chain at ${dappToken.address}`
+  )
+  const tokenAddress = dappToken.address
 
   /**
-   * Use l2Network to create an Arbitrum SDK Erc20Bridger instance
-   * We'll use Erc20Bridger for its convenience methods around transferring token to L2 and back to L1
+   * Use childChainNetwork to create an Arbitrum SDK Erc20Bridger instance
+   * We'll use Erc20Bridger for its convenience methods around transferring token to the child chain
    */
-  const l2Network = await getL2Network(l2Provider)
-  const erc20Bridger = new Erc20Bridger(l2Network)
+  const childChainNetwork = await getArbitrumNetwork(childChainProvider)
+  const erc20Bridger = new Erc20Bridger(childChainNetwork)
 
   /**
    * Because the token might have decimals, we update the amounts to deposit and withdraw taking into account those decimals
    */
-  const tokenDecimals = await l1DappToken.decimals()
+  const tokenDecimals = await dappToken.decimals()
   const tokenDepositAmount = tokenAmount.mul(
     BigNumber.from(10).pow(tokenDecimals)
   )
@@ -69,101 +75,124 @@ const main = async () => {
   )
 
   /**
-   * The Standard Gateway contract will ultimately be making the token transfer call; thus, that's the contract we need to approve.
+   * The StandardGateway contract will ultimately be making the token transfer call; thus, that's the contract we need to approve.
    * erc20Bridger.approveToken handles this approval
    * Arguments required are:
-   * (1) l1Signer: The L1 address transferring token to L2
-   * (2) erc20L1Address: L1 address of the ERC20 token to be deposited to L2
+   * (1) parentSigner: address of the account on the parent chain transferring tokens to the child chain
+   * (2) erc20ParentAddress: address on the parent chain of the ERC-20 token to be depositted to the child chain
    */
   console.log('Approving:')
-  const approveTx = await erc20Bridger.approveToken({
-    l1Signer: l1Wallet,
-    erc20L1Address: l1Erc20Address,
+  const approveTransaction = await erc20Bridger.approveToken({
+    parentSigner: parentChainWallet,
+    erc20ParentAddress: tokenAddress,
   })
 
-  const approveRec = await approveTx.wait()
+  const approveTransactionReceipt = await approveTransaction.wait()
   console.log(
-    `You successfully allowed the Arbitrum Bridge to spend DappToken ${approveRec.transactionHash}`
+    `You successfully allowed the Arbitrum Bridge to spend DappToken ${approveTransactionReceipt.transactionHash}`
   )
 
   /**
-   * Deposit DappToken to L2 using Erc20Bridger. This will escrow funds in the Gateway contract on L1, and send a message to mint tokens on L2.
-   * The erc20Bridger.deposit method handles computing the necessary fees for automatic-execution of retryable tickets — maxSubmission cost & l2 gas price * gas — and will automatically forward the fees to L2 as callvalue
-   * Also note that since this is the first DappToken deposit onto L2, a standard Arb ERC20 contract will automatically be deployed.
+   * The next function initiates the deposit of DappToken to the child chain using erc20Bridger.
+   * This will escrow funds in the gateway contract on the parent chain, and send a message to mint tokens on the child chain.
+   *
+   * The erc20Bridge.deposit method handles computing the necessary fees for automatic-execution of retryable tickets — maxSubmission cost and (gas price * gas)
+   * and will automatically forward the fees to the child chain as callvalue.
+   *
+   * Also note that since this is the first DappToken deposit onto the child chain, a standard Arb ERC-20 contract will automatically be deployed.
    * Arguments required are:
-   * (1) amount: The amount of tokens to be transferred to L2
-   * (2) erc20L1Address: L1 address of the ERC20 token to be deposited to L2
-   * (2) l1Signer: The L1 address transferring token to L2
-   * (3) l2Provider: An l2 provider
+   * (1) amount: The amount of tokens to be transferred to the child chain
+   * (2) erc20ParentAddress: address on the parent chain of the ERC-20 token to be depositted to the child chain
+   * (3) parentSigner: address of the account on the parent chain transferring tokens to the child chain
+   * (4) childProvider: A provider for the child chain
    */
-  console.log('Transferring DappToken to L2:')
-  const depositTx = await erc20Bridger.deposit({
+  console.log('Transferring DappToken to the child chain:')
+  const depositTransaction = await erc20Bridger.deposit({
     amount: tokenDepositAmount,
-    erc20L1Address: l1Erc20Address,
-    l1Signer: l1Wallet,
-    l2Provider: l2Provider,
+    erc20ParentAddress: tokenAddress,
+    parentSigner: parentChainWallet,
+    childProvider: childChainProvider,
   })
 
   /**
-   * Now we wait for L1 and L2 side of transactions to be confirmed
+   * Now we wait for both the parent-chain and child-chain sides of transactions to be confirmed
    */
   console.log(
-    `Deposit initiated: waiting for L2 retryable (takes 10-15 minutes; current time: ${new Date().toTimeString()}) `
+    `Deposit initiated: waiting for execution of the retryable ticket on the child chain (takes 10-15 minutes; current time: ${new Date().toTimeString()}) `
   )
-  const depositRec = await depositTx.wait()
-  const l2Result = await depositRec.waitForL2(l2Provider)
-  console.log(`Setup complete`)
+  const depositTransactionReceipt = await depositTransaction.wait()
+  const childTransactionReceipt =
+    await depositTransactionReceipt.waitForChildTransactionReceipt(
+      childChainProvider
+    )
+
   /**
-   * The `complete` boolean tells us if the l1 to l2 message was successful
+   * The `complete` boolean tells us if the parent-to-child message was successful
    */
-  l2Result.complete
+  childTransactionReceipt.complete
     ? console.log(
-        `L2 message successful: status: ${L1ToL2MessageStatus[l2Result.status]}`
+        `Message was successfully executed on the child chain: status: ${
+          ParentToChildMessageStatus[childTransactionReceipt.status]
+        }`
       )
     : console.log(
-        `L2 message failed: status ${L1ToL2MessageStatus[l2Result.status]}`
+        `Message failed to be executed on the child chain: status ${
+          ParentToChildMessageStatus[childTransactionReceipt.status]
+        }`
       )
+  console.log(`Setup complete`)
 
   /**
-   * ... Okay, Now we begin withdrawing DappToken from L2. To withdraw, we'll use Erc20Bridger helper method withdraw
-   * withdraw will call our L2 Gateway Router to initiate a withdrawal via the Standard ERC20 gateway
-   * This transaction is constructed and paid for like any other L2 transaction (it just happens to (ultimately) make a call to ArbSys.sendTxToL1)
+   * Now we begin withdrawing DappToken from the child chain.
+   * To withdraw, we'll use Erc20Bridger helper method withdraw which will call the GatewayRouter of the child chain
+   * to initiate a withdrawal via the Standard ERC-20 gateway.
+   * This transaction is constructed and paid for like any other transaction (it just happens to (ultimately) make a call to ArbSys.sendTxToL1)
+   *
    * Arguments required are:
-   * (1) amount: The amount of tokens to be transferred to L1
-   * (2) erc20L1Address: L1 address of the ERC20 token
-   * (3) l2Signer: The L2 address transferring token to L1
+   * (1) amount: The amount of tokens to be transferred to the parent chain
+   * (2) erc20ParentAddress: address on the parent chain of the ERC-20 token to be depositted to the parent chain
+   * (3) childSigner: address of the account on the child chain transferring tokens to the parent chain
    */
-  console.log('Withdrawing:')
-  const withdrawTx = await erc20Bridger.withdraw({
+  console.log('Withdrawing...')
+  const withdrawTransaction = await erc20Bridger.withdraw({
     amount: tokenWithdrawAmount,
-    destinationAddress: l2Wallet.address,
-    erc20l1Address: l1Erc20Address,
-    l2Signer: l2Wallet,
+    destinationAddress: childChainWallet.address,
+    erc20ParentAddress: tokenAddress,
+    childSigner: childChainWallet,
   })
-  const withdrawRec = await withdrawTx.wait()
-  console.log(`Token withdrawal initiated! 🥳 ${withdrawRec.transactionHash}`)
+  const withdrawTransactionReceipt = await withdrawTransaction.wait()
+  console.log(
+    `Token withdrawal initiated! 🥳 ${withdrawTransactionReceipt.transactionHash}`
+  )
 
   /**
    * And with that, our withdrawal is initiated! No additional time-sensitive actions are required.
-   * Any time after the transaction's assertion is confirmed (around 7 days), funds can be transferred out of the bridge via the outbox contract
-   * We'll check our l2Wallet DappToken balance here:
+   * Any time after the transaction's assertion is confirmed (around 7 days by default),
+   * funds can be transferred out of the bridge via the outbox contract
+   * We'll check our wallet's DappToken balance here:
    */
-  const l2Token = erc20Bridger.getL2TokenContract(
-    l2Provider,
-    await erc20Bridger.getL2ERC20Address(l1Erc20Address, l1Provider)
+  const childChainTokenAddress = await erc20Bridger.getChildErc20Address(
+    tokenAddress,
+    parentChainProvider
+  )
+  const childChainToken = erc20Bridger.getChildTokenContract(
+    childChainProvider,
+    childChainTokenAddress
   )
 
-  const l2WalletBalance = (
-    await l2Token.functions.balanceOf(await l2Wallet.getAddress())
+  const testWalletBalanceOnChildChain = (
+    await childChainToken.functions.balanceOf(childChainWallet.address)
   )[0]
 
   expect(
-    l2WalletBalance.add(tokenWithdrawAmount).eq(tokenDepositAmount),
+    testWalletBalanceOnChildChain
+      .add(tokenWithdrawAmount)
+      .eq(tokenDepositAmount),
     'token withdraw balance not deducted'
   ).to.be.true
 
   console.log(
-    `To to claim funds (after dispute period), see outbox-execute repo 🤞🏻`
+    `To to claim funds (after dispute period), see outbox-execute repo and use this transaction hash: ${withdrawTransactionReceipt.transactionHash}`
   )
 }
 

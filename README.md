@@ -24,7 +24,7 @@ yarn install
 - ⤴️ 🔹 [Deposit Ether or native token](./packages/eth-deposit/)
 - ⤴️ 🔹 [Deposit Ether or native token to a different address](./packages/eth-deposit-to-different-address/)
 - ⤵️ 🔹 [Withdraw Ether or native token](./packages/eth-withdraw/)
-- ⤴️ 💸 [Deposit Token](./packages/token-deposit/)
+- ⤴️ 💸 [Deposit token](./packages/token-deposit/)
 - ⤵️ 💸 [Withdraw token](./packages/token-withdraw/)
 - ⤴️ 🔹 [Contract alias control in the child chain, and fund-transfer guide](./packages/contract-deposit/)
 
@@ -41,7 +41,7 @@ yarn install
 - 🌉 [Bridging a custom token through the generic-custom gateway](./packages/custom-token-bridging/)
 - 🌉 [Bridging a custom token through a custom gateway](./packages/custom-gateway-bridging/)
 - ✈️ [Send a signed transaction from the parent chain](./packages/delayedInbox-l2msg/)
-- 🎁 [Redeem Retryable Ticket](./packages/redeem-failed-retryable/)
+- 🎁 [Redeem pending retryable ticket](./packages/redeem-pending-retryable/)
 - 🧮 [Gas estimation](./packages/gas-estimation/)
 - 🌀 [Deposit Ether or Tokens from L1 to L3](./packages/l1-l3-teleport/)
 
