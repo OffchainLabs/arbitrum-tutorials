@@ -1,105 +1,111 @@
-const { providers, Wallet } = require('ethers')
-const { BigNumber } = require('@ethersproject/bignumber')
 const hre = require('hardhat')
 const ethers = require('ethers')
+const { providers, Wallet } = require('ethers')
+const { BigNumber } = require('@ethersproject/bignumber')
 const {
-  L1ToL2MessageGasEstimator,
-} = require('@arbitrum/sdk/dist/lib/message/L1ToL2MessageGasEstimator')
-const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
+  arbLog,
+  requireEnvVariables,
+  addCustomNetworkFromFile,
+} = require('arb-shared-dependencies')
 const {
-  L1TransactionReceipt,
-  L1ToL2MessageStatus,
+  ParentToChildMessageGasEstimator,
+  ParentTransactionReceipt,
+  ParentToChildMessageStatus,
   EthBridger,
-  getL2Network,
-  addDefaultLocalNetwork,
+  getArbitrumNetwork,
 } = require('@arbitrum/sdk')
 const { getBaseFee } = require('@arbitrum/sdk/dist/lib/utils/lib')
-requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
+require('dotenv').config()
+requireEnvVariables(['PRIVATE_KEY', 'CHAIN_RPC', 'PARENT_CHAIN_RPC'])
 
 /**
- * Set up: instantiate L1 / L2 wallets connected to providers
+ * Set up: instantiate wallets connected to providers
  */
-const walletPrivateKey = process.env.DEVNET_PRIVKEY
+const walletPrivateKey = process.env.PRIVATE_KEY
 
-const l1Provider = new providers.JsonRpcProvider(process.env.L1RPC)
-const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
+const parentChainProvider = new providers.JsonRpcProvider(
+  process.env.PARENT_CHAIN_RPC
+)
+const childChainProvider = new providers.JsonRpcProvider(process.env.CHAIN_RPC)
 
-const l1Wallet = new Wallet(walletPrivateKey, l1Provider)
-const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
+const parentChainWallet = new Wallet(walletPrivateKey, parentChainProvider)
+const childChainWallet = new Wallet(walletPrivateKey, childChainProvider)
 
 const main = async () => {
   await arbLog('Cross-chain Greeter')
 
   /**
-   * Add the default local network configuration to the SDK
-   * to allow this script to run on a local node
+   * Add the custom network configuration to the SDK if present
    */
-  addDefaultLocalNetwork()
+  addCustomNetworkFromFile()
 
   /**
-   * Use l2Network to create an Arbitrum SDK EthBridger instance
+   * Use childChainNetwork to create an Arbitrum SDK EthBridger instance
    * We'll use EthBridger to retrieve the Inbox address
    */
-
-  const l2Network = await getL2Network(l2Provider)
-  const ethBridger = new EthBridger(l2Network)
-  const inboxAddress = ethBridger.l2Network.ethBridge.inbox
+  const childChainNetwork = await getArbitrumNetwork(childChainProvider)
+  const ethBridger = new EthBridger(childChainNetwork)
+  const inboxAddress = ethBridger.childNetwork.ethBridge.inbox
 
   /**
-   * We deploy L1 Greeter to L1, L2 greeter to L2, each with a different "greeting" message.
-   * After deploying, save set each contract's counterparty's address to its state so that they can later talk to each other.
+   * We deploy GreeterParent to the parent chain, GreeterChild to the child chain, each with a different "greeting" message.
+   * After deploying, save each contract's counterparty's address to its state so that they can later talk to each other.
    */
-  const L1Greeter = await (
-    await hre.ethers.getContractFactory('GreeterL1')
-  ).connect(l1Wallet) //
-  console.log('Deploying L1 Greeter 👋')
-  const l1Greeter = await L1Greeter.deploy(
-    'Hello world in L1',
-    ethers.constants.AddressZero, // temp l2 addr
+  const GreeterParent = (
+    await hre.ethers.getContractFactory('GreeterParent')
+  ).connect(parentChainWallet)
+  console.log('Deploying GreeterParent to the parent chain 👋')
+  const greeterParent = await GreeterParent.deploy(
+    'Hello world in the parent chain',
+    ethers.constants.AddressZero, // temp child addr
     inboxAddress
   )
-  await l1Greeter.deployed()
-  console.log(`deployed to ${l1Greeter.address}`)
-  const L2Greeter = await (
-    await hre.ethers.getContractFactory('GreeterL2')
-  ).connect(l2Wallet)
+  await greeterParent.deployed()
+  console.log(`deployed to ${greeterParent.address}`)
 
-  console.log('Deploying L2 Greeter 👋👋')
-
-  const l2Greeter = await L2Greeter.deploy(
-    'Hello world in L2',
-    ethers.constants.AddressZero // temp l1 addr
+  const GreeterChild = (
+    await hre.ethers.getContractFactory('GreeterChild')
+  ).connect(childChainWallet)
+  console.log('Deploying GreeterChild to the child chain 👋👋')
+  const greeterChild = await GreeterChild.deploy(
+    'Hello world in the child chain',
+    ethers.constants.AddressZero // temp parent addr
   )
-  await l2Greeter.deployed()
-  console.log(`deployed to ${l2Greeter.address}`)
+  await greeterChild.deployed()
+  console.log(`deployed to ${greeterChild.address}`)
 
-  const updateL1Tx = await l1Greeter.updateL2Target(l2Greeter.address)
-  await updateL1Tx.wait()
+  const updateParentTransaction = await greeterParent.updateChildTarget(
+    greeterChild.address
+  )
+  await updateParentTransaction.wait()
 
-  const updateL2Tx = await l2Greeter.updateL1Target(l1Greeter.address)
-  await updateL2Tx.wait()
+  const updateChildTransaction = await greeterChild.updateParentTarget(
+    greeterParent.address
+  )
+  await updateChildTransaction.wait()
   console.log('Counterpart contract addresses set in both greeters 👍')
 
   /**
-   * Let's log the L2 greeting string
+   * Let's log the child chain's greeting string
    */
-  const currentL2Greeting = await l2Greeter.greet()
-  console.log(`Current L2 greeting: "${currentL2Greeting}"`)
-
-  console.log('Updating greeting from L1 to L2:')
+  const currentChildGreeting = await greeterChild.greet()
+  console.log(`Current child chain's greeting: "${currentChildGreeting}"`)
 
   /**
-   * Here we have a new greeting message that we want to set as the L2 greeting; we'll be setting it by sending it as a message from layer 1!!!
+   * Here we have a new greeting message that we want to set as the greeting in the child chain; we'll be setting it by sending it as a message from the parent chain!!!
    */
+  console.log('Updating greeting from Parent to Child:')
   const newGreeting = 'Greeting from far, far away'
 
   /**
    * Now we can query the required gas params using the estimateAll method in Arbitrum SDK
    */
-  const l1ToL2MessageGasEstimate = new L1ToL2MessageGasEstimator(l2Provider)
+  const parentToChildMessageGasEstimator = new ParentToChildMessageGasEstimator(
+    childChainProvider
+  )
 
   /**
-   * To be able to estimate the gas related params to our L1-L2 message, we need to know how many bytes of calldata out retryable ticket will require
+   * To be able to estimate the gas related params to our Parent-to-Child message, we need to know how many bytes of calldata out retryable ticket will require
    * i.e., we need to calculate the calldata for the function being called (setGreeting())
    */
   const ABI = ['function setGreeting(string _greeting)']
@@ -107,12 +113,11 @@ const main = async () => {
   const calldata = iface.encodeFunctionData('setGreeting', [newGreeting])
 
   /**
-   * Users can override the estimated gas params when sending an L1-L2 message
+   * Users can override the estimated gas params when sending an Parent-to-Child message
    * Note that this is totally optional
    * Here we include and example for how to provide these overriding values
    */
-
-  const RetryablesGasOverrides = {
+  const retryablesGasOverrides = {
     gasLimit: {
       base: undefined, // when undefined, the value will be estimated from rpc
       min: BigNumber.from(10000), // set a minimum gas limit, using 10000 as an example
@@ -129,85 +134,93 @@ const main = async () => {
   }
 
   /**
-   * The estimateAll method gives us the following values for sending an L1->L2 message
+   * The estimateAll method gives us the following values for sending a Parent-to-Child message
    * (1) maxSubmissionCost: The maximum cost to be paid for submitting the transaction
-   * (2) gasLimit: The L2 gas limit
-   * (3) deposit: The total amount to deposit on L1 to cover L2 gas and L2 call value
+   * (2) gasLimit: The child chain's gas limit
+   * (3) deposit: The total amount to deposit on the parent chain to cover the gas and call value for the child chain's message
    */
-  const L1ToL2MessageGasParams = await l1ToL2MessageGasEstimate.estimateAll(
-    {
-      from: await l1Greeter.address,
-      to: await l2Greeter.address,
-      l2CallValue: 0,
-      excessFeeRefundAddress: await l2Wallet.address,
-      callValueRefundAddress: await l2Wallet.address,
-      data: calldata,
-    },
-    await getBaseFee(l1Provider),
-    l1Provider,
-    RetryablesGasOverrides //if provided, it will override the estimated values. Note that providing "RetryablesGasOverrides" is totally optional.
-  )
+  const parentToChildMessageGasParams =
+    await parentToChildMessageGasEstimator.estimateAll(
+      {
+        from: await greeterParent.address,
+        to: await greeterChild.address,
+        l2CallValue: 0,
+        excessFeeRefundAddress: childChainWallet.address,
+        callValueRefundAddress: childChainWallet.address,
+        data: calldata,
+      },
+      await getBaseFee(parentChainProvider),
+      parentChainProvider,
+      // if provided, it will override the estimated values. Note that providing "RetryablesGasOverrides" is totally optional.
+      retryablesGasOverrides
+    )
   console.log(
-    `Current retryable base submission price is: ${L1ToL2MessageGasParams.maxSubmissionCost.toString()}`
+    `Current retryable base submission price is: ${parentToChildMessageGasParams.maxSubmissionCost.toString()}`
   )
 
   /**
-   * For the L2 gas price, we simply query it from the L2 provider, as we would when using L1
+   * For the gas price of the child chain, we simply query it from the child chain's provider
    */
-  const gasPriceBid = await l2Provider.getGasPrice()
-  console.log(`L2 gas price: ${gasPriceBid.toString()}`)
+  const gasPriceBid = await childChainProvider.getGasPrice()
+  console.log(`Child chain's gas price: ${gasPriceBid.toString()}`)
 
   console.log(
-    `Sending greeting to L2 with ${L1ToL2MessageGasParams.deposit.toString()} callValue for L2 fees:`
+    `Sending greeting to the child chain with ${parentToChildMessageGasParams.deposit.toString()} callValue for child chain's fees:`
   )
-  const setGreetingTx = await l1Greeter.setGreetingInL2(
+  const setGreetingTransaction = await greeterParent.setGreetingInChild(
     newGreeting, // string memory _greeting,
-    L1ToL2MessageGasParams.maxSubmissionCost,
-    L1ToL2MessageGasParams.gasLimit,
+    parentToChildMessageGasParams.maxSubmissionCost,
+    parentToChildMessageGasParams.gasLimit,
     gasPriceBid,
     {
-      value: L1ToL2MessageGasParams.deposit,
+      value: parentToChildMessageGasParams.deposit,
     }
   )
-  const setGreetingRec = await setGreetingTx.wait()
+  const setGreetingTransactionReceipt = await setGreetingTransaction.wait()
 
   console.log(
-    `Greeting txn confirmed on L1! 🙌 ${setGreetingRec.transactionHash}`
+    `Greeting txn confirmed on the parent chain! 🙌 ${setGreetingTransactionReceipt.transactionHash}`
   )
 
-  const l1TxReceipt = new L1TransactionReceipt(setGreetingRec)
+  const parentChainTransactionReceipt = new ParentTransactionReceipt(
+    setGreetingTransactionReceipt
+  )
 
   /**
-   * In principle, a single L1 txn can trigger any number of L1-to-L2 messages (each with its own sequencer number).
-   * In this case, we know our txn triggered only one
-   * Here, We check if our L1 to L2 message is redeemed on L2
+   * In principle, a single transaction can trigger any number of Parent-to-Child messages (each with its own sequencer number).
+   * In this case, we know our transaction triggered only one
+   * Here, We check if our Parent-to-Child message is redeemed on the child chain
    */
-  const messages = await l1TxReceipt.getL1ToL2Messages(l2Wallet)
+  const messages = await parentChainTransactionReceipt.getParentToChildMessages(
+    childChainWallet
+  )
   const message = messages[0]
-  console.log('Waiting for the L2 execution of the transaction. This may take up to 10-15 minutes ⏰')
+  console.log(
+    'Waiting for the execution of the transaction on the child chain. This may take up to 10-15 minutes ⏰'
+  )
   const messageResult = await message.waitForStatus()
   const status = messageResult.status
-  if (status === L1ToL2MessageStatus.REDEEMED) {
+  if (status === ParentToChildMessageStatus.REDEEMED) {
     console.log(
-      `L2 retryable ticket is executed 🥳 ${messageResult.l2TxReceipt.transactionHash}`
+      `Retryable ticket is executed on the child chain 🥳 ${messageResult.childTxReceipt.transactionHash}`
     )
   } else {
     console.log(
-      `L2 retryable ticket is failed with status ${L1ToL2MessageStatus[status]}`
+      `Retryable ticket failed to execute on the child chain. Status: ${ParentToChildMessageStatus[status]}`
     )
   }
 
   /**
-   * Note that during L2 execution, a retryable's sender address is transformed to its L2 alias.
-   * Thus, when GreeterL2 checks that the message came from the L1, we check that the sender is this L2 Alias.
-   * See setGreeting in GreeterL2.sol for this check.
+   * Note that during execution on the child chain, a retryable's sender address is transformed to its alias.
+   * Thus, when GreeterChild checks that the message came from the parent chain, we check that the sender is this alias.
+   * See setGreeting in GreeterChild.sol for this check.
    */
 
   /**
-   * Now when we call greet again, we should see our new string on L2!
+   * Now when we call greet again, we should see our new string on the child chain!
    */
-  const newGreetingL2 = await l2Greeter.greet()
-  console.log(`Updated L2 greeting: "${newGreetingL2}" 🥳`)
+  const newGreetingChild = await greeterChild.greet()
+  console.log(`Updated greeting in child contract: "${newGreetingChild}" 🥳`)
 }
 
 main()

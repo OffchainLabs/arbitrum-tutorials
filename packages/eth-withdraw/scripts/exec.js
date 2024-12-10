@@ -1,76 +1,74 @@
 const { utils, providers, Wallet } = require('ethers')
+const { getArbitrumNetwork, EthBridger } = require('@arbitrum/sdk')
 const {
-  EthBridger,
-  getL2Network,
-  addDefaultLocalNetwork,
-} = require('@arbitrum/sdk')
-const { parseEther } = utils
-const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
+  arbLog,
+  requireEnvVariables,
+  addCustomNetworkFromFile,
+} = require('arb-shared-dependencies')
 require('dotenv').config()
-requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC', 'L1RPC'])
+requireEnvVariables(['PRIVATE_KEY', 'CHAIN_RPC', 'PARENT_CHAIN_RPC'])
 
 /**
- * Set up: instantiate L2 wallet connected to provider
+ * Set up: instantiate wallets connected to providers
  */
-const walletPrivateKey = process.env.DEVNET_PRIVKEY
-const l2Provider = new providers.JsonRpcProvider(process.env.L2RPC)
-const l2Wallet = new Wallet(walletPrivateKey, l2Provider)
+const walletPrivateKey = process.env.PRIVATE_KEY
+const childChainProvider = new providers.JsonRpcProvider(process.env.CHAIN_RPC)
+const childChainWallet = new Wallet(walletPrivateKey, childChainProvider)
 
 /**
- * Set the amount to be withdrawn from L2 (in wei)
+ * Set the amount to be withdrawn from the child chain (in wei)
  */
-const ethFromL2WithdrawAmount = parseEther('0.000001')
+const withdrawAmount = utils.parseEther('0.000001')
 
 const main = async () => {
   await arbLog('Withdraw Eth via Arbitrum SDK')
 
   /**
-   * Add the default local network configuration to the SDK
-   * to allow this script to run on a local node
+   * Add the custom network configuration to the SDK if present
    */
-  addDefaultLocalNetwork()
+  addCustomNetworkFromFile()
 
   /**
-   * Use l2Network to create an Arbitrum SDK EthBridger instance
-   * We'll use EthBridger for its convenience methods around transferring ETH from L2 to L1
+   * Use childChainNetwork to create an Arbitrum SDK EthBridger instance
+   * We'll use EthBridger for its convenience methods around transferring the native asset to the parent chain
    */
-
-  const l2Network = await getL2Network(l2Provider)
-  const ethBridger = new EthBridger(l2Network)
+  const childChainNetwork = await getArbitrumNetwork(childChainProvider)
+  const ethBridger = new EthBridger(childChainNetwork)
 
   /**
-   * First, let's check our L2 wallet's initial ETH balance and ensure there's some ETH to withdraw
+   * First, let's check our wallet's initial balance in the child chain and ensure there's some native asset to withdraw
    */
-  const l2WalletInitialEthBalance = await l2Wallet.getBalance()
+  const initialEthBalance = await childChainWallet.getBalance()
 
-  if (l2WalletInitialEthBalance.lt(ethFromL2WithdrawAmount)) {
+  if (initialEthBalance.lt(withdrawAmount)) {
     console.log(
-      `Oops - not enough ether; fund your account L2 wallet currently ${l2Wallet.address} with at least 0.000001 ether`
+      `Oops - not enough balance; fund your wallet on the child chain ${childChainWallet.address} with at least 0.000001 ether (or your chain's gas token)`
     )
     process.exit(1)
   }
   console.log('Wallet properly funded: initiating withdrawal now')
 
   /**
-   * We're ready to withdraw ETH using the ethBridger instance from Arbitrum SDK
+   * We're ready to withdraw the native asset using the ethBridger instance from Arbitrum SDK
    * It will use our current wallet's address as the default destination
    */
-
-  const withdrawTx = await ethBridger.withdraw({
-    amount: ethFromL2WithdrawAmount,
-    l2Signer: l2Wallet,
-    destinationAddress: l2Wallet.address,
+  const withdrawTransaction = await ethBridger.withdraw({
+    amount: withdrawAmount,
+    childSigner: childChainWallet,
+    destinationAddress: childChainWallet.address,
   })
-  const withdrawRec = await withdrawTx.wait()
+  const withdrawTransactionReceipt = await withdrawTransaction.wait()
 
   /**
    * And with that, our withdrawal is initiated! No additional time-sensitive actions are required.
    * Any time after the transaction's assertion is confirmed, funds can be transferred out of the bridge via the outbox contract
    * We'll display the withdrawals event data here:
    */
-  console.log(`Ether withdrawal initiated! 🥳 ${withdrawRec.transactionHash}`)
+  console.log(
+    `Ether withdrawal initiated! 🥳 ${withdrawTransactionReceipt.transactionHash}`
+  )
 
-  const withdrawEventsData = await withdrawRec.getL2ToL1Events()
+  const withdrawEventsData = withdrawTransactionReceipt.getChildToParentEvents()
   console.log('Withdrawal data:', withdrawEventsData)
   console.log(
     `To claim funds (after dispute period), see outbox-execute repo 🫡`

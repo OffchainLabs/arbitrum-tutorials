@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity >=0.6.11;
+pragma solidity ^0.8.0;
 
 contract Greeter {
     string greeting;
@@ -11,7 +11,7 @@ contract Greeter {
         _;
     }
 
-    constructor(string memory _greeting) public {
+    constructor(string memory _greeting) {
         greeting = _greeting;
         deployer = msg.sender;
     }

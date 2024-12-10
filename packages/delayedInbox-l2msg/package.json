@@ -13,11 +13,7 @@
   },
   "author": "Offchain Labs, Inc.",
   "license": "Apache-2.0",
-  "devDependencies": {
-    "hardhat": "^2.10.1"
-  },
   "dependencies": {
-    "hardhat": "^2.10.1",
-    "@arbitrum/sdk": "^v3.1.9"
+    "@arbitrum/sdk": "^v4.0.1"
   }
 }

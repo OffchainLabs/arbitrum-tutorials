@@ -1,40 +1,44 @@
+const { providers, Wallet } = require('ethers')
 const hre = require('hardhat')
 const {
   ArbAddressTable__factory,
 } = require('@arbitrum/sdk/dist/lib/abi/factories/ArbAddressTable__factory')
-const { addDefaultLocalNetwork } = require('@arbitrum/sdk')
 const { arbLog, requireEnvVariables } = require('arb-shared-dependencies')
-requireEnvVariables(['DEVNET_PRIVKEY', 'L2RPC'])
+const {
+  ARB_ADDRESS_TABLE_ADDRESS,
+} = require('@arbitrum/sdk/dist/lib/dataEntities/constants')
 require('dotenv').config()
+requireEnvVariables(['PRIVATE_KEY', 'CHAIN_RPC'])
+
+/**
+ * Set up: instantiate wallets connected to providers
+ */
+const walletPrivateKey = process.env.PRIVATE_KEY
+const provider = new providers.JsonRpcProvider(process.env.CHAIN_RPC)
+const wallet = new Wallet(walletPrivateKey, provider)
 
 async function main() {
   await arbLog('Using the Address Table')
 
   /**
-   * Add the default local network configuration to the SDK
-   * to allow this script to run on a local node
+   * Deploy ArbitrumVIP contract
    */
-  addDefaultLocalNetwork()
-
-  /**
-   * Deploy ArbitrumVIP contract to L2
-   */
-  const ArbitrumVIP = await hre.ethers.getContractFactory('ArbitrumVIP')
-  const arbitrumVIP = await ArbitrumVIP.deploy()
-
+  const ArbitrumVIPContract = await (
+    await hre.ethers.getContractFactory('ArbitrumVIP')
+  ).connect(wallet)
+  console.log('Deploying ArbitrumVIP contract...')
+  const arbitrumVIP = await ArbitrumVIPContract.deploy()
   await arbitrumVIP.deployed()
-
   console.log('ArbitrumVIP deployed to:', arbitrumVIP.address)
 
-  const signers = await hre.ethers.getSigners()
-  const myAddress = signers[0].address
+  const myAddress = wallet.address
 
   /**
    * Connect to the Arbitrum Address table pre-compile contract
    */
   const arbAddressTable = ArbAddressTable__factory.connect(
-    '0x0000000000000000000000000000000000000066',
-    signers[0]
+    ARB_ADDRESS_TABLE_ADDRESS,
+    wallet
   )
 
   //**
