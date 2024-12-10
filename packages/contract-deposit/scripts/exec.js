@@ -18,6 +18,7 @@ const {
   ParentEthDepositTransactionReceipt,
 } = require('@arbitrum/sdk')
 const { getBaseFee } = require('@arbitrum/sdk/dist/lib/utils/lib')
+require('dotenv').config()
 requireEnvVariables([
   'PRIVATE_KEY',
   'CHAIN_RPC',
