@@ -1,4 +1,5 @@
-pragma solidity ^0.7.0;
+// SPDX-License-Identifier: Apache-2.0
+pragma solidity ^0.8.0;
 
 contract Election {
     // Model a Candidate
@@ -19,7 +20,7 @@ contract Election {
     // voted event
     event votedEvent(uint256 indexed _candidateId);
 
-    constructor() public {
+    constructor() {
         addCandidate("Candidate 1");
         addCandidate("Candidate 2");
     }

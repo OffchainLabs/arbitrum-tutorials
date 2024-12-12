@@ -1,28 +1,26 @@
-# demo-dapp-election Tutorial
+# demo-dapp-election tutorial
 
-demo-dapp-election is a simple sample example that allows you to deploy the Election contract to Arbitrum and run its functions.
+`demo-dapp-election` is a simple sample example that allows you to deploy the Election contract to Arbitrum and run its functions.
 
-The contract lives entirely on L2 / involves no direct L1 interacts; writing, deploying, and interacting with it works just like using an L1 contract.
+The contract lives entirely on the targetted chain, and involves no direct interacts from the parent chain; writing, deploying, and interacting with it works just like using a regular contract on Ethereum.
 
-## Config Environment Variables
+## Set environment variables
 
 Set the values shown in `.env-sample` as environmental variables. To copy it into a `.env` file:
 
-```bash
+```shell
 cp .env-sample .env
 ```
 
-(you'll still need to edit some variables, i.e., `DEVNET_PRIVKEY`)
+You'll still need to edit some variables, i.e., `PRIVATE_KEY` and `CHAIN_RPC`.
 
-### Run Demo
+Note that you can also set the environment variables in an `.env` file in the root of the monorepo, which will be available in all tutorials.
 
-```bash
+## Run demo
+
+```
 yarn run exec
 ```
-
-## Curious to see the output on the Arbitrum chain?
-
-Once the script is successfully executed, you can go to the [Arbitrum block explorer](https://sepolia.arbiscan.io), enter your L2 address, and see the corresponding transactions on the Arbitrum chain!
 
 <p align="left">
   <img width="350" height="150" src= "../../assets/logo.svg" />
