@@ -1,17 +1,10 @@
 {
   "name": "demo-dapp-pet-shop",
   "license": "Apache-2.0",
+  "author": "Offchain Labs, Inc.",
   "version": "1.0.0",
   "scripts": {
     "build": "hardhat compile",
-    "exec": "hardhat run scripts/exec.js --network l2"
-  },
-  "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.2",
-    "ethers": "^5.1.2",
-    "hardhat": "^2.2.0"
-  },
-  "dependencies": {
-    "dotenv": "^8.2.0"
+    "exec": "hardhat run scripts/exec.js"
   }
 }

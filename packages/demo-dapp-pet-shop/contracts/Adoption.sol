@@ -1,4 +1,5 @@
-pragma solidity ^0.7.0;
+// SPDX-License-Identifier: Apache-2.0
+pragma solidity ^0.8.0;
 
 contract Adoption {
     event PetAdopted(uint256 returnValue);
