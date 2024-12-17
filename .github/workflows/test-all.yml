@@ -2,12 +2,8 @@ name: Test all tutorials
 
 on:
   pull_request:
-  workflow_dispatch:
-
-# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#concurrency
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+    branches:
+      - master
 
 env:
   PRIVATE_KEY: "b6b15c8cb491557369f3c7d2c287b053eb229daa9c22138887752191c9520659"
