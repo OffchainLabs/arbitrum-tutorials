@@ -12,7 +12,7 @@ env:
   PARENT_CHAIN_RPC: "http://localhost:8547"
   # Env variables for specific tutorials
   L1_RPC: "http://localhost:8545"
-  TransferTo: 0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E
+  TransferTo: "0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E"
 
 jobs:
   test-all:
