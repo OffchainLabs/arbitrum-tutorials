@@ -71,7 +71,7 @@ const main = async () => {
   const withdrawEventsData = withdrawTransactionReceipt.getChildToParentEvents()
   console.log('Withdrawal data:', withdrawEventsData)
   console.log(
-    `To claim funds (after dispute period), see outbox-execute repo 🫡`
+    `To claim funds (after dispute period), run the outbox-execute tutorial using the transaction hash ${withdrawTransactionReceipt.transactionHash} 🫡`
   )
 }
 

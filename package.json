@@ -12,7 +12,8 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "format": "prettier './**/*.{js,json,md,yml,sol}' --write && yarn run lint --fix"
+    "format": "prettier './**/*.{js,json,md,yml,sol}' --write && yarn run lint --fix",
+    "testAll": "tests/runAll.sh"
   },
   "devDependencies": {
     "eslint": "^8.15.0",
