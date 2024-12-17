@@ -61,7 +61,7 @@ withdrawalTransactionHash=$(echo "$ethWithdrawOutput" | tail -1 | grep -oE '0x[a
 
 # We now run the rest of the tutorials
 run_tutorial "address-table" "exec"
-run_tutorial "block-verification-in-parent-chain-assertion" "exec"
+run_tutorial "block-verification-in-parent-chain-assertion" "exec 10"
 run_tutorial "contract-deposit" "start"
 run_tutorial "custom-gateway-bridging" "exec"
 run_tutorial "custom-token-bridging" "custom-token-bridging"
