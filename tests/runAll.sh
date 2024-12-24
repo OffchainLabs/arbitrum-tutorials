@@ -61,7 +61,6 @@ withdrawalTransactionHash=$(echo "$ethWithdrawOutput" | tail -1 | grep -oE '0x[a
 
 # We now run the rest of the tutorials
 run_tutorial "address-table" "exec"
-run_tutorial "block-verification-in-parent-chain-assertion" "exec 10"
 run_tutorial "contract-deposit" "start"
 run_tutorial "custom-gateway-bridging" "exec"
 run_tutorial "custom-token-bridging" "custom-token-bridging"
@@ -83,9 +82,10 @@ echo "$createFailedRetryableOutput"
 retryableTransactionHash=$(echo "$createFailedRetryableOutput" | tail -1 | grep -oE '0x[a-fA-F0-9]+')
 run_tutorial "redeem-pending-retryable" "redeemPendingRetryable $retryableTransactionHash"
 
-# We finish by running parent-chain-confirmation-checker and outbox-execute
+# We finish by running parent-chain-confirmation-checker, block-verification-in-parent-chain-assertion and outbox-execute
 run_tutorial "parent-chain-confirmation-checker" "checkConfirmation --txHash $withdrawalTransactionHash"
 run_tutorial "parent-chain-confirmation-checker" "findSubmissionTx --txHash $withdrawalTransactionHash"
+run_tutorial "block-verification-in-parent-chain-assertion" "exec 10"
 run_tutorial "outbox-execute" "outbox-exec $withdrawalTransactionHash"
 
 # Show final results

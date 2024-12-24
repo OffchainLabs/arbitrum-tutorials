@@ -41,10 +41,9 @@ const main = async () => {
   const initialEthBalance = await childChainWallet.getBalance()
 
   if (initialEthBalance.lt(withdrawAmount)) {
-    console.log(
+    throw new Error(
       `Oops - not enough balance; fund your wallet on the child chain ${childChainWallet.address} with at least 0.000001 ether (or your chain's gas token)`
     )
-    process.exit(1)
   }
   console.log('Wallet properly funded: initiating withdrawal now')
 
