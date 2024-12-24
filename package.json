@@ -16,7 +16,6 @@
     "testAll": "tests/runAll.sh"
   },
   "devDependencies": {
-    "chai": "^4.3.4",
     "eslint": "^8.15.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-mocha": "^9.0.0",
