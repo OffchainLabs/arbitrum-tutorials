@@ -11,6 +11,10 @@ requireEnvVariables(['PRIVATE_KEY', 'CHAIN_RPC', 'PARENT_CHAIN_RPC'])
 /**
  * Set up: instantiate wallets connected to providers
  */
+console.log(process.env.CHAIN_RPC)
+console.log(process.env.PARENT_CHAIN_RPC)
+console.log(process.env.PRIVATE_KEY)
+
 const walletPrivateKey = process.env.PRIVATE_KEY
 const childChainProvider = new providers.JsonRpcProvider(process.env.CHAIN_RPC)
 const childChainWallet = new Wallet(walletPrivateKey, childChainProvider)
