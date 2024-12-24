@@ -55,9 +55,9 @@ run_tutorial() {
 # to be used in outbox-exec. Since this script is expected to be run on the nitro-testnode
 # confirm periods are much shorter and by the time we run outbox-exec, this withdrawal should
 # be ready to be executed
-ethWithdrawOutput=$(run_tutorial "eth-withdraw" "withdrawETH")
-echo "$ethWithdrawOutput"
-withdrawalTransactionHash=$(echo "$ethWithdrawOutput" | tail -1 | grep -oE '0x[a-fA-F0-9]+')
+run_tutorial "eth-withdraw" "withdrawETH" | tee output
+withdrawalTransactionHash=$(cat output | tail -1 | grep -oE '0x[a-fA-F0-9]+')
+rm output
 
 # We now run the rest of the tutorials
 run_tutorial "address-table" "exec"
@@ -77,9 +77,9 @@ run_tutorial "token-withdraw" "token-withdraw"
 
 # These two tutorials should be run together. We get the transaction hash from the first one
 # and execute the second one using that transaction hash
-createFailedRetryableOutput=$(run_tutorial "redeem-pending-retryable" "createFailedRetryable")
-echo "$createFailedRetryableOutput"
-retryableTransactionHash=$(echo "$createFailedRetryableOutput" | tail -1 | grep -oE '0x[a-fA-F0-9]+')
+run_tutorial "redeem-pending-retryable" "createFailedRetryable" | tee output
+retryableTransactionHash=$(cat output | tail -1 | grep -oE '0x[a-fA-F0-9]+')
+rm output
 run_tutorial "redeem-pending-retryable" "redeemPendingRetryable $retryableTransactionHash"
 
 # We finish by running parent-chain-confirmation-checker, block-verification-in-parent-chain-assertion and outbox-execute
