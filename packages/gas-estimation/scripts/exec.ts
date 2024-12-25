@@ -55,8 +55,6 @@ const gasEstimator = async () => {
     //      NodeInterface.GasEstimateComponents() and get the fourth element and multiply by 16 => result[3]*16
     // L1S (Size in bytes of the calldata to post on the parent chain) =>
     //      Will depend on the size (in bytes) of the calldata of the transaction
-    //      We add a fixed amount of 140 bytes to that amount for the transaction metadata (recipient, nonce, gas price, ...)
-    //      Final size will be less after compression, but this calculation gives a good estimation
 
     // ****************************
     // * Other values you can get *
@@ -97,7 +95,6 @@ const gasEstimator = async () => {
     // -------------------------------------------------------------------------------
     // NOTE: This one might be a bit confusing, but parentChainGasEstimated (B in the formula) is calculated based on child-chain's gas fees
     const parentChainCost = parentChainGasEstimated.mul(childChainEstimatedPrice);
-    // NOTE: This is similar to 140 + utils.hexDataLength(txData);
     const parentChainSize = parentChainCost.div(parentChainEstimatedPrice);
 
     // Getting the result of the formula
