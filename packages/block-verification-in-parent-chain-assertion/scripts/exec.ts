@@ -46,8 +46,7 @@ const main = async (childChainBlockNumberToVerify: number) => {
   const nodeCreatedEventFilter = rollup.filters.NodeCreated(nodeId)
   const nodeCreatedEvents = await rollup.queryFilter(nodeCreatedEventFilter)
   if (!nodeCreatedEvents) {
-    console.error(`INTERNAL ERROR: NodeCreated events not found for Rblock/node: ${nodeId}`)
-    return
+    throw new Error(`INTERNAL ERROR: NodeCreated events not found for Rblock/node: ${nodeId}`)
   }
   const nodeCreatedEvent = nodeCreatedEvents[0]
   console.log(`NodeCreated event found in transaction ${nodeCreatedEvent.transactionHash}`)
@@ -56,8 +55,7 @@ const main = async (childChainBlockNumberToVerify: number) => {
    * Finding the assertion within the NodeCreated event, and getting the afterState
    */
   if (!nodeCreatedEvent.args) {
-    console.error(`INTERNAL ERROR: NodeCreated event does not have an assertion for Rblock/node: ${nodeId}`)
-    return
+    throw new Error(`INTERNAL ERROR: NodeCreated event does not have an assertion for Rblock/node: ${nodeId}`)
   }
   const assertion = nodeCreatedEvent.args.assertion
   const afterState = assertion.afterState
@@ -91,7 +89,7 @@ const main = async (childChainBlockNumberToVerify: number) => {
 if (process.argv.length < 3) {
   console.log(`Missing block number of the child chain to verify whether it has been processed in the latest ${useCreatedNodeInsteadOfConfirmed ? 'created' : 'confirmed'} RBlock/node`)
   console.log(`Usage: yarn run exec <block number>`)
-  process.exit()
+  process.exit(1)
 }
 
 const childChainBlockNumber = Number(process.argv[2]);

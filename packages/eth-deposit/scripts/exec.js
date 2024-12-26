@@ -85,17 +85,19 @@ const main = async () => {
   /**
    * The `complete` boolean tells us if the cross-chain message was successful
    */
-  transactionResult.complete
-    ? console.log(
-        `Message successfully executed on the child chain. Status: ${
-          EthDepositMessageStatus[await transactionResult.message.status()]
-        }`
-      )
-    : console.log(
-        `Message failed execution on the child chain . Status ${
-          EthDepositMessageStatus[await transactionResult.message.status()]
-        }`
-      )
+  if (transactionResult.complete) {
+    console.log(
+      `Message successfully executed on the child chain. Status: ${
+        EthDepositMessageStatus[await transactionResult.message.status()]
+      }`
+    )
+  } else {
+    throw new Error(
+      `Message failed execution on the child chain . Status ${
+        EthDepositMessageStatus[await transactionResult.message.status()]
+      }`
+    )
+  }
 
   /**
    * Our wallet's balance on the child chain should be updated now

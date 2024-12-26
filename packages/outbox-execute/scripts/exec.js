@@ -36,17 +36,15 @@ const main = async transactionHash => {
    * we assume this is a transaction that triggered a child-to-parent message on the child chain (i.e., ArbSys.sendTxToL1)
    */
   if (!transactionHash) {
-    console.error(
+    throw new Error(
       'Provide a transaction hash of a transaction that sent a child-to-parent message'
     )
-    return
   }
   if (
     !transactionHash.startsWith('0x') ||
     transactionHash.trim().length != 66
   ) {
-    console.error(`Hmm, ${transactionHash} doesn't look like a txn hash...`)
-    return
+    throw new Error(`Hmm, ${transactionHash} doesn't look like a txn hash...`)
   }
 
   /**
@@ -73,8 +71,7 @@ const main = async transactionHash => {
     (await childToParentMessage.status(childChainProvider)) ==
     ChildToParentMessageStatus.EXECUTED
   ) {
-    console.log(`Message already executed! Nothing else to do here`)
-    return
+    throw new Error(`Message already executed! Nothing else to do here`)
   }
 
   /**
@@ -108,7 +105,7 @@ if (process.argv.length < 3) {
     `Missing transaction hash of the child chain that sent a child-to-parent message`
   )
   console.log(`Usage: yarn run outbox-exec <transaction hash>`)
-  process.exit()
+  process.exit(1)
 }
 
 const transactionHash = process.argv[2]

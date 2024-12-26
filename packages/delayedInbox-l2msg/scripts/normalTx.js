@@ -106,10 +106,9 @@ const main = async () => {
   if (status == true) {
     console.log(`Transaction executed on the child chain!!! 🥳`)
   } else {
-    console.log(
+    throw new Error(
       `The transaction failed to execute on the child chain. Please verify if the gas provided was enough`
     )
-    return
   }
 
   /**

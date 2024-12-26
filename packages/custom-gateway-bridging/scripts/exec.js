@@ -287,17 +287,19 @@ const main = async () => {
   /**
    * The `complete` boolean tells us if the cross-chain message was successful
    */
-  childChainDepositResult.complete
-    ? console.log(
-        `Deposit to the child chain complete. Status: ${
-          ParentToChildMessageStatus[childChainDepositResult.status]
-        }`
-      )
-    : console.log(
-        `Deposit to the child chain failed. Status ${
-          ParentToChildMessageStatus[childChainDepositResult.status]
-        }`
-      )
+  if (childChainDepositResult.complete) {
+    console.log(
+      `Deposit to the child chain complete. Status: ${
+        ParentToChildMessageStatus[childChainDepositResult.status]
+      }`
+    )
+  } else {
+    throw new Error(
+      `Deposit to the child chain failed. Status ${
+        ParentToChildMessageStatus[childChainDepositResult.status]
+      }`
+    )
+  }
 
   /**
    * Get the Bridge token balance
@@ -427,17 +429,19 @@ const main = async () => {
   /**
    * The `complete` boolean tells us if the cross-chain message was successful
    */
-  childChainFinalResult.complete
-    ? console.log(
-        `Deposit on child chain successful. Status: ${
-          ParentToChildMessageStatus[childChainFinalResult.status]
-        }`
-      )
-    : console.log(
-        `Deposit on child chain failed. Status: ${
-          ParentToChildMessageStatus[childChainFinalResult.status]
-        }`
-      )
+  if (childChainFinalResult.complete) {
+    console.log(
+      `Deposit on child chain successful. Status: ${
+        ParentToChildMessageStatus[childChainFinalResult.status]
+      }`
+    )
+  } else {
+    throw new Error(
+      `Deposit on child chain failed. Status: ${
+        ParentToChildMessageStatus[childChainFinalResult.status]
+      }`
+    )
+  }
 }
 
 main()

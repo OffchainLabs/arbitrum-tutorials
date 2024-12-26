@@ -129,17 +129,19 @@ const main = async () => {
   /**
    * The `complete` boolean tells us if the parent-to-child message was successful
    */
-  childTransactionReceipt.complete
-    ? console.log(
-        `Message was successfully executed on the child chain: status: ${
-          ParentToChildMessageStatus[childTransactionReceipt.status]
-        }`
-      )
-    : console.log(
-        `Message failed to be executed on the child chain: status ${
-          ParentToChildMessageStatus[childTransactionReceipt.status]
-        }`
-      )
+  if (childTransactionReceipt.complete) {
+    console.log(
+      `Message was successfully executed on the child chain: status: ${
+        ParentToChildMessageStatus[childTransactionReceipt.status]
+      }`
+    )
+  } else {
+    throw new Error(
+      `Message failed to be executed on the child chain: status ${
+        ParentToChildMessageStatus[childTransactionReceipt.status]
+      }`
+    )
+  }
   console.log(`Setup complete`)
 
   /**

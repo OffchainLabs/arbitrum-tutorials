@@ -95,10 +95,9 @@ const main = async () => {
       `Transaction executed on the child chain!!! 🥳 After a challenge period has passed, you can go to https://bridge.arbitrum.io/ to execute your withdrawal and receive your funds!`
     )
   } else {
-    console.log(
+    throw new Error(
       `The transaction failed to execute on the child chain. Please verify if the gas provided was enough`
     )
-    return
   }
 }
 
