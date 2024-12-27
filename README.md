@@ -1,12 +1,12 @@
 # Arbitrum Tutorials
 
-This monorepo will help you get started with building on Arbitrum chains. It provides various simple demos showing and explaining how to interact with Arbitrum chains (including Orbit chains) — deploying and using contracts directly on Arbitrum, moving Ether and tokens betweens the parent and child chains, and more.
+This monorepo will help you get started with building on Arbitrum chains. It provides various simple demos showing and explaining how to interact with Arbitrum chains (including Orbit chains) — deploying and using contracts directly on Arbitrum, moving Ether and tokens between the parent and child chains, and more.
 
-We show how you can use broadly supported Ethereum ecosystem tooling (Hardhat, Ethers-js, etc.) as well as our special [Arbitrum SDK](https://github.com/OffchainLabs/arbitrum-sdk) for convenience.
+We show how you can use broadly supported Ethereum ecosystem tooling (Hardhat, Ethers.js, etc.) as well as our special [Arbitrum SDK](https://github.com/OffchainLabs/arbitrum-sdk) for convenience.
 
 ## Installation
 
-From root directory:
+From the root directory:
 
 ```bash
 yarn install
@@ -42,14 +42,14 @@ yarn install
 - 🌉 [Bridging a custom token through a custom gateway](./packages/custom-gateway-bridging/)
 - ✈️ [Send a signed transaction from the parent chain](./packages/delayedInbox-l2msg/)
 - 🎁 [Redeem pending retryable ticket](./packages/redeem-pending-retryable/)
-- 🧮 [Gas estimation](./packages/gas-estimation/)
+- 🧮 [Gas Estimation](./packages/gas-estimation/)
 - 🌀 [Deposit Ether or Tokens from L1 to L3](./packages/l1-l3-teleport/)
 
 ## How to run the tutorials against a custom network
 
 As mentioned above, these tutorials use the [Arbitrum SDK](https://github.com/OffchainLabs/arbitrum-sdk), which loads the regular Arbitrum chains by default (Arbitrum One, Arbitrum Nova and Arbitrum Sepolia). You can use these tutorials against any other Arbitrum chain (including Orbit chains), by loading it to the Arbitrum SDK.
 
-To do that, fill the information of your chain in the [`customNetwork.json`](./customNetwork.json) file, which is automatically loaded in all tutorials.
+To do that, fill in the information of your chain in the [`customNetwork.json`](./customNetwork.json) file, which is automatically loaded in all tutorials.
 
 To obtain the information of a specific chain, you can use the method [`prepareArbitrumNetwork`](https://github.com/OffchainLabs/arbitrum-orbit-sdk/blob/main/src/utils/registerNewNetwork.ts#L18) of the Orbit SDK.
 
