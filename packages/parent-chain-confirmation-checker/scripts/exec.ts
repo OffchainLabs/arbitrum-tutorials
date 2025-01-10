@@ -52,7 +52,7 @@ const main = async () => {
       break
 
     default:
-      console.log(`Unknown action: ${args.action}`)
+      throw new Error(`Unknown action: ${args.action}`)
   }
 }
 

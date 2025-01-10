@@ -41,10 +41,9 @@ const main = async () => {
   const initialEthBalance = await childChainWallet.getBalance()
 
   if (initialEthBalance.lt(withdrawAmount)) {
-    console.log(
+    throw new Error(
       `Oops - not enough balance; fund your wallet on the child chain ${childChainWallet.address} with at least 0.000001 ether (or your chain's gas token)`
     )
-    process.exit(1)
   }
   console.log('Wallet properly funded: initiating withdrawal now')
 
@@ -71,7 +70,7 @@ const main = async () => {
   const withdrawEventsData = withdrawTransactionReceipt.getChildToParentEvents()
   console.log('Withdrawal data:', withdrawEventsData)
   console.log(
-    `To claim funds (after dispute period), see outbox-execute repo 🫡`
+    `To claim funds (after dispute period), run the outbox-execute tutorial using the transaction hash ${withdrawTransactionReceipt.transactionHash} 🫡`
   )
 }
 

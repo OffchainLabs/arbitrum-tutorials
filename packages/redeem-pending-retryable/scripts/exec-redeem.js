@@ -38,10 +38,9 @@ const main = async parentChainTransactionHash => {
     !parentChainTransactionHash.startsWith('0x') ||
     parentChainTransactionHash.trim().length != 66
   ) {
-    console.log(
+    throw new Error(
       `Hmm, ${parentChainTransactionHash} doesn't look like a txn hash...`
     )
-    return
   }
 
   /**
@@ -86,7 +85,7 @@ if (process.argv.length < 3) {
     `Missing the transaction hash on the parent chain that created the pending retryable ticket`
   )
   console.log(`Usage: yarn run redeemPendingRetryable 0x<transaction-hash>`)
-  process.exit()
+  process.exit(1)
 }
 
 const transactionHash = process.argv[2]

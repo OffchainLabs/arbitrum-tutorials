@@ -205,7 +205,7 @@ const main = async () => {
       `Retryable ticket is executed on the child chain 🥳 ${messageResult.childTxReceipt.transactionHash}`
     )
   } else {
-    console.log(
+    throw new Error(
       `Retryable ticket failed to execute on the child chain. Status: ${ParentToChildMessageStatus[status]}`
     )
   }
