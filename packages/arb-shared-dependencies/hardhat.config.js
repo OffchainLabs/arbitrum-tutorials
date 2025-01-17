@@ -6,22 +6,6 @@ module.exports = {
         version: '0.8.16',
         settings: {},
       },
-      {
-        version: '0.8.9',
-        settings: {},
-      },
-      {
-        version: '0.7.2',
-        settings: {},
-      },
-      {
-        version: '0.6.12',
-        settings: {},
-      },
-      {
-        version: '0.6.11',
-        settings: {},
-      },
     ],
   },
   networks: {
