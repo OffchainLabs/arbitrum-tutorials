@@ -7,26 +7,15 @@ on:
       - master
 
 jobs:
-  install:
-    name: 'Install'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout files
-        uses: actions/checkout@v4
-
-      - name: Install node_modules
-        uses: OffchainLabs/actions/node-modules/install@main
-
   check-formatting:
     name: 'Check Formatting'
     runs-on: ubuntu-latest
-    needs: install
     steps:
       - name: Checkout files
         uses: actions/checkout@v4
 
       - name: Restore node_modules
-        uses: OffchainLabs/actions/node-modules/restore@main
+        uses: OffchainLabs/actions/node-modules/install@main
 
       - name: Check formatting with Prettier
         run: yarn prettier:format
