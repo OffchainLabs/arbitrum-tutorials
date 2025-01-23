@@ -8,9 +8,8 @@ on:
 
 jobs:
   check-formatting:
-    name: "Check Formatting"
+    name: 'Check Formatting'
     runs-on: ubuntu-latest
-    needs: install
     steps:
       - name: Checkout files
         uses: actions/checkout@v4
