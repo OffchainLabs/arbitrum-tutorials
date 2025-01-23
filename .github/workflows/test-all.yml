@@ -15,15 +15,26 @@ env:
   TransferTo: '0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E'
 
 jobs:
-  test-all:
-    name: Test all tutorials
+install:
+    name: "Install"
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout files
         uses: actions/checkout@v4
 
       - name: Install node_modules
         uses: OffchainLabs/actions/node-modules/install@main
+
+  test-all:
+    name: Test all tutorials
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore node_modules
+        uses: OffchainLabs/actions/node-modules/restore@main
 
       - name: Set up the local node
         # https://github.com/OffchainLabs/actions/blob/feat-simplify/run-nitro-test-node/action.yml
