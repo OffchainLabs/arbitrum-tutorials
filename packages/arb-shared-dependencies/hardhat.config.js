@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config();
 module.exports = {
   solidity: {
     compilers: [
@@ -20,15 +20,11 @@ module.exports = {
       gas: 2100000,
       gasLimit: 0,
       url: process.env['L1RPC'] || '',
-      accounts: process.env['DEVNET_PRIVKEY']
-        ? [process.env['DEVNET_PRIVKEY']]
-        : [],
+      accounts: process.env['DEVNET_PRIVKEY'] ? [process.env['DEVNET_PRIVKEY']] : [],
     },
     l2: {
       url: process.env['L2RPC'] || '',
-      accounts: process.env['DEVNET_PRIVKEY']
-        ? [process.env['DEVNET_PRIVKEY']]
-        : [],
+      accounts: process.env['DEVNET_PRIVKEY'] ? [process.env['DEVNET_PRIVKEY']] : [],
     },
     parent_chain: {
       gas: 2100000,
@@ -41,4 +37,4 @@ module.exports = {
       accounts: process.env['PRIVATE_KEY'] ? [process.env['PRIVATE_KEY']] : [],
     },
   },
-}
+};

@@ -1,81 +1,72 @@
-const hardhatConfig = require('./hardhat.config.js')
-const path = require('path')
-const fs = require('fs')
-const { registerCustomArbitrumNetwork } = require('@arbitrum/sdk')
-require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') })
+const hardhatConfig = require('./hardhat.config.js');
+const path = require('path');
+const fs = require('fs');
+const { registerCustomArbitrumNetwork } = require('@arbitrum/sdk');
+require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') });
 
 const wait = (ms = 0) => {
-  return new Promise(res => setTimeout(res, ms || 0))
-}
+  return new Promise((res) => setTimeout(res, ms || 0));
+};
 
-const arbLog = async text => {
-  let str = '🔵'
+const arbLog = async (text) => {
+  let str = '🔵';
   for (let i = 0; i < 25; i++) {
-    await wait(40)
+    // eslint-disable-next-line no-await-in-loop
+    await wait(40);
     if (i == 12) {
-      str = `🔵${'🔵'.repeat(i)}🔵`
+      str = `🔵${'🔵'.repeat(i)}🔵`;
     } else {
-      str = `🔵${' '.repeat(i * 2)}🔵`
+      str = `🔵${' '.repeat(i * 2)}🔵`;
     }
     while (str.length < 60) {
-      str = ` ${str} `
+      str = ` ${str} `;
     }
 
-    console.log(str)
+    console.log(str);
   }
 
-  console.log('Arbitrum Demo:', text)
-  await wait(2000)
+  console.log('Arbitrum Demo:', text);
+  await wait(2000);
 
-  console.log('Lets')
-  await wait(1000)
+  console.log('Lets');
+  await wait(1000);
 
-  console.log('Go ➡️')
-  await wait(1000)
-  console.log('...🚀')
-  await wait(1000)
-  console.log('')
-}
+  console.log('Go ➡️');
+  await wait(1000);
+  console.log('...🚀');
+  await wait(1000);
+  console.log('');
+};
 
-const arbLogTitle = text => {
-  console.log('\n###################')
-  console.log(text)
-  console.log('###################')
-}
+const arbLogTitle = (text) => {
+  console.log('\n###################');
+  console.log(text);
+  console.log('###################');
+};
 
-const requireEnvVariables = envVars => {
+const requireEnvVariables = (envVars) => {
   for (const envVar of envVars) {
     if (!process.env[envVar]) {
-      throw new Error(`Error: set your '${envVar}' environmental variable `)
+      throw new Error(`Error: set your '${envVar}' environmental variable `);
     }
   }
-  console.log('Environmental variables properly set 👍')
-}
+  console.log('Environmental variables properly set 👍');
+};
 
 const addCustomNetworkFromFile = () => {
-  const pathToCustomNetworkFile = path.join(
-    __dirname,
-    '..',
-    '..',
-    'customNetwork.json'
-  )
+  const pathToCustomNetworkFile = path.join(__dirname, '..', '..', 'customNetwork.json');
   if (!fs.existsSync(pathToCustomNetworkFile)) {
-    return
+    return;
   }
 
-  const customNetworkFileContents = fs.readFileSync(
-    pathToCustomNetworkFile,
-    'utf8'
-  )
-  const customNetworkInformation = JSON.parse(customNetworkFileContents)
+  const customNetworkFileContents = fs.readFileSync(pathToCustomNetworkFile, 'utf8');
+  const customNetworkInformation = JSON.parse(customNetworkFileContents);
   if (customNetworkInformation instanceof Array) {
-    customNetworkInformation.map(customNetwork =>
-      registerCustomArbitrumNetwork(customNetwork)
-    )
+    customNetworkInformation.map((customNetwork) => registerCustomArbitrumNetwork(customNetwork));
   } else {
-    registerCustomArbitrumNetwork(customNetworkInformation)
+    registerCustomArbitrumNetwork(customNetworkInformation);
   }
-}
+};
 
 module.exports = {
   arbLog,
@@ -83,4 +74,4 @@ module.exports = {
   hardhatConfig,
   requireEnvVariables,
   addCustomNetworkFromFile,
-}
+};

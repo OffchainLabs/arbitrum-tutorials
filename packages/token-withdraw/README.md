@@ -10,7 +10,6 @@ To withdraw a token from an Arbitrum chain, a message is send from a gateway con
 
 For more info, see [child-to-parent messages](https://docs.arbitrum.io/how-arbitrum-works/arbos/l2-l1-messaging).
 
-
 ## Standard ERC-20 withdrawal
 
 In this tutorial, we deploy a fresh token and then deposit some to the child chain. Then, we use these new tokens to trigger a withdrawal back to the parent chain.
