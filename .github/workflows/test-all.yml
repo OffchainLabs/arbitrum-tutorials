@@ -16,7 +16,7 @@ env:
 
 jobs:
   install:
-    name: "Install"
+    name: 'Install'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout files
