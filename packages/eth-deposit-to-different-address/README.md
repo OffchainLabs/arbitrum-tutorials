@@ -14,7 +14,6 @@ Our [Arbitrum SDK](https://github.com/OffchainLabs/arbitrum-sdk) provides a simp
 
 See [./exec.js](./scripts/exec.js) for inline explanation.
 
-
 ## Set environment variables
 
 Set the values shown in `.env-sample` as environmental variables. To copy it into a `.env` file:

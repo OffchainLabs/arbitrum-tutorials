@@ -62,7 +62,11 @@ contract ParentChainToken is Ownable, ERC20, ICustomToken {
     address public router;
     bool internal shouldRegisterGateway;
 
-    constructor(address _gateway, address _router, uint256 _initialSupply) ERC20("L1CustomToken", "LCT") {
+    constructor(
+        address _gateway,
+        address _router,
+        uint256 _initialSupply
+    ) ERC20("L1CustomToken", "LCT") {
         gateway = _gateway;
         router = _router;
         _mint(msg.sender, _initialSupply * 10 ** decimals());
@@ -82,7 +86,9 @@ contract ParentChainToken is Ownable, ERC20, ICustomToken {
     }
 
     /// @dev See {ERC20-balanceOf}
-    function balanceOf(address account) public view override(ICustomToken, ERC20) returns (uint256) {
+    function balanceOf(
+        address account
+    ) public view override(ICustomToken, ERC20) returns (uint256) {
         return super.balanceOf(account);
     }
 
