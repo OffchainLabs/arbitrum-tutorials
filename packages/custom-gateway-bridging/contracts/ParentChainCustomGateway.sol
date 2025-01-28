@@ -12,7 +12,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * and simplify the test
  */
 contract ParentChainCustomGateway is IL1CustomGateway, L1CrosschainMessenger, Ownable {
-    
     // Token bridge state variables
     address public l1CustomToken;
     address public l2CustomToken;
@@ -27,10 +26,7 @@ contract ParentChainCustomGateway is IL1CustomGateway, L1CrosschainMessenger, Ow
      * @param router_ L1GatewayRouter address
      * @param inbox_ Inbox address
      */
-    constructor(
-        address router_,
-        address inbox_
-    ) L1CrosschainMessenger(inbox_) {
+    constructor(address router_, address inbox_) L1CrosschainMessenger(inbox_) {
         router = router_;
         allowsDeposits = false;
     }
@@ -184,15 +180,9 @@ contract ParentChainCustomGateway is IL1CustomGateway, L1CrosschainMessenger, Ow
      *         maxSubmissionCost max gas deducted from user's L2 balance to cover base submission fee,
      *         extraData decoded data
      */
-    function _parseOutboundData(bytes memory data)
-    internal
-    pure
-    returns (
-        address from,
-        uint256 maxSubmissionCost,
-        bytes memory extraData
-    )
-    {
+    function _parseOutboundData(
+        bytes memory data
+    ) internal pure returns (address from, uint256 maxSubmissionCost, bytes memory extraData) {
         // Router encoded
         (from, extraData) = abi.decode(data, (address, bytes));
 

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-'use strict'
-import yargs from 'yargs/yargs'
+'use strict';
+import yargs from 'yargs/yargs';
 
 const argv = yargs(process.argv.slice(2))
   .options({
@@ -28,6 +28,6 @@ const argv = yargs(process.argv.slice(2))
   })
   .demandOption('action')
   .demandOption('txHash')
-  .parseSync()
+  .parseSync();
 
-export default argv
+export default argv;

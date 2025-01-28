@@ -11,11 +11,7 @@ contract GreeterParent is Greeter {
 
     event RetryableTicketCreated(uint256 indexed ticketId);
 
-    constructor(
-        string memory _greeting,
-        address _childTarget,
-        address _inbox
-    ) Greeter(_greeting) {
+    constructor(string memory _greeting, address _childTarget, address _inbox) Greeter(_greeting) {
         childTarget = _childTarget;
         inbox = IInbox(_inbox);
     }
@@ -53,7 +49,10 @@ contract GreeterParent is Greeter {
         require(msg.sender == address(bridge), "NOT_BRIDGE");
         IOutbox outbox = IOutbox(bridge.activeOutbox());
         address childSender = outbox.l2ToL1Sender();
-        require(childSender == childTarget, "Greeting only updateable by the child chain's contract");
+        require(
+            childSender == childTarget,
+            "Greeting only updateable by the child chain's contract"
+        );
 
         Greeter.setGreeting(_greeting);
     }

@@ -12,6 +12,20 @@ From the root directory:
 yarn install
 ```
 
+## Testing
+
+1. Start the nitro-testnode (you can find instructions [here](https://docs.arbitrum.io/run-arbitrum-node/run-local-full-chain-simulation)) with the following parameters:
+
+```shell
+./test-node.bash --init --tokenbridge --l3node --l3-token-bridge
+```
+
+2. Execute all tests with the following command
+
+```shell
+yarn run testAll
+```
+
 ## What's included?
 
 #### :white_check_mark: Basics

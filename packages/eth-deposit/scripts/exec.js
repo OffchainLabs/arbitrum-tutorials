@@ -1,54 +1,48 @@
-const { utils, providers, Wallet } = require('ethers')
-const {
-  getArbitrumNetwork,
-  EthBridger,
-  EthDepositMessageStatus,
-} = require('@arbitrum/sdk')
+const { utils, providers, Wallet } = require('ethers');
+const { getArbitrumNetwork, EthBridger, EthDepositMessageStatus } = require('@arbitrum/sdk');
 const {
   arbLog,
   requireEnvVariables,
   addCustomNetworkFromFile,
-} = require('arb-shared-dependencies')
-require('dotenv').config()
-requireEnvVariables(['PRIVATE_KEY', 'CHAIN_RPC', 'PARENT_CHAIN_RPC'])
+} = require('arb-shared-dependencies');
+require('dotenv').config();
+requireEnvVariables(['PRIVATE_KEY', 'CHAIN_RPC', 'PARENT_CHAIN_RPC']);
 
 /**
  * Set up: instantiate wallets connected to providers
  */
-const walletPrivateKey = process.env.PRIVATE_KEY
+const walletPrivateKey = process.env.PRIVATE_KEY;
 
-const parentChainProvider = new providers.JsonRpcProvider(
-  process.env.PARENT_CHAIN_RPC
-)
-const childChainProvider = new providers.JsonRpcProvider(process.env.CHAIN_RPC)
+const parentChainProvider = new providers.JsonRpcProvider(process.env.PARENT_CHAIN_RPC);
+const childChainProvider = new providers.JsonRpcProvider(process.env.CHAIN_RPC);
 
-const parentChainWallet = new Wallet(walletPrivateKey, parentChainProvider)
-const childChainWallet = new Wallet(walletPrivateKey, childChainProvider)
+const parentChainWallet = new Wallet(walletPrivateKey, parentChainProvider);
+const childChainWallet = new Wallet(walletPrivateKey, childChainProvider);
 
 /**
  * Set the amount to be deposited in the child chain (in wei)
  */
-const depositAmount = utils.parseEther('0.0001')
+const depositAmount = utils.parseEther('0.0001');
 
 const main = async () => {
-  await arbLog('Deposit native token (e.g. Ether) via Arbitrum SDK')
+  await arbLog('Deposit native token (e.g. Ether) via Arbitrum SDK');
 
   /**
    * Add the custom network configuration to the SDK if present
    */
-  addCustomNetworkFromFile()
+  addCustomNetworkFromFile();
 
   /**
    * Use childChainNetwork to create an Arbitrum SDK EthBridger instance
    * We'll use EthBridger for its convenience methods around transferring the native asset to the child chain
    */
-  const childChainNetwork = await getArbitrumNetwork(childChainProvider)
-  const ethBridger = new EthBridger(childChainNetwork)
+  const childChainNetwork = await getArbitrumNetwork(childChainProvider);
+  const ethBridger = new EthBridger(childChainNetwork);
 
   /**
    * First, let's check the wallet's initial balance in the child chain
    */
-  const initialEthBalance = await childChainWallet.getBalance()
+  const initialEthBalance = await childChainWallet.getBalance();
 
   /**
    * Transfer ether (or native token) from parent to child chain
@@ -62,52 +56,48 @@ const main = async () => {
     amount: depositAmount,
     parentSigner: parentChainWallet,
     childProvider: childChainProvider,
-  })
+  });
 
-  const depositTransactionReceipt = await depositTransaction.wait()
-  console.log(
-    'Deposit receipt on the parent chain is:',
-    depositTransactionReceipt.transactionHash
-  )
+  const depositTransactionReceipt = await depositTransaction.wait();
+  console.log('Deposit receipt on the parent chain is:', depositTransactionReceipt.transactionHash);
 
   /**
    * With the transaction confirmed on the parent chain, we now wait for the child chain's side (i.e., balance credited to the child chain) to be confirmed as well.
    * Here we're waiting for the sequencer to include the message in its off-chain queue. The sequencer should include it in around 15 minutes.
    */
-  console.log(
-    `Now we wait for child chain's side of the transaction to be executed ⏳`
-  )
-  const transactionResult =
-    await depositTransactionReceipt.waitForChildTransactionReceipt(
-      childChainProvider
-    )
+  console.log(`Now we wait for child chain's side of the transaction to be executed ⏳`);
+  const transactionResult = await depositTransactionReceipt.waitForChildTransactionReceipt(
+    childChainProvider,
+  );
 
   /**
    * The `complete` boolean tells us if the cross-chain message was successful
    */
-  transactionResult.complete
-    ? console.log(
-        `Message successfully executed on the child chain. Status: ${
-          EthDepositMessageStatus[await transactionResult.message.status()]
-        }`
-      )
-    : console.log(
-        `Message failed execution on the child chain . Status ${
-          EthDepositMessageStatus[await transactionResult.message.status()]
-        }`
-      )
+  if (transactionResult.complete) {
+    console.log(
+      `Message successfully executed on the child chain. Status: ${
+        EthDepositMessageStatus[await transactionResult.message.status()]
+      }`,
+    );
+  } else {
+    throw new Error(
+      `Message failed execution on the child chain . Status ${
+        EthDepositMessageStatus[await transactionResult.message.status()]
+      }`,
+    );
+  }
 
   /**
    * Our wallet's balance on the child chain should be updated now
    */
-  const updatedEthBalance = await childChainWallet.getBalance()
+  const updatedEthBalance = await childChainWallet.getBalance();
   console.log(
-    `Your balance in the child chain is updated from ${initialEthBalance.toString()} to ${updatedEthBalance.toString()}`
-  )
-}
+    `Your balance in the child chain is updated from ${initialEthBalance.toString()} to ${updatedEthBalance.toString()}`,
+  );
+};
 main()
   .then(() => process.exit(0))
-  .catch(error => {
-    console.error(error)
-    process.exit(1)
-  })
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });

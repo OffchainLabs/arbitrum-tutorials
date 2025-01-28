@@ -69,8 +69,8 @@ contract ChildChainCustomGateway is IL2CustomGateway, L2CrosschainMessenger, Own
         address l1Token,
         address to,
         uint256 amount,
-        uint256, /* _maxGas */
-        uint256, /* _gasPriceBid */
+        uint256 /* _maxGas */,
+        uint256 /* _gasPriceBid */,
         bytes calldata data
     ) public payable override returns (bytes memory res) {
         // Only execute if deposits are allowed
@@ -79,7 +79,7 @@ contract ChildChainCustomGateway is IL2CustomGateway, L2CrosschainMessenger, Own
         // The function is marked as payable to conform to the inheritance setup
         // This particular code path shouldn't have a msg.value > 0
         require(msg.value == 0, "NO_VALUE");
-        
+
         // Only allow the custom token to be bridged through this gateway
         require(l1Token == l1CustomToken, "Token is not allowed through this gateway");
 
@@ -98,11 +98,7 @@ contract ChildChainCustomGateway is IL2CustomGateway, L2CrosschainMessenger, Own
         res = getOutboundCalldata(l1Token, from, to, amount, extraData);
 
         // Trigger the crosschain message
-        uint256 id = _sendTxToL1(
-            from,
-            l1Gateway,
-            res
-        );
+        uint256 id = _sendTxToL1(from, l1Gateway, res);
 
         emit WithdrawalInitiated(l1Token, from, to, id, currExitNum, amount);
         return abi.encode(id);
@@ -157,7 +153,7 @@ contract ChildChainCustomGateway is IL2CustomGateway, L2CrosschainMessenger, Own
         if (l1Token == l1CustomToken) {
             return l2CustomToken;
         }
-        
+
         return address(0);
     }
 
@@ -172,14 +168,9 @@ contract ChildChainCustomGateway is IL2CustomGateway, L2CrosschainMessenger, Own
      * @return from account that initiated the deposit,
      *         extraData decoded data
      */
-    function _parseOutboundData(bytes memory data)
-    internal
-    view
-    returns (
-        address from,
-        bytes memory extraData
-    )
-    {
+    function _parseOutboundData(
+        bytes memory data
+    ) internal view returns (address from, bytes memory extraData) {
         if (msg.sender == router) {
             // Router encoded
             (from, extraData) = abi.decode(data, (address, bytes));
