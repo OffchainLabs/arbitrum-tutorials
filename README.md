@@ -56,7 +56,7 @@ yarn run testAll
 - 🌉 [Bridging a custom token through a custom gateway](./packages/custom-gateway-bridging/)
 - ✈️ [Send a signed transaction from the parent chain](./packages/delayedInbox-l2msg/)
 - 🎁 [Redeem pending retryable ticket](./packages/redeem-pending-retryable/)
-- 🧮 [Gas Estimation](./packages/gas-estimation/)
+- 🧮 [Gas estimation](./packages/gas-estimation/)
 - 🌀 [Deposit Ether or Tokens from L1 to L3](./packages/l1-l3-teleport/)
 
 ## How to run the tutorials against a custom network
