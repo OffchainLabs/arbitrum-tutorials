@@ -1,4 +1,4 @@
-const { utils, providers, Wallet } = require('ethers');
+const { utils, providers, Wallet, constants } = require('ethers');
 const { getArbitrumNetwork, EthBridger, EthDepositMessageStatus } = require('@arbitrum/sdk');
 const {
   arbLog,
@@ -38,11 +38,35 @@ const main = async () => {
    */
   const childChainNetwork = await getArbitrumNetwork(childChainProvider);
   const ethBridger = new EthBridger(childChainNetwork);
+  const isCustomGasTokenChain =
+    ethBridger.nativeToken && ethBridger.nativeToken !== constants.AddressZero;
 
   /**
    * First, let's check the balance of the destination address
    */
   const destinationAddressInitialEthBalance = await childChainProvider.getBalance(destAddress);
+
+  /**
+   * For chains that use a custom gas token, we'll have to approve the transfer of native tokens
+   * to pay for the execution of the retryable tickets on the child chain
+   */
+  if (isCustomGasTokenChain) {
+    console.log('Custom gas token chain detected');
+    console.log('Giving allowance to the deployed token to transfer the chain native token');
+    const approvalTransactionRequest = await ethBridger.getApproveGasTokenRequest({
+      erc20ParentAddress: ethBridger.nativeToken,
+      parentProvider: parentChainProvider,
+    });
+    const approvalTransaction = await ethBridger.approveGasToken({
+      txRequest: approvalTransactionRequest,
+      parentSigner: parentChainWallet,
+    });
+
+    const approvalTransactionReceipt = await approvalTransaction.wait();
+    console.log(
+      `Native token approval transaction receipt is: ${approvalTransactionReceipt.transactionHash}`,
+    );
+  }
 
   /**
    * Transfer ether (or native token) from parent chain to a different address on child chain

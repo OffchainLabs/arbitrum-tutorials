@@ -1,5 +1,5 @@
 const { ethers } = require('hardhat');
-const { BigNumber, providers, Wallet } = require('ethers');
+const { BigNumber, providers, Wallet, constants } = require('ethers');
 const { getArbitrumNetwork, ParentToChildMessageStatus, Erc20Bridger } = require('@arbitrum/sdk');
 const {
   arbLog,
@@ -50,6 +50,12 @@ const main = async () => {
    */
   const childChainNetwork = await getArbitrumNetwork(childChainProvider);
   const erc20Bridger = new Erc20Bridger(childChainNetwork);
+  const isCustomGasTokenChain =
+    erc20Bridger.nativeToken && erc20Bridger.nativeToken !== constants.AddressZero;
+
+  if (isCustomGasTokenChain) {
+    console.log('Custom gas token chain detected');
+  }
 
   /**
    * We get the address of the parent-chain gateway for our DappToken,
@@ -101,6 +107,28 @@ const main = async () => {
    * (4) childProvider: A provider for the child chain
    */
   console.log('Transferring DappToken to the child chain:');
+
+  /**
+   * For chains that use a custom gas token, we'll have to approve the transfer of native tokens
+   * to pay for the execution of the retryable tickets on the child chain
+   */
+  if (isCustomGasTokenChain) {
+    console.log('Giving allowance to the deployed token to transfer the chain native token');
+    const approvalTransactionRequest = await erc20Bridger.getApproveGasTokenRequest({
+      erc20ParentAddress: erc20Bridger.nativeToken,
+      parentProvider: parentChainProvider,
+    });
+    const approvalTransaction = await erc20Bridger.approveGasToken({
+      txRequest: approvalTransactionRequest,
+      parentSigner: parentChainWallet,
+    });
+
+    const approvalTransactionReceipt = await approvalTransaction.wait();
+    console.log(
+      `Native token approval transaction receipt is: ${approvalTransactionReceipt.transactionHash}`,
+    );
+  }
+
   const depositTransaction = await erc20Bridger.deposit({
     amount: tokenDepositAmount,
     erc20ParentAddress: tokenAddress,
