@@ -27,7 +27,7 @@ Note that you can also set the environment variables in an `.env` file in the ro
 ## Run
 
 ```
-yarn run depositNative
+yarn run depositETH
 ```
 
 <p align="left">
