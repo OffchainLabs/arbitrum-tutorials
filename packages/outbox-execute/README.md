@@ -25,7 +25,7 @@ Note that you can also set the environment variables in an `.env` file in the ro
 To run:
 
 ```shell
-yarn outbox-exec --txhash 0xmytxnhash
+yarn outbox-exec 0xmytxnhash
 ```
 
 - _0xmytxnhash_ is expected to be the transaction hash of a transaction in the child chain that triggered a child-to-parent message.
