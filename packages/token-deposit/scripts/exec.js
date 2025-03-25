@@ -110,8 +110,8 @@ const main = async () => {
    */
   if (isCustomGasTokenChain) {
     console.log('Giving allowance to the deployed token to transfer the chain native token');
-    const approvalTransaction = await ethBridger.approveGasToken({
-      erc20ParentAddress: ethBridger.nativeToken,
+    const approvalTransaction = await erc20Bridger.approveGasToken({
+      erc20ParentAddress: erc20Bridger.nativeToken,
       parentSigner: parentChainWallet,
     });
 
