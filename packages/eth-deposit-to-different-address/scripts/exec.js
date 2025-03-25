@@ -41,10 +41,6 @@ const main = async () => {
   const isCustomGasTokenChain =
     ethBridger.nativeToken && ethBridger.nativeToken !== constants.AddressZero;
 
-  if (isCustomGasTokenChain) {
-    console.log('Custom gas token chain detected');
-  }
-
   /**
    * First, let's check the balance of the destination address
    */
@@ -56,12 +52,8 @@ const main = async () => {
    */
   if (isCustomGasTokenChain) {
     console.log('Giving allowance to the deployed token to transfer the chain native token');
-    const approvalTransactionRequest = await ethBridger.getApproveGasTokenRequest({
-      erc20ParentAddress: ethBridger.nativeToken,
-      parentProvider: parentChainProvider,
-    });
     const approvalTransaction = await ethBridger.approveGasToken({
-      txRequest: approvalTransactionRequest,
+      erc20ParentAddress: ethBridger.nativeToken,
       parentSigner: parentChainWallet,
     });
 

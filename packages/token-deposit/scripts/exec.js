@@ -53,10 +53,6 @@ const main = async () => {
   const isCustomGasTokenChain =
     erc20Bridger.nativeToken && erc20Bridger.nativeToken !== constants.AddressZero;
 
-  if (isCustomGasTokenChain) {
-    console.log('Custom gas token chain detected');
-  }
-
   /**
    * We get the address of the parent-chain gateway for our DappToken,
    * which will later help us get the initial token balance of the bridge (before deposit)
@@ -114,12 +110,8 @@ const main = async () => {
    */
   if (isCustomGasTokenChain) {
     console.log('Giving allowance to the deployed token to transfer the chain native token');
-    const approvalTransactionRequest = await erc20Bridger.getApproveGasTokenRequest({
-      erc20ParentAddress: erc20Bridger.nativeToken,
-      parentProvider: parentChainProvider,
-    });
-    const approvalTransaction = await erc20Bridger.approveGasToken({
-      txRequest: approvalTransactionRequest,
+    const approvalTransaction = await ethBridger.approveGasToken({
+      erc20ParentAddress: ethBridger.nativeToken,
       parentSigner: parentChainWallet,
     });
 
