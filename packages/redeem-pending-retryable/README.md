@@ -31,7 +31,7 @@ To create a failed retryable ticket:
 To redeem a pending retryable ticket:
 
 ```
- yarn redeemPendingRetryable --txhash 0xmytxnhash
+ yarn redeemPendingRetryable 0xmytxnhash
 ```
 
 - _0xmytxnhash_ is expected to be the transaction hash of the transaction on the parent chain that triggered the parent-to-child message.
