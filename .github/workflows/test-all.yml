@@ -66,6 +66,11 @@ jobs:
           .[1].tokenBridge.parentWeth = "0x0000000000000000000000000000000000000000" |
           .[1].tokenBridge.childWeth = "0x0000000000000000000000000000000000000000"
           ' customNetwork.json > tmp.customNetwork.json && mv tmp.customNetwork.json customNetwork.json
+      
+      - name: Fund main account with native tokens
+        # In nitro-testnode the account that has native tokens is the L3 rollup owner
+        # (https://docs.arbitrum.io/run-arbitrum-node/run-local-full-chain-simulation#default-endpoints-and-addresses)
+        run: cast send -r http://localhost:8547 --private-key 0xecdf21cb41c65afb51f91df408b7656e2c8739a5877f2814add0afd780cc210e 0xE069078bA9ACCE4eeAE609d8754515Cf13dd6706 "transfer(address,uint256)()" 0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E 10ether
 
       - name: Test
         run: yarn run testAll
