@@ -15,8 +15,8 @@ env:
   TransferTo: '0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E'
 
 jobs:
-  test-all:
-    name: Test all tutorials
+  test-all-eth:
+    name: Test all tutorials (ETH-based chain)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -34,6 +34,44 @@ jobs:
 
       - name: Copy .env
         run: cp ./.env-sample ./.env
+
+      - name: Test
+        run: yarn run testAll
+
+  test-all-custom-gas:
+    name: Test all tutorials (Custom-gas-token chain)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore node_modules
+        uses: OffchainLabs/actions/node-modules/install@main
+
+      - name: Set up the local node
+        # https://github.com/OffchainLabs/actions/blob/feat-simplify/run-nitro-test-node/action.yml
+        uses: OffchainLabs/actions/run-nitro-test-node@feat-simplify
+        with:
+          nitro-testnode-ref: release
+          args: --tokenbridge --l3node --l3-token-bridge --l3-fee-token
+
+      - name: Copy .env
+        run: cp ./.env-sample ./.env
+      
+      - name: Modify custom network file
+        # Some contract addresses are different when using a custom gas token chain
+        run: >
+          jq -c '
+          .[1].nativeToken = "0xE069078bA9ACCE4eeAE609d8754515Cf13dd6706" |
+          .[1].ethBridge.rollup = "0xA7c5B54f271844ff9cA8B5da77500180d1aD8899" |
+          .[1].tokenBridge.parentGatewayRouter = "0x0C085152C2799834fc1603533ff6916fa1FdA302" |
+          .[1].tokenBridge.parentErc20Gateway = "0x59156b0596689D965Ba707E160e5370AF22461a0" |
+          .[1].tokenBridge.parentCustomGateway = "0xCe02eA568090ae7d5184B0a98df90f6aa69C1552" |
+          .[1].tokenBridge.parentWethGateway = "0x0000000000000000000000000000000000000000" |
+          .[1].tokenBridge.childWethGateway = "0x0000000000000000000000000000000000000000" |
+          .[1].tokenBridge.parentWeth = "0x0000000000000000000000000000000000000000" |
+          .[1].tokenBridge.childWeth = "0x0000000000000000000000000000000000000000"
+          ' customNetwork.json > tmp.customNetwork.json && mv tmp.customNetwork.json customNetwork.json
 
       - name: Test
         run: yarn run testAll
