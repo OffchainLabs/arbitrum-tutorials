@@ -32,9 +32,6 @@ jobs:
           nitro-testnode-ref: release
           args: --tokenbridge --l3node --l3-token-bridge
 
-      - name: Copy .env
-        run: cp ./.env-sample ./.env
-
       - name: Test
         run: yarn run testAll
 
@@ -54,9 +51,6 @@ jobs:
         with:
           nitro-testnode-ref: release
           args: --tokenbridge --l3node --l3-token-bridge --l3-fee-token
-
-      - name: Copy .env
-        run: cp ./.env-sample ./.env
       
       - name: Modify custom network file
         # Some contract addresses are different when using a custom gas token chain
