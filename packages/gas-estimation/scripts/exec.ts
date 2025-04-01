@@ -1,7 +1,11 @@
 import { utils, providers } from 'ethers';
 import { NodeInterface__factory } from '@arbitrum/sdk/dist/lib/abi/factories/NodeInterface__factory';
 import { NODE_INTERFACE_ADDRESS } from '@arbitrum/sdk/dist/lib/dataEntities/constants';
-const { requireEnvVariables, addCustomNetworkFromFile } = require('arb-shared-dependencies');
+const {
+  requireEnvVariables,
+  addCustomNetworkFromFile,
+  arbLog,
+} = require('arb-shared-dependencies');
 
 // Importing configuration //
 require('dotenv').config();
@@ -24,6 +28,8 @@ const destinationAddress = '0x1234563d5de0d7198451f87bcbf15aefd00d434d';
 const txData = '0x';
 
 const gasEstimator = async () => {
+  await arbLog('Gas estimation');
+
   // ***************************
   // * Gas formula explanation *
   // ***************************
@@ -93,7 +99,9 @@ const gasEstimator = async () => {
   // -------------------------------------------------------------------------------
   // NOTE: This one might be a bit confusing, but parentChainGasEstimated (B in the formula) is calculated based on child-chain's gas fees
   const parentChainCost = parentChainGasEstimated.mul(childChainEstimatedPrice);
-  const parentChainSize = parentChainCost.div(parentChainEstimatedPrice);
+  const parentChainSize = parentChainEstimatedPrice.eq(0)
+    ? 0
+    : parentChainCost.div(parentChainEstimatedPrice);
 
   // Getting the result of the formula
   // ---------------------------------
