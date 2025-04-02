@@ -1,52 +1,48 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "@arbitrum/nitro-contracts/src/bridge/IInbox.sol";
 import "@arbitrum/token-bridge-contracts/contracts/tokenbridge/ethereum/ICustomToken.sol";
+import "@arbitrum/token-bridge-contracts/contracts/tokenbridge/libraries/IERC20Bridge.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 /**
  * @title Interface needed to call function registerTokenToL2 of the L1CustomGateway
  *        (We don't need this interface for this example, but we're keeping it for completion)
  */
-interface IL1CustomGateway {
+interface IL1OrbitCustomGateway {
     function registerTokenToL2(
         address l2Address,
         uint256 maxGas,
         uint256 gasPriceBid,
         uint256 maxSubmissionCost,
-        address creditBackAddress
-    ) external payable returns (uint256);
+        address creditBackAddress,
+        uint256 feeAmount
+    ) external returns (uint256);
 }
 
-/**
- * @title Interface needed to call function setGateway of the L2GatewayRouter
- */
-interface IL1GatewayRouter {
+interface IOrbitGatewayRouter {
     function setGateway(
         address gateway,
         uint256 maxGas,
         uint256 gasPriceBid,
         uint256 maxSubmissionCost,
-        address creditBackAddress
-    ) external payable returns (uint256);
+        address creditBackAddress,
+        uint256 feeAmount
+    ) external returns (uint256);
+
+    function inbox() external returns (address);
 }
 
-/**
- * @title Example implementation of a custom ERC20 token to be deployed on L1
- */
 contract ParentChainToken is Ownable, ERC20, ICustomToken {
-    address public gateway; // The parent chain custom gateway contract
-    address public router; // The parent chain router contract
-    bool private shouldRegisterGateway;
+    using SafeERC20 for ERC20;
 
-    /**
-     * @dev See {ERC20-constructor} and {Ownable-constructor}
-     * An initial supply amount is passed, which is preminted to the deployer.
-     * @param _gateway address of the L1 custom gateway
-     * @param _router address of the L1GatewayRouter
-     * @param initialSupply initial supply amount to be minted to the deployer
-     */
+    address public gateway;
+    address public router;
+    bool internal shouldRegisterGateway;
+
     constructor(
         address _gateway,
         address _router,
@@ -63,16 +59,11 @@ contract ParentChainToken is Ownable, ERC20, ICustomToken {
         return uint8(0xb1);
     }
 
-    /**
-     * @dev See {ICustomToken-registerTokenOnL2}
-     * In this case, we don't need to call IL1CustomGateway.registerTokenToL2, because our
-     * custom gateway works for a single token it already knows.
-     */
     function registerTokenOnL2(
         address /* l2CustomTokenAddress */,
         uint256 /* maxSubmissionCostForCustomGateway */,
         uint256 maxSubmissionCostForRouter,
-        uint256 /*  maxGasForCustomGateway */,
+        uint256 /* maxGasForCustomGateway */,
         uint256 maxGasForRouter,
         uint256 gasPriceBid,
         uint256 /* valueForGateway */,
@@ -83,13 +74,32 @@ contract ParentChainToken is Ownable, ERC20, ICustomToken {
         bool prev = shouldRegisterGateway;
         shouldRegisterGateway = true;
 
-        IL1GatewayRouter(router).setGateway{ value: valueForRouter }(
+        address inbox = IOrbitGatewayRouter(router).inbox();
+        address bridge = address(IInbox(inbox).bridge());
+
+        // transfer fees from user to here, and approve router to use it
+        {
+            address nativeToken = IERC20Bridge(bridge).nativeToken();
+
+            ERC20(nativeToken).safeTransferFrom(msg.sender, address(this), valueForRouter);
+            ERC20(nativeToken).approve(router, valueForRouter);
+        }
+
+        IOrbitGatewayRouter(router).setGateway(
             gateway,
             maxGasForRouter,
             gasPriceBid,
             maxSubmissionCostForRouter,
-            creditBackAddress
+            creditBackAddress,
+            valueForRouter
         );
+
+        // reset allowance back to 0 in case not all approved native tokens are spent
+        {
+            address nativeToken = IERC20Bridge(bridge).nativeToken();
+
+            ERC20(nativeToken).approve(router, 0);
+        }
 
         shouldRegisterGateway = prev;
     }

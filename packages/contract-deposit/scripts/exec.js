@@ -18,6 +18,7 @@ const {
   ParentEthDepositTransactionReceipt,
 } = require('@arbitrum/sdk');
 const { getBaseFee } = require('@arbitrum/sdk/dist/lib/utils/lib');
+const { ERC20__factory } = require('@arbitrum/sdk/dist/lib/abi/factories/ERC20__factory');
 require('dotenv').config();
 requireEnvVariables(['PRIVATE_KEY', 'CHAIN_RPC', 'PARENT_CHAIN_RPC', 'TransferTo']);
 
@@ -51,14 +52,23 @@ const main = async () => {
   const inboxAddress = ethBridger.childNetwork.ethBridge.inbox;
 
   /**
+   * We find out whether the child chain we are using is a custom gas token chain
+   * We need to perform an additional approve call to transfer
+   * the native tokens to pay for the gas of the retryable tickets.
+   */
+  const isCustomGasTokenChain =
+    childChainNetwork.nativeToken && childChainNetwork.nativeToken !== ethers.constants.AddressZero;
+
+  /**
    * We deploy EthDeposit contract to the parent chain first and send eth to
    * the child chain via this contract.
    * Funds will deposit to the contract's alias address first.
    */
-  const DepositContract = await (
-    await hre.ethers.getContractFactory('EthDeposit')
-  ).connect(parentChainWallet);
-  console.log('Deploying EthDeposit contract...');
+  const depositContractName = isCustomGasTokenChain ? 'CustomGasTokenDeposit' : 'EthDeposit';
+  const DepositContract = (await hre.ethers.getContractFactory(depositContractName)).connect(
+    parentChainWallet,
+  );
+  console.log(`Deploying ${depositContractName} contract...`);
   const depositContract = await DepositContract.deploy(inboxAddress);
   await depositContract.deployed();
   console.log(`deployed to ${depositContract.address}`);
@@ -71,18 +81,37 @@ const main = async () => {
 
   console.log(`Sending deposit transaction...`);
 
-  const ethDepositTx = await depositContract.depositToChildChain({
-    value: ethers.utils.parseEther('0.01'),
-  });
-  const ethDepositRec = await ethDepositTx.wait();
+  let depositTx;
+  if (isCustomGasTokenChain) {
+    // Approve the gas token to be sent to the contract
+    console.log('Giving allowance to the contract to transfer the chain native token');
+    const nativeToken = new ethers.Contract(
+      childChainNetwork.nativeToken,
+      ERC20__factory.abi,
+      parentChainWallet,
+    );
+    const approvalTransaction = await nativeToken.approve(
+      depositContract.address,
+      ethers.utils.parseEther('1'),
+    );
+    const approvalTransactionReceipt = await approvalTransaction.wait();
+    console.log(`Approval transaction receipt is: ${approvalTransactionReceipt.transactionHash}`);
 
-  console.log(`Deposit txn confirmed on the parent chain! 🙌 ${ethDepositRec.transactionHash}`);
+    depositTx = await depositContract.depositToChildChain(ethers.utils.parseEther('0.01'));
+  } else {
+    depositTx = await depositContract.depositToChildChain({
+      value: ethers.utils.parseEther('0.01'),
+    });
+  }
+  const depositReceipt = await depositTx.wait();
+
+  console.log(`Deposit txn confirmed on the parent chain! 🙌 ${depositReceipt.transactionHash}`);
 
   console.log(
     'Waiting for the execution of the deposit in the child chain. This may take up to 10-15 minutes ⏰',
   );
 
-  const parentChainDepositTxReceipt = new ParentEthDepositTransactionReceipt(ethDepositRec);
+  const parentChainDepositTxReceipt = new ParentEthDepositTransactionReceipt(depositReceipt);
   const childChainDepositResult = await parentChainDepositTxReceipt.waitForChildTransactionReceipt(
     childChainProvider,
   );
@@ -103,7 +132,7 @@ const main = async () => {
     );
   } else {
     throw new Error(
-      `Deposit to the child chain failed, EthDepositStatus is ${
+      `Deposit to the child chain failed, DepositStatus is ${
         EthDepositStatus[childChainDepositResult.message.status]
       }`,
     );
@@ -186,16 +215,31 @@ const main = async () => {
   /**
    * Call the contract's method to transfer the funds from the alias to the address you set
    */
-  const setTransferTx = await depositContract.moveFundsFromChildChainAliasToAnotherAddress(
-    transferTo,
-    ethers.utils.parseEther('0.01'), // because we deposited 0.01 ether, so we also transfer 0.01 ether out here.
-    parentToChildMessageGasParams.maxSubmissionCost,
-    parentToChildMessageGasParams.gasLimit,
-    gasPriceBid,
-    {
-      value: depositAmount,
-    },
-  );
+  let setTransferTx;
+  if (isCustomGasTokenChain) {
+    // We don't need to give allowance to the contract now since we already gave plenty in the
+    // previous step
+
+    setTransferTx = await depositContract.moveFundsFromChildChainAliasToAnotherAddress(
+      transferTo,
+      ethers.utils.parseEther('0.01'), // because we deposited 0.01 ether, so we also transfer 0.01 ether out here.
+      parentToChildMessageGasParams.maxSubmissionCost,
+      parentToChildMessageGasParams.gasLimit,
+      gasPriceBid,
+      depositAmount,
+    );
+  } else {
+    setTransferTx = await depositContract.moveFundsFromChildChainAliasToAnotherAddress(
+      transferTo,
+      ethers.utils.parseEther('0.01'), // because we deposited 0.01 ether, so we also transfer 0.01 ether out here.
+      parentToChildMessageGasParams.maxSubmissionCost,
+      parentToChildMessageGasParams.gasLimit,
+      gasPriceBid,
+      {
+        value: depositAmount,
+      },
+    );
+  }
   const setTransferRec = await setTransferTx.wait();
 
   console.log(

@@ -1,5 +1,5 @@
 const { ethers } = require('hardhat');
-const { providers, Wallet, BigNumber } = require('ethers');
+const { providers, Wallet, BigNumber, Contract, constants } = require('ethers');
 const { getArbitrumNetwork, ParentToChildMessageStatus } = require('@arbitrum/sdk');
 const {
   arbLog,
@@ -11,6 +11,7 @@ const {
   AdminErc20Bridger,
   Erc20Bridger,
 } = require('@arbitrum/sdk/dist/lib/assetBridger/erc20Bridger');
+const { ERC20__factory } = require('@arbitrum/sdk/dist/lib/abi/factories/ERC20__factory');
 const { expect } = require('chai');
 require('dotenv').config();
 requireEnvVariables(['PRIVATE_KEY', 'CHAIN_RPC', 'PARENT_CHAIN_RPC']);
@@ -54,13 +55,26 @@ const main = async () => {
   const childChainGatewayRouter = childChainNetwork.tokenBridge.childGatewayRouter;
   const inbox = childChainNetwork.ethBridge.inbox;
 
+  /**
+   * We first find out whether the child chain we are using is a custom gas token chain
+   * We'll use a different parent chain token contract in that case (the register method has
+   * a slightly different behavior), and a different parent chain custom gateway
+   * and we'll perform an additional approve call to transfer the native tokens to pay for
+   * the gas of the retryable tickets
+   */
+  const isCustomGasTokenChain =
+    adminTokenBridger.nativeToken && adminTokenBridger.nativeToken !== constants.AddressZero;
+
   arbLogTitle('Deployment of custom gateways and tokens');
 
   /**
    * Deploy our custom gateway to the parent chain
    */
+  const parentChainCustomGatewayContractName = isCustomGasTokenChain
+    ? 'contracts/ParentChainCustomGatewayCustomGas.sol:ParentChainCustomGateway'
+    : 'contracts/ParentChainCustomGateway.sol:ParentChainCustomGateway';
   const ParentChainCustomGateway = await ethers.getContractFactory(
-    'ParentChainCustomGateway',
+    parentChainCustomGatewayContractName,
     parentChainWallet,
   );
   console.log('Deploying custom gateway to the parent chain');
@@ -91,11 +105,15 @@ const main = async () => {
 
   /**
    * Deploy our custom token smart contract to the parent chain
-   * We give the custom token contract the address of parentChainCustomGateway
-   * and parentChainGatewayRouter as well as the initial supply (premint)
+   * We give the custom token contract the address of parentChainCustomGateway and parentChainGatewayRouter
+   * as well as the initial supply (premine). If the child chain we are using is a custom gas token chain,
+   * we will deploy a different ParentChainToken contract, since the register method has a slightly different behavior
    */
+  const parentChainTokenContractName = isCustomGasTokenChain
+    ? 'contracts/ParentChainTokenCustomGas.sol:ParentChainToken'
+    : 'contracts/ParentChainToken.sol:ParentChainToken';
   const ParentChainCustomToken = await ethers.getContractFactory(
-    'ParentChainToken',
+    parentChainTokenContractName,
     parentChainWallet,
   );
   console.log('Deploying custom token to the parent chain');
@@ -157,9 +175,30 @@ const main = async () => {
   );
 
   /**
+   * For chains that use a custom gas token, we'll have to approve the transfer of native tokens
+   * to pay for the execution of the retryable tickets on the child chain
+   */
+  if (isCustomGasTokenChain) {
+    console.log(
+      'Giving allowance to the deployed token to transfer the chain native token (to register the gateway in the router)',
+    );
+    const nativeToken = new Contract(
+      childChainNetwork.nativeToken,
+      ERC20__factory.abi,
+      parentChainWallet,
+    );
+    const approvalTransaction = await nativeToken.approve(
+      parentChainCustomToken.address,
+      ethers.utils.parseEther('1'),
+    );
+    const approvalTransactionReceipt = await approvalTransaction.wait();
+    console.log(`Approval transaction receipt is: ${approvalTransactionReceipt.transactionHash}`);
+  }
+
+  /**
    * Register the custom gateway as the gateway of our custom token
    */
-  console.log('Registering custom token on the child chain:');
+  console.log('Registering the custom gateway as the gateway of the custom token:');
   const registerTokenTransaction = await adminTokenBridger.registerCustomToken(
     parentChainCustomToken.address,
     childChainCustomToken.address,
@@ -169,7 +208,7 @@ const main = async () => {
 
   const registerTokenTransactionReceipt = await registerTokenTransaction.wait();
   console.log(
-    `Registering token txn confirmed on the parent chain! 🙌 Receipt is: ${registerTokenTransactionReceipt.transactionHash}.`,
+    `Registering gateway txn confirmed on the parent chain! 🙌 Receipt is: ${registerTokenTransactionReceipt.transactionHash}.`,
   );
   console.log(
     `Waiting for the retryable to be executed on the child chain (takes 10-15 minutes); current time: ${new Date().toTimeString()})`,
@@ -223,7 +262,7 @@ const main = async () => {
   const tokenDepositAmount = tokenAmountToDeposit.mul(BigNumber.from(10).pow(tokenDecimals));
 
   /**
-   * Approving the parentChainCustomGateway to transfer the tokens being deposited
+   * Allowing the parentChainCustomGateway to transfer the tokens being deposited
    */
   console.log('Approving ParentChainCustomGateway:');
   const approveTransaction = await erc20Bridger.approveToken({
@@ -233,7 +272,7 @@ const main = async () => {
 
   const approveTransactionReceipt = await approveTransaction.wait();
   console.log(
-    `You successfully allowed the Arbitrum Bridge to spend ParentChainToken. Tx hash: ${approveTransactionReceipt.transactionHash}`,
+    `You successfully allowed the custom gateway to spend the custom token. Tx hash: ${approveTransactionReceipt.transactionHash}`,
   );
 
   /**
@@ -241,7 +280,24 @@ const main = async () => {
    * This will escrow funds in the custom gateway contract on the parent chain,
    * and send a message to mint tokens on the child chain
    */
-  console.log('Transferring ParentChainToken to the child chain:');
+  console.log('Transferring the custom token to the child chain:');
+
+  /**
+   * For chains that use a custom gas token, we'll have to approve the transfer of native tokens
+   * to pay for the execution of the retryable tickets on the child chain
+   */
+  if (isCustomGasTokenChain) {
+    console.log('Allowing the custom gateway to transfer the chain native token to pay the fees');
+    const approvalTransaction = await erc20Bridger.approveGasToken({
+      erc20ParentAddress: parentChainCustomToken.address,
+      parentSigner: parentChainWallet,
+    });
+    const approvalTransactionReceipt = await approvalTransaction.wait();
+    console.log(
+      `Native token approval transaction receipt is: ${approvalTransactionReceipt.transactionHash}`,
+    );
+  }
+
   const depositTransaction = await erc20Bridger.deposit({
     amount: tokenDepositAmount,
     erc20ParentAddress: parentChainCustomToken.address,
@@ -327,7 +383,7 @@ const main = async () => {
    * Withdraw ChildChainToken to the parent chain using erc20Bridger.
    * This will burn tokens on the child chain and release funds in the custom gateway contract on the parent chain
    */
-  console.log('Withdrawing ChildChainToken to the parent chain:');
+  console.log('Withdrawing custom token to the parent chain:');
   const withdrawTransaction = await erc20Bridger.withdraw({
     amount: tokenWithdrawAmount,
     destinationAddress: parentChainWallet.address,
