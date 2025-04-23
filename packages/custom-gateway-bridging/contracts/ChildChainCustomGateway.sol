@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "./interfaces/ICustomGateway.sol";
 import "./CrosschainMessenger.sol";
-import "./interfaces/IArbToken.sol";
+import "@arbitrum/token-bridge-contracts/contracts/tokenbridge/arbitrum/IArbToken.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**

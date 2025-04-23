@@ -6,7 +6,7 @@
       "bridge": "0x5eCF728ffC5C5E802091875f96281B5aeECf6C49",
       "inbox": "0x9f8c1c641336A371031499e3c362e40d58d0f254",
       "outbox": "0x50143333b44Ea46255BEb67255C9Afd35551072F",
-      "rollup": "0x7d98BA231d29D5C202981542C0291718A7358c63",
+      "rollup": "0xe5Ab92C74CD297F0a1F2914cE37204FC5Bc4e82D",
       "sequencerInbox": "0x18d19C5d3E685f5be5b9C86E097f0E439285D216"
     },
     "explorerUrl": "",
@@ -44,7 +44,7 @@
       "bridge": "0xA584795e24628D9c067A6480b033C9E96281fcA3",
       "inbox": "0xDcA690902d3154886Ec259308258D10EA5450996",
       "outbox": "0xda243bD61B011024FC923164db75Dde198AC6175",
-      "rollup": "0xfe808cD61B3fe45c67c47B17DB49B96Fb2BFDfae",
+      "rollup": "0x47b238E195b638b8972Cb3649e5d6775c279245d",
       "sequencerInbox": "0x16c54EE2015CD824415c2077F4103f444E00A8cb"
     },
     "explorerUrl": "",
