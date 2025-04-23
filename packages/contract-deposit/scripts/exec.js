@@ -82,6 +82,7 @@ const main = async () => {
   console.log(`Sending deposit transaction...`);
 
   let depositTx;
+  let nativeTokenDecimals = 18; // We default to 18 decimals for ETH and most of ERC-20 tokens
   if (isCustomGasTokenChain) {
     // Approve the gas token to be sent to the contract
     console.log('Giving allowance to the contract to transfer the chain native token');
@@ -90,17 +91,20 @@ const main = async () => {
       ERC20__factory.abi,
       parentChainWallet,
     );
+    nativeTokenDecimals = await nativeToken.decimals();
     const approvalTransaction = await nativeToken.approve(
       depositContract.address,
-      ethers.utils.parseEther('1'),
+      ethers.utils.parseUnits('1', nativeTokenDecimals),
     );
     const approvalTransactionReceipt = await approvalTransaction.wait();
     console.log(`Approval transaction receipt is: ${approvalTransactionReceipt.transactionHash}`);
 
-    depositTx = await depositContract.depositToChildChain(ethers.utils.parseEther('0.01'));
+    depositTx = await depositContract.depositToChildChain(
+      ethers.utils.parseUnits('0.01', nativeTokenDecimals),
+    );
   } else {
     depositTx = await depositContract.depositToChildChain({
-      value: ethers.utils.parseEther('0.01'),
+      value: ethers.utils.parseEther('0.01'), // Here we know we are using ETH, so we can use parseEther
     });
   }
   const depositReceipt = await depositTx.wait();
@@ -176,7 +180,7 @@ const main = async () => {
     {
       from: contractAliasAddress,
       to: transferTo,
-      l2CallValue: ethers.utils.parseEther('0.01'), // because we deposited 0.01 ether, so we also transfer 0.01 ether out here.
+      l2CallValue: ethers.utils.parseUnits('0.01', nativeTokenDecimals), // because we deposited 0.01 ether, so we also transfer 0.01 ether out here.
       excessFeeRefundAddress: depositContract.address,
       callValueRefundAddress: depositContract.address,
       data: [],
@@ -204,7 +208,9 @@ const main = async () => {
    * we need to subtract it here so the transaction in the parent chain doesn't pay l2callvalue
    * and instead uses the alias balance on the child chain directly.
    */
-  const depositAmount = parentToChildMessageGasParams.deposit.sub(ethers.utils.parseEther('0.01'));
+  const depositAmount = parentToChildMessageGasParams.deposit.sub(
+    ethers.utils.parseUnits('0.01', nativeTokenDecimals),
+  );
 
   console.log(
     `Transfer funds txn needs ${ethers.utils.formatEther(
@@ -222,7 +228,7 @@ const main = async () => {
 
     setTransferTx = await depositContract.moveFundsFromChildChainAliasToAnotherAddress(
       transferTo,
-      ethers.utils.parseEther('0.01'), // because we deposited 0.01 ether, so we also transfer 0.01 ether out here.
+      ethers.utils.parseUnits('0.01', nativeTokenDecimals), // because we deposited 0.01 ether, so we also transfer 0.01 ether out here.
       parentToChildMessageGasParams.maxSubmissionCost,
       parentToChildMessageGasParams.gasLimit,
       gasPriceBid,

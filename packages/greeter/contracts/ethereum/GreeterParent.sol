@@ -35,6 +35,9 @@ contract GreeterParent is Greeter {
         bytes memory data = abi.encodeWithSelector(Greeter.setGreeting.selector, _greeting);
 
         // Find out if this chain uses a custom gas token
+        // NOTE: in a real dApp, you don't need to perform this check since you'll
+        // know what kind of chain you'll be deploying this contract to. We added this
+        // check here to simplify showcasing how the Greeter contract works in any chain.
         address bridge = address(IInbox(inbox).bridge());
         address nativeToken;
         try IERC20Bridge(bridge).nativeToken() returns (address nativeTokenAddress) {
