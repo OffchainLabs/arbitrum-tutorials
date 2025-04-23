@@ -60,7 +60,7 @@ jobs:
         run: >
           jq -c '
           .[1].nativeToken = "0xE069078bA9ACCE4eeAE609d8754515Cf13dd6706" |
-          .[1].ethBridge.rollup = "0xA7c5B54f271844ff9cA8B5da77500180d1aD8899" |
+          .[1].ethBridge.rollup = "0x44612A67F6A7c4C894fB4AeA66c7Cfa7A0f0D388" |
           .[1].tokenBridge.parentGatewayRouter = "0x0C085152C2799834fc1603533ff6916fa1FdA302" |
           .[1].tokenBridge.parentErc20Gateway = "0x59156b0596689D965Ba707E160e5370AF22461a0" |
           .[1].tokenBridge.parentCustomGateway = "0xCe02eA568090ae7d5184B0a98df90f6aa69C1552" |
