@@ -15,6 +15,7 @@ const {
   getArbitrumNetwork,
 } = require('@arbitrum/sdk');
 const { getBaseFee } = require('@arbitrum/sdk/dist/lib/utils/lib');
+const { ERC20__factory } = require('@arbitrum/sdk/dist/lib/abi/factories/ERC20__factory');
 require('dotenv').config();
 requireEnvVariables(['PRIVATE_KEY', 'CHAIN_RPC', 'PARENT_CHAIN_RPC']);
 
@@ -158,13 +159,38 @@ const main = async () => {
   console.log(
     `Sending greeting to the child chain with ${parentToChildMessageGasParams.deposit.toString()} callValue for child chain's fees:`,
   );
+
+  /**
+   * We find out whether the child chain we are using is a custom gas token chain
+   * We need to perform an additional approve call to transfer
+   * the native tokens to pay for the gas of the retryable tickets.
+   */
+  const isCustomGasTokenChain =
+    childChainNetwork.nativeToken && childChainNetwork.nativeToken !== ethers.constants.AddressZero;
+
+  if (isCustomGasTokenChain) {
+    // Approve the gas token to be sent to the contract
+    console.log('Giving allowance to the greeter to transfer the chain native token');
+    const nativeToken = new ethers.Contract(
+      childChainNetwork.nativeToken,
+      ERC20__factory.abi,
+      parentChainWallet,
+    );
+    const approvalTransaction = await nativeToken.approve(
+      greeterParent.address,
+      ethers.utils.parseEther('1'),
+    );
+    const approvalTransactionReceipt = await approvalTransaction.wait();
+    console.log(`Approval transaction receipt is: ${approvalTransactionReceipt.transactionHash}`);
+  }
+
   const setGreetingTransaction = await greeterParent.setGreetingInChild(
     newGreeting, // string memory _greeting,
     parentToChildMessageGasParams.maxSubmissionCost,
     parentToChildMessageGasParams.gasLimit,
     gasPriceBid,
     {
-      value: parentToChildMessageGasParams.deposit,
+      value: isCustomGasTokenChain ? 0 : parentToChildMessageGasParams.deposit,
     },
   );
   const setGreetingTransactionReceipt = await setGreetingTransaction.wait();

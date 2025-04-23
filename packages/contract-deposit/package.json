@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@arbitrum/sdk": "^4.0.1",
-    "@arbitrum/nitro-contracts": "2.1.0"
+    "@arbitrum/nitro-contracts": "2.1.0",
+    "@openzeppelin/contracts": "^4.8.3"
   }
 }

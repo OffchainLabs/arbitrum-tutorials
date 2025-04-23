@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "@arbitrum/sdk": "^4.0.1",
+    "@arbitrum/token-bridge-contracts": "^1.2.3",
     "@openzeppelin/contracts": "^4.8.3"
   }
 }
