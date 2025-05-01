@@ -19,10 +19,29 @@ const childChainProvider = new providers.JsonRpcProvider(process.env.CHAIN_RPC);
 const parentChainWallet = new Wallet(walletPrivateKey, parentChainProvider);
 
 /**
- * Set the destination address and amount to be deposited in the child chain (in wei)
+ * Get destination address from command line arguments
+ * Usage: node exec.js <destination_address> [amount_in_eth]
  */
-const destAddress = '0x2D98cBc6f944c4bD36EdfE9f98cd7CB57faEC8d6';
-const depositAmount = utils.parseEther('0.0001');
+const destAddress = process.argv[2];
+if (!destAddress) {
+  console.error('Error: Please provide a destination address as the first argument');
+  console.error('Usage: node exec.js <destination_address> [amount_in_eth]');
+  process.exit(1);
+}
+
+// Validate the address format
+if (!utils.isAddress(destAddress)) {
+  console.error('Error: Invalid destination address format');
+  process.exit(1);
+}
+
+/**
+ * Set the amount to be deposited in the child chain (in wei)
+ * Default to 0.0001 ETH if not specified
+ */
+const depositAmount = process.argv[3] 
+  ? utils.parseEther(process.argv[3])
+  : utils.parseEther('0.0001');
 
 const main = async () => {
   await arbLog('Deposit native token (e.g. Ether) via Arbitrum SDK to a different address');
