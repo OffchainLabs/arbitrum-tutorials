@@ -72,9 +72,6 @@ function processSampleFile(samplePath, envPath, values) {
 
   const newContent = lines.join('\n') + '\n';
   fs.writeFileSync(envPath, newContent, 'utf8');
-  if (samplePath !== envPath) {
-    fs.unlinkSync(samplePath); // remove sample after successful creation
-  }
 }
 
 function processDirectory(dir, values, summary) {
