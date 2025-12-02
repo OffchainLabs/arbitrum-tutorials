@@ -18,6 +18,9 @@ To simplify providing environment variables across all tutorials, a helper scrip
 
 ```bash
 yarn setup-envs
+
+# To update existing .env files as well
+yarn setup-envs --update
 ```
 
 ## Testing

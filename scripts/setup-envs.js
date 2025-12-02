@@ -3,7 +3,8 @@
 /*
  * Environment setup script for Arbitrum Tutorials.
  * Usage:
- *   yarn setup-envs
+ *   yarn setup-envs              # prompts for values (L1_RPC optional), does NOT overwrite existing .env
+ *   yarn setup-envs --update     # prompts and updates existing .env files as well
  */
 
 /* eslint-disable no-await-in-loop */
@@ -13,6 +14,8 @@ const path = require('path');
 const readline = require('readline');
 
 const VARS = ['PRIVATE_KEY', 'CHAIN_RPC', 'PARENT_CHAIN_RPC', 'L1_RPC'];
+const ARGS = new Set(process.argv.slice(2));
+const UPDATE_EXISTING = ARGS.has('--update');
 
 function log(msg) {
   console.log(msg);
@@ -87,8 +90,12 @@ function processDirectory(dir, values, summary) {
       processSampleFile(samplePath, envPath, values);
       summary.updated.push(dir);
     } else if (hasEnv) {
-      processSampleFile(envPath, envPath, values);
-      summary.updated.push(dir);
+      if (UPDATE_EXISTING) {
+        processSampleFile(envPath, envPath, values);
+        summary.updated.push(dir);
+      } else {
+        summary.skipped.push(dir);
+      }
     }
   } catch (e) {
     summary.errors.push({ dir, error: e.message });
@@ -101,11 +108,11 @@ function validate(values) {
     throw new Error('PRIVATE_KEY must be 0x + 64 hex characters.');
   }
   ['CHAIN_RPC', 'PARENT_CHAIN_RPC'].forEach((k) => {
-    if (!/^https?:\/\/\\S+$/i.test(values[k])) {
+    if (!/^https?:\/\/\S+$/i.test(values[k])) {
       throw new Error(`${k} must be an http(s) URL.`);
     }
   });
-  if (values.L1_RPC && !/^https?:\/\/\\S+$/i.test(values.L1_RPC)) {
+  if (values.L1_RPC && !/^https?:\/\/\S+$/i.test(values.L1_RPC)) {
     throw new Error('L1_RPC must be an http(s) URL if provided.');
   }
 }
@@ -124,7 +131,7 @@ async function main() {
   const rootDir = path.resolve(__dirname, '..');
   const packagesDir = path.join(rootDir, 'packages');
 
-  const summary = { updated: [], errors: [] };
+  const summary = { updated: [], skipped: [], errors: [] };
 
   processDirectory(rootDir, values, summary);
 
@@ -140,6 +147,8 @@ async function main() {
 
   log('Environment setup complete.');
   log(`Updated: ${summary.updated.length}`);
+  if (summary.skipped.length)
+    log(`Skipped (existing .env, no --update): ${summary.skipped.length}`);
   if (summary.errors.length) {
     warn('Errors encountered:');
     for (const e of summary.errors) warn(` - ${e.dir}: ${e.error}`);
