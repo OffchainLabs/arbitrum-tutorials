@@ -100,16 +100,22 @@ function processDirectory(dir, values, summary) {
 }
 
 function validate(values) {
-  const pk = values.PRIVATE_KEY;
-  if (!/^0x[a-fA-F0-9]{64}$/.test(pk)) {
-    throw new Error('PRIVATE_KEY must be 0x + 64 hex characters.');
+  const pk = values.PRIVATE_KEY && String(values.PRIVATE_KEY).trim();
+  if (!/^(?:0x)?[a-fA-F0-9]{64}$/.test(pk)) {
+    throw new Error('PRIVATE_KEY must be 64 hex characters, with or without a leading 0x.');
+  }
+  // Normalize: ensure stored value has 0x prefix
+  if (!pk.startsWith('0x')) {
+    values.PRIVATE_KEY = `0x${pk}`;
+  } else {
+    values.PRIVATE_KEY = pk;
   }
   ['CHAIN_RPC', 'PARENT_CHAIN_RPC'].forEach((k) => {
-    if (!/^https?:\/\/\S+$/i.test(values[k])) {
+    if (!/^https?:\/\/\S+$/i.test(String(values[k] || ''))) {
       throw new Error(`${k} must be an http(s) URL.`);
     }
   });
-  if (values.L1_RPC && !/^https?:\/\/\S+$/i.test(values.L1_RPC)) {
+  if (values.L1_RPC && !/^https?:\/\/\S+$/i.test(String(values.L1_RPC))) {
     throw new Error('L1_RPC must be an http(s) URL if provided.');
   }
 }
