@@ -1,12 +1,12 @@
 # Block verification in an assertion posted on the parent chain
 
-This tutorial shows how to verify whether a block of a chain has been processed as part of an RBlock assertion on its parent chain.
+This tutorial shows how to verify whether a block of a chain has been processed as part of an assertion on its parent chain.
 
-It uses the `Rollup` contract to find the latest confirmed (or created if configured in the script) RBlock/node, find the event that created it, and get the latest processed block hash of the child chain that's part of the assertion of that RBlock/node.
+It uses the `Rollup` contract to find the latest confirmed assertion hash, find the `AssertionCreated` event that created it, and get the latest processed block hash of the child chain that's part of that assertion's `afterState`.
 
 Then it checks whether the block number passed as argument was created before the latest block hash of the child chain processed.
 
-See [./exec.js](./scripts/exec.js) for inline explanations.
+See [./exec.ts](./scripts/exec.ts) for inline explanations.
 
 ## Set environment variables
 

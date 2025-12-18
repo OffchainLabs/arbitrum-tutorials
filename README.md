@@ -12,6 +12,17 @@ From root directory:
 yarn install
 ```
 
+## Environment Setup
+
+To simplify providing environment variables across all tutorials, a helper script automates creating `.env` files from each existing `.env-sample`.
+
+```bash
+yarn setup-envs
+
+# To update existing .env files as well
+yarn setup-envs --update
+```
+
 ## Testing
 
 1. Start the nitro-testnode (you can find instructions [here](https://docs.arbitrum.io/run-arbitrum-node/run-local-full-chain-simulation)) with the following parameters:
@@ -25,6 +36,10 @@ yarn install
 ```shell
 yarn run testAll
 ```
+
+### Notes on RPCs and Finality
+
+Using public testnet RPCs can be slow because many tutorials wait for transaction finality or multiple confirmations. Some tests may take 10–15 minutes to complete on testnets. For faster and more reliable execution, prefer running a local node and pointing your environment variables (`CHAIN_RPC`, `PARENT_CHAIN_RPC`, and `L1_RPC` when applicable) to local RPC endpoints.
 
 ## What's included?
 
