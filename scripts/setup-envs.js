@@ -13,7 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
 
-const VARS = ['PRIVATE_KEY', 'CHAIN_RPC', 'PARENT_CHAIN_RPC', 'L1_RPC'];
+const VARS = ['PRIVATE_KEY', 'CHAIN_RPC', 'PARENT_CHAIN_RPC', 'L1_RPC', 'TransferTo'];
 const ARGS = new Set(process.argv.slice(2));
 const UPDATE_EXISTING = ARGS.has('--update');
 
@@ -32,7 +32,7 @@ async function promptForValues() {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   const ask = (q) => new Promise((res) => rl.question(q, (ans) => res(ans.trim())));
   for (const v of VARS) {
-    const optional = v === 'L1_RPC';
+    const optional = v === 'L1_RPC' || v === 'TransferTo';
     const existing = process.env[v] ? ` [default: ${process.env[v]}]` : '';
     const prompt = optional ? `${v} (optional)${existing}: ` : `${v}${existing}: `;
     const ans = await ask(prompt);
@@ -117,6 +117,13 @@ function validate(values) {
   });
   if (values.L1_RPC && !/^https?:\/\/\S+$/i.test(String(values.L1_RPC))) {
     throw new Error('L1_RPC must be an http(s) URL if provided.');
+  }
+  if (values.TransferTo) {
+    const addr = String(values.TransferTo).trim();
+    if (!/^0x[a-fA-F0-9]{40}$/.test(addr)) {
+      throw new Error('TransferTo must be a valid 0x-prefixed Ethereum address.');
+    }
+    values.TransferTo = addr;
   }
 }
 
