@@ -53,18 +53,21 @@ const requireEnvVariables = (envVars) => {
   console.log('Environmental variables properly set 👍');
 };
 
-const addCustomNetworkFromFile = () => {
+const addCustomNetworkFromFile = (registerFn) => {
   const pathToCustomNetworkFile = path.join(__dirname, '..', '..', 'customNetwork.json');
   if (!fs.existsSync(pathToCustomNetworkFile)) {
     return;
   }
 
+  // Use the provided register function, or fall back to the local one
+  const register = registerFn || registerCustomArbitrumNetwork;
+
   const customNetworkFileContents = fs.readFileSync(pathToCustomNetworkFile, 'utf8');
   const customNetworkInformation = JSON.parse(customNetworkFileContents);
   if (customNetworkInformation instanceof Array) {
-    customNetworkInformation.map((customNetwork) => registerCustomArbitrumNetwork(customNetwork));
+    customNetworkInformation.map((customNetwork) => register(customNetwork));
   } else {
-    registerCustomArbitrumNetwork(customNetworkInformation);
+    register(customNetworkInformation);
   }
 };
 

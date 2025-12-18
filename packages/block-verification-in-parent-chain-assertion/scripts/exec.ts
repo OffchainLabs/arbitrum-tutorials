@@ -1,5 +1,5 @@
 import { providers, Contract } from 'ethers';
-import { getArbitrumNetwork } from '@arbitrum/sdk';
+import { getArbitrumNetwork, registerCustomArbitrumNetwork } from '@arbitrum/sdk';
 import { BoldRollupUserLogic__factory } from '@arbitrum/sdk/dist/lib/abi-bold/factories/BoldRollupUserLogic__factory';
 import { arbLog, requireEnvVariables, addCustomNetworkFromFile } from 'arb-shared-dependencies';
 require('dotenv').config();
@@ -16,7 +16,7 @@ const main = async (childChainBlockNumberToVerify: number) => {
     'Find whether a block of the child chain has been processed as part of an RBlock on the parent chain',
   );
 
-  addCustomNetworkFromFile();
+  addCustomNetworkFromFile(registerCustomArbitrumNetwork);
 
   const childChainNetwork = await getArbitrumNetwork(childChainProvider);
   const rollupAddress = childChainNetwork.ethBridge.rollup;
