@@ -81,18 +81,17 @@ function processDirectory(dir, values, summary) {
   const hasEnv = fs.existsSync(envPath);
 
   if (!hasSample && !hasEnv) return;
-
   try {
-    if (hasSample) {
-      processSampleFile(samplePath, envPath, values);
-      summary.updated.push(dir);
-    } else if (hasEnv) {
+    if (hasEnv) {
       if (UPDATE_EXISTING) {
         processSampleFile(envPath, envPath, values);
         summary.updated.push(dir);
       } else {
         summary.skipped.push(dir);
       }
+    } else if (hasSample) {
+      processSampleFile(samplePath, envPath, values);
+      summary.updated.push(dir);
     }
   } catch (e) {
     summary.errors.push({ dir, error: e.message });
