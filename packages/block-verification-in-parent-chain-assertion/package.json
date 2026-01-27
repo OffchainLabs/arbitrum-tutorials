@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "This tutorial shows how to verify whether a block has been processed as part of an RBlock assertion on the parent chain.",
   "scripts": {
-    "exec": "ts-node scripts/exec.ts"
+    "exec": "hardhat run scripts/exec.js"
   },
   "dependencies": {
     "@arbitrum/sdk": "^v4.0.1",

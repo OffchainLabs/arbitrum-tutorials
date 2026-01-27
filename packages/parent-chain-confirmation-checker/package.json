@@ -3,8 +3,8 @@
   "license": "Apache-2.0",
   "version": "1.0.0",
   "scripts": {
-    "checkConfirmation": "yarn ts-node scripts/exec.ts --action checkConfirmation",
-    "findSubmissionTx": "yarn ts-node scripts/exec.ts --action findSubmissionTx"
+    "checkConfirmation": "yarn hardhat run scripts/exec.js --action checkConfirmation",
+    "findSubmissionTx": "yarn hardhat run scripts/exec.js --action findSubmissionTx"
   },
   "dependencies": {
     "@arbitrum/sdk": "^v4.0.1",
