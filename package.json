@@ -15,7 +15,8 @@
     "prettier:format": "prettier './**/*.{js,json,md,sol,ts,yml}' --write && yarn run lint --fix",
     "prettier:check": "prettier './**/*.{js,json,md,sol,ts,yml}' --check && yarn run lint",
     "testAll": "tests/runAll.sh",
-    "setup-envs": "node scripts/setup-envs.js"
+    "setup-envs": "node scripts/setup-envs.js",
+    "update-custom-network": "node scripts/update-custom-network.js"
   },
   "devDependencies": {
     "@offchainlabs/eslint-config-typescript": "^0.2.1",
