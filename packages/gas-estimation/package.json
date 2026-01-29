@@ -3,7 +3,7 @@
   "license": "Apache-2.0",
   "version": "1.0.0",
   "scripts": {
-    "exec": "hardhat run scripts/exec.js"
+    "exec": "ts-node scripts/exec.ts"
   },
   "dependencies": {
     "@arbitrum/sdk": "^v4.0.1",
