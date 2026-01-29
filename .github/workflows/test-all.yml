@@ -32,6 +32,11 @@ jobs:
           nitro-testnode-ref: release
           args: --tokenbridge --l3node --l3-token-bridge
 
+      - name: Update custom network file
+        env:
+          ORBIT_TEST: '1'
+        run: yarn update-custom-network
+
       - name: Test
         run: yarn run testAll
 
@@ -54,21 +59,11 @@ jobs:
         with:
           nitro-testnode-ref: release
           args: --tokenbridge --l3node --l3-token-bridge --l3-fee-token
-      
-      - name: Modify custom network file
-        # Some contract addresses are different when using a custom gas token chain
-        run: >
-          jq -c '
-          .[1].nativeToken = "0xE069078bA9ACCE4eeAE609d8754515Cf13dd6706" |
-          .[1].ethBridge.rollup = "0x44612A67F6A7c4C894fB4AeA66c7Cfa7A0f0D388" |
-          .[1].tokenBridge.parentGatewayRouter = "0x0C085152C2799834fc1603533ff6916fa1FdA302" |
-          .[1].tokenBridge.parentErc20Gateway = "0x59156b0596689D965Ba707E160e5370AF22461a0" |
-          .[1].tokenBridge.parentCustomGateway = "0xCe02eA568090ae7d5184B0a98df90f6aa69C1552" |
-          .[1].tokenBridge.parentWethGateway = "0x0000000000000000000000000000000000000000" |
-          .[1].tokenBridge.childWethGateway = "0x0000000000000000000000000000000000000000" |
-          .[1].tokenBridge.parentWeth = "0x0000000000000000000000000000000000000000" |
-          .[1].tokenBridge.childWeth = "0x0000000000000000000000000000000000000000"
-          ' customNetwork.json > tmp.customNetwork.json && mv tmp.customNetwork.json customNetwork.json
+
+      - name: Update custom network file
+        env:
+          ORBIT_TEST: '1'
+        run: yarn update-custom-network
 
       - name: Test
         run: yarn run testAll

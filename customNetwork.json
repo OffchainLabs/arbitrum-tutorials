@@ -1,6 +1,7 @@
 [
   {
-    "chainID": 412346,
+    "parentChainId": 1337,
+    "chainId": 412346,
     "confirmPeriodBlocks": 20,
     "ethBridge": {
       "bridge": "0xC179edf2Ecdc3764574AEF66D8919154F3F9DAeD",
@@ -9,15 +10,10 @@
       "rollup": "0xD0B8D2BA3e2ac9AA58b8D9BB1887dC9F7649C5C8",
       "sequencerInbox": "0xF03488b09fdF9301d7Bde7e0a1D7Ee0EbD43BA16"
     },
-    "explorerUrl": "",
-    "isArbitrum": true,
     "isCustom": true,
-    "name": "ArbLocal",
-    "partnerChainID": 1337,
+    "name": "OrbitLocal",
     "retryableLifetimeSeconds": 604800,
-    "nitroGenesisBlock": 0,
-    "nitroGenesisL1Block": 0,
-    "depositTimeout": 900000,
+    "isTestnet": true,
     "tokenBridge": {
       "parentCustomGateway": "0x3cfd8C5F1A00544Ee7F5D78C9846A60bfb1a868a",
       "parentErc20Gateway": "0xd4Ee82dcf6f42F2316d527215A33aF8a156cA786",
@@ -34,45 +30,9 @@
       "childWeth": "0xA1abD387192e3bb4e84D3109181F9f005aBaF5CA",
       "childWethGateway": "0x67aE8014BD1A0c1Ed747715d22b3b3a188aC324B"
     },
-    "chainId": 412346,
-    "parentChainId": 1337
-  },
-  {
-    "chainID": 333333,
-    "confirmPeriodBlocks": 20,
-    "ethBridge": {
-      "bridge": "0xE9AC186e6d0ABe1C0C19B8a9cd2eaf0E1628c693",
-      "inbox": "0x3C833ae37aaaa108f84aD0006036a56863eC791e",
-      "outbox": "0xA8b59beeCEB5596Db9A126C748d361a81d696ef3",
-      "rollup": "0x9D8DBFe48DeB6fe3254b44A52bD420f94E65Eda5",
-      "sequencerInbox": "0xdf51ca40b52717Fcb87c16489f4CCE423c832186"
-    },
-    "explorerUrl": "",
+    "chainID": 412346,
+    "partnerChainID": 1337,
     "isArbitrum": true,
-    "isCustom": true,
-    "name": "ArbLocalL3",
-    "partnerChainID": 412346,
-    "retryableLifetimeSeconds": 604800,
-    "nitroGenesisBlock": 0,
-    "nitroGenesisL1Block": 0,
-    "depositTimeout": 900000,
-    "tokenBridge": {
-      "parentCustomGateway": "0x0a59eC64F520575F0fA34C1be9035C66ccD6DE94",
-      "parentErc20Gateway": "0xF0B8d5f9ecfDFee74b865bd90e83Da29f273FcE8",
-      "parentGatewayRouter": "0x7201dda76FB31771881593925A715D9B2E8c6790",
-      "parentMultiCall": "0x20a3627Dcc53756E38aE3F92717DE9B23617b422",
-      "parentProxyAdmin": "0x74513d47D265527f0647eD5B90072578c609B378",
-      "parentWeth": "0xA1abD387192e3bb4e84D3109181F9f005aBaF5CA",
-      "parentWethGateway": "0x42a32543138Fef254E948a12aB8360c5A7631e57",
-      "childCustomGateway": "0xD4816AeF8f85A3C1E01Cd071a81daD4fa941625f",
-      "childErc20Gateway": "0xaa7d51aFFEeB32d99b1CB2fd6d81D7adA4a896e8",
-      "childGatewayRouter": "0x8B6BC759226f8Fe687c8aD8Cc0DbF85E095e9297",
-      "childMultiCall": "0x052B15c8Ff0544287AE689C4F2FC53A3905d7Db3",
-      "childProxyAdmin": "0x36C56eC2CF3a3f53db9F01d0A5Ae84b36fb0A1e2",
-      "childWeth": "0x582a8dBc77f665dF2c49Ce0a138978e9267dd968",
-      "childWethGateway": "0xA6AB233B3c7bfd0399834897b5073974A3D467e2"
-    },
-    "chainId": 333333,
-    "parentChainId": 412346
+    "explorerUrl": ""
   }
 ]
