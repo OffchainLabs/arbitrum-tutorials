@@ -37,7 +37,8 @@
     "@nomiclabs/hardhat-ethers": "^2.2.3",
     "ethers": "^5.7.2",
     "hardhat": "^2.13.1",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "blockintel-gate-sdk": "^0.3.6"
   },
   "workspaces": {
     "packages": [
