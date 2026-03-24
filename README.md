@@ -70,6 +70,7 @@ Using public testnet RPCs can be slow because many tutorials wait for transactio
 - 🌉 [Bridging a custom token through the generic-custom gateway](./packages/custom-token-bridging/)
 - 🌉 [Bridging a custom token through a custom gateway](./packages/custom-gateway-bridging/)
 - ✈️ [Send a signed transaction from the parent chain](./packages/delayedInbox-l2msg/)
+- 🛡️ [Force inclusion end-to-end test](./packages/force-inclusion/)
 - 🎁 [Redeem pending retryable ticket](./packages/redeem-pending-retryable/)
 - 🧮 [Gas estimation](./packages/gas-estimation/)
 - 🌀 [Deposit Ether or Tokens from L1 to L3](./packages/l1-l3-teleport/)

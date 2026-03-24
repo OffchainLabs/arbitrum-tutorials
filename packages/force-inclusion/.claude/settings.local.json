@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node:*)",
+      "Bash(find /Users/jasonwan1/Work/code/arbitrum-tutorials/packages/force-inclusion/node_modules/@arbitrum/chain-sdk -name SequencerInbox*)",
+      "Bash(docker ps:*)",
+      "Bash(git:*)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\(''''scripts'''',{}\\), indent=2\\)\\)\")",
+      "Bash(yarn build:*)",
+      "Bash(docker image:*)",
+      "Bash(docker run:*)"
+    ]
+  }
+}

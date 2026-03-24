@@ -1,0 +1,54 @@
+{
+  "chain": {
+    "info-json": "[{\"chain-id\":835090776,\"parent-chain-id\":421614,\"parent-chain-is-arbitrum\":true,\"chain-name\":\"ForceInclusionTestChain\",\"chain-config\":{\"chainId\":835090776,\"homesteadBlock\":0,\"daoForkBlock\":null,\"daoForkSupport\":true,\"eip150Block\":0,\"eip150Hash\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"eip155Block\":0,\"eip158Block\":0,\"byzantiumBlock\":0,\"constantinopleBlock\":0,\"petersburgBlock\":0,\"istanbulBlock\":0,\"muirGlacierBlock\":0,\"berlinBlock\":0,\"londonBlock\":0,\"clique\":{\"period\":0,\"epoch\":0},\"arbitrum\":{\"EnableArbOS\":true,\"AllowDebugPrecompiles\":false,\"DataAvailabilityCommittee\":false,\"InitialArbOSVersion\":51,\"InitialChainOwner\":\"0x860C58951A77ac2F2Cb452cC9F36B1d1FdF7c521\",\"GenesisBlockNum\":0,\"MaxCodeSize\":24576,\"MaxInitCodeSize\":49152}},\"rollup\":{\"bridge\":\"0x301C08f30060e365ddA1bA462E47Cd8F164f9f3F\",\"inbox\":\"0xDaebf491243df4BfB42f8eD5faA665F25C6dB3E0\",\"sequencer-inbox\":\"0x82b4c8c9005Bc43F90d18853E1a3C6C42322CFC7\",\"rollup\":\"0xEdB4d8ab6d51B0C623D049732Cc3a3Dbe22e0541\",\"validator-wallet-creator\":\"0x2c37dCBCE3fbe32c9Ba62892F1E41DbB023BB62b\",\"stake-token\":\"0x0000000000000000000000000000000000000000\",\"deployed-at\":253218540}}]",
+    "name": "ForceInclusionTestChain"
+  },
+  "parent-chain": {
+    "connection": {
+      "url": "https://arb-sepolia.g.alchemy.com/v2/A9Awdfc74bkIT_CzQkOcyM036BSQxyk4"
+    }
+  },
+  "http": {
+    "addr": "0.0.0.0",
+    "port": 8449,
+    "vhosts": [
+      "*"
+    ],
+    "corsdomain": [
+      "*"
+    ],
+    "api": [
+      "eth",
+      "net",
+      "web3",
+      "arb",
+      "debug"
+    ]
+  },
+  "node": {
+    "sequencer": false,
+    "delayed-sequencer": {
+      "enable": false
+    },
+    "batch-poster": {
+      "enable": false
+    },
+    "staker": {
+      "enable": false
+    },
+    "dangerous": {
+      "no-sequencer-coordinator": true,
+      "disable-blob-reader": false
+    },
+    "ensure-rollup-deployment": false
+  },
+  "execution": {
+    "forwarding-target": "null",
+    "sequencer": {
+      "enable": false
+    },
+    "caching": {
+      "archive": true
+    }
+  }
+}
