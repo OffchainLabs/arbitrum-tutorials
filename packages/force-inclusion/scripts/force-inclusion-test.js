@@ -328,30 +328,37 @@ async function verifyOnFullnode(nodeConfigPath) {
   console.log('Starting fullnode via docker (sequencer disabled)...');
   let dockerContainerId;
   try {
-    dockerContainerId = execSync(
-      `docker run -d ` +
-        `-v ${nodeConfigPath}:/config/nodeConfig.json ` +
-        `-p 8449:8449 ` +
-        `offchainlabs/nitro-node:v3.9.5-66e42c4 ` +
-        `--conf.file /config/nodeConfig.json`,
+    dockerContainerId = execFileSync(
+      'docker',
+      [
+        'run',
+        '-d',
+        '-v',
+        `${nodeConfigPath}:/config/nodeConfig.json`,
+        '-p',
+        '8449:8449',
+        'offchainlabs/nitro-node:v3.9.5-66e42c4',
+        '--conf.file',
+        '/config/nodeConfig.json',
+      ],
       { encoding: 'utf8' },
     ).trim();
     console.log(`Container started: ${dockerContainerId.substring(0, 12)}`);
 
     // Wait briefly then verify the container is still running
     await new Promise((r) => setTimeout(r, 3000));
-    const running = execSync(`docker ps -q --filter id=${dockerContainerId}`, {
+    const running = execFileSync('docker', ['ps', '-q', '--filter', `id=${dockerContainerId}`], {
       encoding: 'utf8',
     }).trim();
     if (!running) {
       console.error('Container exited immediately. Logs:');
       try {
-        console.error(execSync(`docker logs ${dockerContainerId}`, { encoding: 'utf8' }));
+        console.error(execFileSync('docker', ['logs', dockerContainerId], { encoding: 'utf8' }));
       } catch (_) {
         /* ignore */
       }
       try {
-        execSync(`docker rm ${dockerContainerId}`, { encoding: 'utf8' });
+        execFileSync('docker', ['rm', dockerContainerId], { encoding: 'utf8' });
       } catch (_) {
         /* ignore */
       }
