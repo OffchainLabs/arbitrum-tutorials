@@ -35,7 +35,7 @@ const {
 } = require('@arbitrum/sdk/dist/lib/abi/factories/SequencerInbox__factory');
 const { utils, providers, Wallet } = require('ethers');
 const { EthBridger, InboxTools, registerCustomArbitrumNetwork } = require('@arbitrum/sdk');
-const { execSync } = require('child_process');
+const { execSync, execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
@@ -337,7 +337,7 @@ async function verifyOnFullnode(nodeConfigPath) {
         `${nodeConfigPath}:/config/nodeConfig.json`,
         '-p',
         '8449:8449',
-        'offchainlabs/nitro-node:v3.9.5-66e42c4',
+        'offchainlabs/nitro-node:v3.10.0-b1cf6db',
         '--conf.file',
         '/config/nodeConfig.json',
       ],
