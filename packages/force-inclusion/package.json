@@ -9,7 +9,7 @@
   "author": "Offchain Labs, Inc.",
   "license": "Apache-2.0",
   "dependencies": {
-    "@arbitrum/sdk": "^v4.0.1",
+    "@arbitrum/sdk": "^4.0.5",
     "@arbitrum/chain-sdk": "^0.25.0",
     "viem": "^1.20.0"
   }
