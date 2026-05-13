@@ -401,9 +401,11 @@ async function verifyOnFullnode(nodeConfigPath) {
     const startTime = Date.now();
     let latestBlock;
     while (Date.now() - startTime < SYNC_TIMEOUT_MS) {
+      // eslint-disable-next-line no-await-in-loop
       latestBlock = await childChainProvider.getBlock('latest');
       if (latestBlock.number > 0) break;
       console.log(`  Block: ${latestBlock.number}, waiting...`);
+      // eslint-disable-next-line no-await-in-loop
       await new Promise((r) => setTimeout(r, 5_000));
     }
 
