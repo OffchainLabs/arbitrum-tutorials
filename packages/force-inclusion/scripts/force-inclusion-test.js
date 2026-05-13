@@ -302,7 +302,7 @@ async function forceInclude(childChainNetwork) {
   console.log(`  TX: ${receipt.transactionHash}`);
 
   // Verify totalDelayedMessagesRead
-  
+
   const sequencerInbox = SequencerInbox__factory.connect(
     childChainNetwork.ethBridge.sequencerInbox,
     parentChainProvider,
@@ -340,16 +340,21 @@ async function verifyOnFullnode(nodeConfigPath) {
 
     // Wait briefly then verify the container is still running
     await new Promise((r) => setTimeout(r, 3000));
-    const running = execSync(
-      `docker ps -q --filter id=${dockerContainerId}`,
-      { encoding: 'utf8' },
-    ).trim();
+    const running = execSync(`docker ps -q --filter id=${dockerContainerId}`, {
+      encoding: 'utf8',
+    }).trim();
     if (!running) {
       console.error('Container exited immediately. Logs:');
       try {
         console.error(execSync(`docker logs ${dockerContainerId}`, { encoding: 'utf8' }));
-      } catch (_) { /* ignore */ }
-      try { execSync(`docker rm ${dockerContainerId}`, { encoding: 'utf8' }); } catch (_) { /* ignore */ }
+      } catch (_) {
+        /* ignore */
+      }
+      try {
+        execSync(`docker rm ${dockerContainerId}`, { encoding: 'utf8' });
+      } catch (_) {
+        /* ignore */
+      }
       return;
     }
 

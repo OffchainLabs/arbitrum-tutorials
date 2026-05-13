@@ -11,7 +11,7 @@ This tutorial runs the full cycle in a single command:
 1. **Deploy** a new Orbit rollup with `maxTimeVariation.delaySeconds = 90` (instead of the default 24 hours)
 2. **Deposit** ETH via `Inbox.depositEth()` on the parent chain (goes into the delayed inbox)
 3. **Force include** the deposit by calling `SequencerInbox.forceInclusion()` after the delay window passes
-4. *(Optional)* **Start a fullnode** (no sequencer) to verify the deposit appears on the child chain
+4. _(Optional)_ **Start a fullnode** (no sequencer) to verify the deposit appears on the child chain
 
 ## Prerequisites
 
@@ -29,18 +29,18 @@ cp .env-sample .env
 
 Required variables:
 
-| Variable | Description |
-|---|---|
+| Variable               | Description                                                     |
+| ---------------------- | --------------------------------------------------------------- |
 | `DEPLOYER_PRIVATE_KEY` | Private key of the deployer (must have ETH on the parent chain) |
-| `PARENT_CHAIN_RPC` | RPC URL of the parent chain |
+| `PARENT_CHAIN_RPC`     | RPC URL of the parent chain                                     |
 
 Optional variables:
 
-| Variable | Description |
-|---|---|
-| `PARENT_CHAIN_ID` | Parent chain ID (defaults to Arbitrum Sepolia 421614) |
-| `BATCH_POSTER_PRIVATE_KEY` | Batch poster key (auto-generated if not set) |
-| `VALIDATOR_PRIVATE_KEY` | Validator key (auto-generated if not set) |
+| Variable                   | Description                                           |
+| -------------------------- | ----------------------------------------------------- |
+| `PARENT_CHAIN_ID`          | Parent chain ID (defaults to Arbitrum Sepolia 421614) |
+| `BATCH_POSTER_PRIVATE_KEY` | Batch poster key (auto-generated if not set)          |
+| `VALIDATOR_PRIVATE_KEY`    | Validator key (auto-generated if not set)             |
 
 ## Run
 
