@@ -1,0 +1,16 @@
+{
+  "name": "force-inclusion",
+  "version": "1.0.0",
+  "description": "End-to-end force inclusion test: deploy a rollup with a short delay, deposit ETH via delayed inbox, and force include — all without a sequencer.",
+  "scripts": {
+    "test": "node scripts/force-inclusion-test.js",
+    "test:withNode": "node scripts/force-inclusion-test.js --with-node"
+  },
+  "author": "Offchain Labs, Inc.",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@arbitrum/sdk": "^4.0.5",
+    "@arbitrum/chain-sdk": "^0.25.0",
+    "viem": "^1.20.0"
+  }
+}
