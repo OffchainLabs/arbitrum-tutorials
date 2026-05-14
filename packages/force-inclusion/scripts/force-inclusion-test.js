@@ -55,6 +55,7 @@ const DEPOSIT_AMOUNT = utils.parseEther('0.01');
 const POLL_INTERVAL_SECONDS = 10;
 const FULLNODE_RPC = 'http://localhost:8449';
 const SYNC_TIMEOUT_MS = 180_000;
+const BALANCE_TIMEOUT_MS = 60_000;
 
 // ============================================================
 // Helpers
@@ -415,15 +416,26 @@ async function verifyOnFullnode(nodeConfigPath) {
     }
 
     console.log(`Fullnode synced! Latest block: ${latestBlock.number}`);
-
-    const balance = await wallet.getBalance();
     console.log(`\nWallet: ${wallet.address}`);
+    console.log('Waiting for force-included deposit to settle in state...');
+
+    const balanceStartTime = Date.now();
+    let balance;
+    while (Date.now() - balanceStartTime < BALANCE_TIMEOUT_MS) {
+      // eslint-disable-next-line no-await-in-loop
+      balance = await wallet.getBalance();
+      if (balance.gt(0)) break;
+      console.log('  Balance still 0, retrying in 5s...');
+      // eslint-disable-next-line no-await-in-loop
+      await new Promise((r) => setTimeout(r, 5_000));
+    }
+
     console.log(`Balance on child chain: ${utils.formatEther(balance)} ETH`);
 
     if (balance.gt(0)) {
       console.log('\nETH deposit verified on child chain! Force inclusion works end-to-end.');
     } else {
-      console.log('\nBalance is 0. Fullnode may need more time to process.');
+      console.log('\nBalance is still 0 after timeout. Fullnode may need more time to process.');
     }
   } finally {
     console.log(`\nStopping container ${dockerContainerId.substring(0, 12)}...`);
