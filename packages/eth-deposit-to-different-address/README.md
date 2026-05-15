@@ -28,8 +28,21 @@ Note that you can also set the environment variables in an `.env` file in the ro
 
 ## Run
 
+The script accepts two optional command line arguments:
+- `destination_address`: The address on the child chain where the ETH will be sent to (required)
+- `amount_in_eth`: The amount of ETH to deposit (optional, defaults to 0.0001 ETH)
+
+```bash
+# Basic usage with default amount (0.0001 ETH)
+yarn run exec <destination_address>
+
+# Specify custom amount (e.g., 0.001 ETH)
+yarn run exec <destination_address> 0.001
 ```
-yarn run exec
+
+Example:
+```bash
+yarn run exec 0x2D98cBc6f944c4bD36EdfE9f98cd7CB57faEC8d6 0.001
 ```
 
 <p align="center"><img src="../../assets/offchain_labs_logo.png" width="600"></p>
