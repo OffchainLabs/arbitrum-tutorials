@@ -2,7 +2,7 @@
 
 `demo-dapp-election` is a simple sample example that allows you to deploy the Election contract to Arbitrum and run its functions.
 
-The contract lives entirely on the targetted chain, and involves no direct interacts from the parent chain; writing, deploying, and interacting with it works just like using a regular contract on Ethereum.
+The contract lives entirely on the targeted chain, and involves no direct interacts from the parent chain; writing, deploying, and interacting with it works just like using a regular contract on Ethereum.
 
 ## Set environment variables
 
